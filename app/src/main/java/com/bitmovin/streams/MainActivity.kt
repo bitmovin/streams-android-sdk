@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.bitmovin.streams.ui.theme.StreamsandroidsdkTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,8 +19,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            StreamsandroidsdkTheme {
-                StreamsPlayer(streamId = "cot1gjsd1q7m56d4ch3g")
+            StreamsandroidsdkTheme{
+                StreamsPlayer(
+                    streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
+                    // Top padding and centered
+                    modifier = Modifier.fillMaxSize().padding(top = 64.dp).padding(start = 16.dp, end = 16.dp)
+                )
             }
         }
     }
