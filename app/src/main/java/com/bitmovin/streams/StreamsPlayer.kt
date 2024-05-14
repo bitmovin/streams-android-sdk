@@ -1,6 +1,7 @@
 package com.bitmovin.streams
 
 import android.util.Log
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,6 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
+import com.bitmovin.player.PlayerView
+import com.bitmovin.player.SubtitleView
+import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.streamsjson.StreamConfigData
 
 const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
@@ -34,6 +39,7 @@ fun StreamsPlayer(
     muted : Boolean = false,
     poster : String? = null,
     start : Double = 0.0,
+    subtitles : List<SubtitleTrack> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -77,6 +83,37 @@ fun StreamsPlayer(
                 Log.e("StreamsPlayer", "StreamConfigData is null | SHOULD NOT HAPPEN HERE!")
                 state = StreamDataBridgeState.DISPLAYING_ERROR
             }
+
+            val streamConfig = streamConfigData!!
+            val player = createPlayer(streamConfig, context)
+            val streamSource = createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
+
+            // Loading the stream source
+            player.load(streamSource)
+
+            // Handling properties
+            if (autoPlay)
+                player.play()
+            if (muted)
+                player.mute()
+
+            player.seek(start)
+
+            // UI
+            val subtitlesView = SubtitleView(context)
+            subtitlesView.setPlayer(player)
+
+            val playerView = createPlayerView(context, player)
+
+            Column {
+                AndroidView(factory = { playerView }, modifier = modifier)
+                AndroidView(factory = { subtitlesView }, modifier = modifier)
+            }
+
+
+
+
+
         }
         StreamDataBridgeState.DISPLAYING_ERROR -> {
             // Temporary error message
