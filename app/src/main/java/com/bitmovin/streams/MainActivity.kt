@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.ui.theme.StreamsandroidsdkTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,8 +23,13 @@ class MainActivity : ComponentActivity() {
             StreamsandroidsdkTheme{
                 StreamsPlayer(
                     streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
+                    subtitles = listOf(
+                        SubtitleTrack(language = "francais", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"),
+                        SubtitleTrack(language = "German", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt"),
+                        SubtitleTrack(label = "Spanish", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_es.vtt"),
+                    ),
                     // Top padding and centered
-                    modifier = Modifier.fillMaxSize().padding(top = 64.dp).padding(start = 16.dp, end = 16.dp)
+                    modifier = Modifier.padding(top = 64.dp).padding(start = 16.dp, end = 16.dp)
                 )
             }
         }
