@@ -1,6 +1,22 @@
 package com.bitmovin.streams
 
+import android.content.Context
 import android.util.Log
+import android.view.ViewGroup
+import com.bitmovin.analytics.api.AnalyticsConfig
+import com.bitmovin.analytics.api.SourceMetadata
+import com.bitmovin.player.PlayerView
+import com.bitmovin.player.api.Player
+import com.bitmovin.player.api.PlayerConfig
+import com.bitmovin.player.api.advertising.AdvertisingConfig
+import com.bitmovin.player.api.analytics.AnalyticsPlayerConfig
+import com.bitmovin.player.api.analytics.AnalyticsSourceConfig
+import com.bitmovin.player.api.media.subtitle.SubtitleTrack
+import com.bitmovin.player.api.source.Source
+import com.bitmovin.player.api.source.SourceConfig
+import com.bitmovin.player.api.source.SourceType
+import com.bitmovin.player.api.ui.PlayerViewConfig
+import com.bitmovin.player.api.ui.UiConfig
 import com.bitmovin.streams.streamsjson.StreamConfigData
 import com.bitmovin.streams.streamsjson.StreamConfigDataResponse
 import com.google.gson.Gson
@@ -43,3 +59,54 @@ fun addURLParam(url: String, attribute: String, value: String): String {
     return "$url$separator$attribute=$value"
 }
 
+fun createPlayer(streamConfigData: StreamConfigData, context: Context): Player {
+    val analyticsConfig : AnalyticsConfig = streamConfigData.analytics.getAnalyticsConfig()
+    val advertisingConfig : AdvertisingConfig = AdvertisingConfig()
+    val playerConfig : PlayerConfig = PlayerConfig(
+        key = streamConfigData.key,
+        advertisingConfig = advertisingConfig,
+    )
+
+    return Player(
+        context,
+        playerConfig = playerConfig,
+        analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig),
+    )
+
+}
+
+fun createSource(streamConfigData: StreamConfigData, customPosterSource: String?, subtitlesSources: List<SubtitleTrack> = emptyList()): Source {
+    val sourceConfig = SourceConfig(
+        url = streamConfigData.sources.hls,
+        type = SourceType.Hls, // Might be different in some cases but let's pretend it's always HLS for now
+        title = streamConfigData.sources.title,
+        posterSource = customPosterSource?: streamConfigData.sources.poster,
+        subtitleTracks = subtitlesSources,
+    )
+    val sourceMetadata = SourceMetadata(
+        videoId = streamConfigData.analytics.videoId,
+        title = streamConfigData.analytics.videoTitle,
+    )
+    return Source(
+        sourceConfig,
+        AnalyticsSourceConfig.Enabled(sourceMetadata)
+    )
+}
+
+fun createPlayerView(context: Context, player: Player) : PlayerView{
+    val playerView = PlayerView(context, player, config =
+    PlayerViewConfig(
+        UiConfig.WebUi(
+            // Should be chqnged once the endpoint is ready
+            jsLocation =  "https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.js",
+            cssLocation = "https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.css",
+        ))
+    ).apply {
+        layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        keepScreenOn = true
+    }
+    return playerView
+}
