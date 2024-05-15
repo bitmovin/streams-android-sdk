@@ -34,13 +34,13 @@ const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
 @Composable
 fun StreamsPlayer(
     streamId: String,
+    modifier: Modifier = Modifier,
     jwToken : String? = null,
     autoPlay : Boolean = false,
     muted : Boolean = false,
     poster : String? = null,
     start : Double = 0.0,
     subtitles : List<SubtitleTrack> = emptyList(),
-    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
@@ -53,25 +53,28 @@ fun StreamsPlayer(
 
             // Fetch the stream config data
             LaunchedEffect(key1 = streamId, key2 = jwToken) {
-                var tryCount = 0
-                while (true) {
-                    // Fetch the stream config data
-                    val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
-                    streamResponseError = streamConfigDataResp.responseHttpCode
-                    if (streamConfigDataResp.responseHttpCode != 200) {
-                        if (tryCount < MAX_FETCH_ATTEMPTS_STREAMS_CONFIG) {
-                            tryCount++
-                            continue
-                        }
-                        // Happens only if the maximum number of attempts is reached
+
+                // Fetch the stream config data
+                val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
+                streamResponseError = streamConfigDataResp.responseHttpCode
+                when (streamResponseError) {
+                    200 -> {
+                        streamConfigData = streamConfigDataResp.streamConfigData
+                        state = StreamDataBridgeState.DISPLAYING
+                    }
+                    401 -> {
+                        Log.e("StreamsPlayer", "Unauthorized access to stream\nThis stream may be private or require a token.")
                         state = StreamDataBridgeState.DISPLAYING_ERROR
-                        break
+                    }
+                    403 -> {
+                        Log.e("StreamsPlayer", "Forbidden access to stream\nThe domain may not be allowed to access the stream or the token you provided may be invalid.")
+                        state = StreamDataBridgeState.DISPLAYING_ERROR
+                    }
+                    else -> {
+                        Log.e("StreamsPlayer", "Error fetching stream config data.")
+                        state = StreamDataBridgeState.DISPLAYING_ERROR
                     }
 
-                    streamConfigData = streamConfigDataResp.streamConfigData
-
-                    state = StreamDataBridgeState.DISPLAYING
-                    break
                 }
             }
         }
@@ -105,14 +108,23 @@ fun StreamsPlayer(
 
             val playerView = createPlayerView(context, player)
 
-            Column {
-                AndroidView(factory = { playerView }, modifier = modifier)
-                AndroidView(factory = { subtitlesView }, modifier = modifier)
+            Column(modifier = modifier) {
+                AndroidView(factory = { playerView })
+                AndroidView(factory = { subtitlesView })
             }
         }
         StreamDataBridgeState.DISPLAYING_ERROR -> {
-            // Temporary error message
-            TextVideoPlayerFiller("Error: $streamResponseError", modifier = modifier)
+            when (streamResponseError) {
+                401 -> {
+                    TextVideoPlayerFiller("Unauthorized access to stream")
+                }
+                403 -> {
+                    TextVideoPlayerFiller("Forbidden access to stream")
+                }
+                else -> {
+                    TextVideoPlayerFiller("Error fetching stream config data")
+                }
+            }
         }
     }
 }
