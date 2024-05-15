@@ -109,11 +109,6 @@ fun StreamsPlayer(
                 AndroidView(factory = { playerView }, modifier = modifier)
                 AndroidView(factory = { subtitlesView }, modifier = modifier)
             }
-
-
-
-
-
         }
         StreamDataBridgeState.DISPLAYING_ERROR -> {
             // Temporary error message

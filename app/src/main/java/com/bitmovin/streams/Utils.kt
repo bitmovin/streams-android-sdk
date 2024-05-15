@@ -8,6 +8,9 @@ import com.bitmovin.analytics.api.SourceMetadata
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.PlayerConfig
+import com.bitmovin.player.api.advertising.AdItem
+import com.bitmovin.player.api.advertising.AdSource
+import com.bitmovin.player.api.advertising.AdSourceType
 import com.bitmovin.player.api.advertising.AdvertisingConfig
 import com.bitmovin.player.api.analytics.AnalyticsPlayerConfig
 import com.bitmovin.player.api.analytics.AnalyticsSourceConfig
@@ -61,7 +64,7 @@ fun addURLParam(url: String, attribute: String, value: String): String {
 
 fun createPlayer(streamConfigData: StreamConfigData, context: Context): Player {
     val analyticsConfig : AnalyticsConfig = streamConfigData.analytics.getAnalyticsConfig()
-    val advertisingConfig : AdvertisingConfig = AdvertisingConfig()
+    val advertisingConfig : AdvertisingConfig = getAdvertisingConfig(streamConfigData)
     val playerConfig : PlayerConfig = PlayerConfig(
         key = streamConfigData.key,
         advertisingConfig = advertisingConfig,
@@ -72,8 +75,28 @@ fun createPlayer(streamConfigData: StreamConfigData, context: Context): Player {
         playerConfig = playerConfig,
         analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig),
     )
-
 }
+fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
+    // Bitmovin and Progressive ads only for now
+    val ads = streamConfig.adConfig?.ads?.map { ad ->
+        val fileExt = ad.url.split(".").last()
+        val adSource = when (fileExt) {
+            "mp4" -> AdSource(AdSourceType.Progressive, ad.url)
+            "xml" -> AdSource(AdSourceType.Bitmovin, ad.url)
+            // "..." -> AdSource(AdSourceType.Ima, ad.url) ignoring this case for now
+            else -> AdSource(AdSourceType.Unknown, ad.url)
+        }
+        AdItem(ad.position, adSource)
+    } ?: emptyList()
+
+    if (ads.isEmpty()) {
+        Log.d("Ads", "No ads found")
+        return AdvertisingConfig()
+    }
+    return AdvertisingConfig(ads)
+}
+
+
 
 fun createSource(streamConfigData: StreamConfigData, customPosterSource: String?, subtitlesSources: List<SubtitleTrack> = emptyList()): Source {
     val sourceConfig = SourceConfig(
