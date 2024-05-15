@@ -34,3 +34,8 @@ google-services.json
 
 # Testing streams ids
 /app/src/main/java/com/bitmovin/streams/TEST_STREAMS_ID.kt
+
+
+# MacOs Profiling
+*.DS_Store
+.DS_Store
