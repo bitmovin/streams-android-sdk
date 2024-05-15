@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,17 +22,28 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            StreamsandroidsdkTheme{
-                StreamsPlayer(
-                    streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
-                    subtitles = listOf(
-                        SubtitleTrack(language = "francais", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"),
-                        SubtitleTrack(language = "German", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt"),
-                        SubtitleTrack(label = "Spanish", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_es.vtt"),
-                    ),
-                    // Top padding and centered
-                    modifier = Modifier.padding(top = 64.dp).padding(start = 16.dp, end = 16.dp)
-                )
+            StreamsandroidsdkTheme {
+                Box(modifier = Modifier.size(300.dp)) {
+                    StreamsPlayer(
+                        streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
+                        subtitles = listOf(
+                            SubtitleTrack(
+                                language = "francais",
+                                url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"
+                            ),
+                            SubtitleTrack(
+                                language = "German",
+                                url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt"
+                            ),
+                            SubtitleTrack(
+                                label = "Spanish",
+                                url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_es.vtt"
+                            ),
+                        ),
+                        // Top padding and centered
+                        modifier = Modifier
+                    )
+                }
             }
         }
     }

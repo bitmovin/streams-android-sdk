@@ -13,7 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import com.bitmovin.player.PlayerView
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.bitmovin.player.SubtitleView
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.streamsjson.StreamConfigData
@@ -44,6 +45,8 @@ fun StreamsPlayer(
 ) {
     val context = LocalContext.current
 
+    val isFullScreen = remember { mutableStateOf(false) }
+    val fullScreenHandler = FullScreenHandler(isFullScreen)
     var streamConfigData by remember { mutableStateOf<StreamConfigData?>(null) }
     var streamResponseError by remember { mutableIntStateOf(0) }
     var state by remember { mutableStateOf(StreamDataBridgeState.FETCHING) }
@@ -54,6 +57,7 @@ fun StreamsPlayer(
             // Fetch the stream config data
             LaunchedEffect(key1 = streamId, key2 = jwToken) {
 
+                Log.d("StreamsPlayer", "Fetching stream config data for stream $streamId")
                 // Fetch the stream config data
                 val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
                 streamResponseError = streamConfigDataResp.responseHttpCode
@@ -79,10 +83,7 @@ fun StreamsPlayer(
             }
         }
         StreamDataBridgeState.DISPLAYING -> {
-            if (streamConfigData != null) {
-                // Display the player
-                TextVideoPlayerFiller("Stream Player of id : ${streamConfigData!!.analytics.videoId}", modifier = modifier)
-            } else {
+            if (streamConfigData == null) {
                 Log.e("StreamsPlayer", "StreamConfigData is null | SHOULD NOT HAPPEN HERE!")
                 state = StreamDataBridgeState.DISPLAYING_ERROR
             }
@@ -107,10 +108,22 @@ fun StreamsPlayer(
             subtitlesView.setPlayer(player)
 
             val playerView = createPlayerView(context, player)
-
-            Column(modifier = modifier) {
-                AndroidView(factory = { playerView })
-                AndroidView(factory = { subtitlesView })
+            playerView.setFullscreenHandler(fullScreenHandler)
+            if (isFullScreen.value) {
+                Dialog(
+                    onDismissRequest = { /* Do something when back button pressed */ },
+                    properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false, usePlatformDefaultWidth = false)
+                ){
+                    Column(modifier = modifier) {
+                        AndroidView(factory = { playerView })
+                        AndroidView(factory = { subtitlesView })
+                    }
+                }
+            } else {
+                Column(modifier = modifier) {
+                    AndroidView(factory = { playerView })
+                    AndroidView(factory = { subtitlesView })
+                }
             }
         }
         StreamDataBridgeState.DISPLAYING_ERROR -> {
@@ -135,7 +148,7 @@ fun StreamsPlayer(
  */
 @Composable
 fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier) {
-    Text(text =  "Not implemented yet: msg : $text", modifier = modifier)
+    Text(text =  "Not implemented yet : $text", modifier = modifier)
 }
 
 enum class StreamDataBridgeState {
