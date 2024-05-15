@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.bitmovin.player.PlayerView
 import com.bitmovin.player.SubtitleView
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.streamsjson.StreamConfigData
@@ -43,6 +44,7 @@ fun StreamsPlayer(
     start : Double = 0.0,
     subtitles : List<SubtitleTrack> = emptyList(),
 ) {
+    Log.d("StreamsPlayer", "StreamsPlayer called")
     val context = LocalContext.current
 
     val isFullScreen = remember { mutableStateOf(false) }
@@ -50,6 +52,9 @@ fun StreamsPlayer(
     var streamConfigData by remember { mutableStateOf<StreamConfigData?>(null) }
     var streamResponseError by remember { mutableIntStateOf(0) }
     var state by remember { mutableStateOf(StreamDataBridgeState.FETCHING) }
+
+    var playerView by remember { mutableStateOf<PlayerView?>(null) }
+    var subtitlesView by remember { mutableStateOf<SubtitleView?>(null) }
 
     when (state) {
         StreamDataBridgeState.FETCHING -> {
@@ -64,7 +69,7 @@ fun StreamsPlayer(
                 when (streamResponseError) {
                     200 -> {
                         streamConfigData = streamConfigDataResp.streamConfigData
-                        state = StreamDataBridgeState.DISPLAYING
+                        state = StreamDataBridgeState.INITILIZING
                     }
                     401 -> {
                         Log.e("StreamsPlayer", "Unauthorized access to stream\nThis stream may be private or require a token.")
@@ -82,7 +87,7 @@ fun StreamsPlayer(
                 }
             }
         }
-        StreamDataBridgeState.DISPLAYING -> {
+        StreamDataBridgeState.INITILIZING -> {
             if (streamConfigData == null) {
                 Log.e("StreamsPlayer", "StreamConfigData is null | SHOULD NOT HAPPEN HERE!")
                 state = StreamDataBridgeState.DISPLAYING_ERROR
@@ -104,27 +109,13 @@ fun StreamsPlayer(
             player.seek(start)
 
             // UI
-            val subtitlesView = SubtitleView(context)
-            subtitlesView.setPlayer(player)
+            subtitlesView = SubtitleView(context)
+            subtitlesView!!.setPlayer(player)
 
-            val playerView = createPlayerView(context, player)
-            playerView.setFullscreenHandler(fullScreenHandler)
-            if (isFullScreen.value) {
-                Dialog(
-                    onDismissRequest = { /* Do something when back button pressed */ },
-                    properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false, usePlatformDefaultWidth = false)
-                ){
-                    Column(modifier = modifier) {
-                        AndroidView(factory = { playerView })
-                        AndroidView(factory = { subtitlesView })
-                    }
-                }
-            } else {
-                Column(modifier = modifier) {
-                    AndroidView(factory = { playerView })
-                    AndroidView(factory = { subtitlesView })
-                }
-            }
+            playerView = createPlayerView(context, player)
+            playerView!!.setFullscreenHandler(fullScreenHandler)
+
+            state = StreamDataBridgeState.DISPLAYING
         }
         StreamDataBridgeState.DISPLAYING_ERROR -> {
             when (streamResponseError) {
@@ -136,6 +127,26 @@ fun StreamsPlayer(
                 }
                 else -> {
                     TextVideoPlayerFiller("Error fetching stream config data")
+                }
+            }
+        }
+        StreamDataBridgeState.DISPLAYING -> {
+
+            subtitlesView!!
+            if (isFullScreen.value) {
+                Dialog(
+                    onDismissRequest = { isFullScreen.value = false },
+                    properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false, usePlatformDefaultWidth = false)
+                ){
+                    Column(modifier = modifier) {
+                        AndroidView(factory = { playerView!! })
+                        AndroidView(factory = { subtitlesView!! })
+                    }
+                }
+            } else {
+                Column(modifier = modifier) {
+                    AndroidView(factory = { playerView!! })
+                    AndroidView(factory = { subtitlesView!! })
                 }
             }
         }
@@ -153,6 +164,7 @@ fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier) {
 
 enum class StreamDataBridgeState {
     FETCHING,
+    INITILIZING,
     DISPLAYING,
     DISPLAYING_ERROR,
 }
