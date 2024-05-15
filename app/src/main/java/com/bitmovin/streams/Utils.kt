@@ -34,6 +34,9 @@ import okhttp3.Request
  * @return the stream config data
  * @throws IOException if the request fails
  */
+
+
+
 suspend fun getStreamConfigData(streamId: String, jwToken: String?) : StreamConfigDataResponse {
     return withContext(Dispatchers.IO) {
         val client = OkHttpClient()
@@ -63,7 +66,7 @@ fun addURLParam(url: String, attribute: String, value: String): String {
 }
 
 fun createPlayer(streamConfigData: StreamConfigData, context: Context): Player {
-    val analyticsConfig : AnalyticsConfig = streamConfigData.analytics.getAnalyticsConfig()
+    val analyticsConfig : AnalyticsConfig = getAnalyticsConfig(streamConfigData)
     val advertisingConfig : AdvertisingConfig = getAdvertisingConfig(streamConfigData)
     val playerConfig : PlayerConfig = PlayerConfig(
         key = streamConfigData.key,
@@ -96,6 +99,12 @@ fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
     return AdvertisingConfig(ads)
 }
 
+fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig {
+    return AnalyticsConfig(
+        licenseKey = streamConfig.analytics.key
+    )
+}
+
 
 
 fun createSource(streamConfigData: StreamConfigData, customPosterSource: String?, subtitlesSources: List<SubtitleTrack> = emptyList()): Source {
@@ -116,15 +125,31 @@ fun createSource(streamConfigData: StreamConfigData, customPosterSource: String?
     )
 }
 
-fun createPlayerView(context: Context, player: Player) : PlayerView{
-    val playerView = PlayerView(context, player, config =
-    PlayerViewConfig(
-        UiConfig.WebUi(
-            // Should be chqnged once the endpoint is ready
-            jsLocation =  "https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.js",
-            cssLocation = "https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.css",
-        ))
-    ).apply {
+fun createPlayerView(context: Context, player: Player, jsLocation: String? = null, cssLocation : String?= null) : PlayerView{
+    var playerViewConfig = PlayerViewConfig(UiConfig.WebUi(forceSubtitlesIntoViewContainer = true))
+    if (jsLocation != null && cssLocation != null) {
+        playerViewConfig = PlayerViewConfig(
+            UiConfig.WebUi(
+                jsLocation = jsLocation,
+                cssLocation = cssLocation
+            )
+        )
+    } else if (jsLocation != null) {
+        playerViewConfig = PlayerViewConfig(
+            UiConfig.WebUi(
+                jsLocation = jsLocation
+            )
+        )
+    } else if (cssLocation != null) {
+        playerViewConfig = PlayerViewConfig(
+            UiConfig.WebUi(
+                cssLocation = cssLocation
+            )
+        )
+    }
+
+    val playerView = PlayerView(context, player, config = playerViewConfig)
+        .apply {
         layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
