@@ -1,6 +1,8 @@
 package com.bitmovin.streams
 
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -74,6 +76,12 @@ fun StreamsPlayer(
             val playerView = viewModel.playerView!!
             val subtitlesView = viewModel.subtitlesView!!
 
+            // Remove the views from their parent
+            // This is necessary to avoid the current child to be
+            // added to the parent again while leaving full screen mode
+            playerView.removeFromParent()
+            subtitlesView.removeFromParent()
+
             if (viewModel.isFullScreen.value) {
                 Dialog(
                     onDismissRequest = { viewModel.isFullScreen.value = false },
@@ -107,3 +115,11 @@ fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier) {
     Text(text =  "Not implemented yet : $text", modifier = modifier)
 }
 
+/**
+ * Removes the view from its parent.
+ */
+fun FrameLayout.removeFromParent() {
+    this.parent?.let {
+        (it as? ViewGroup)?.removeView(this)
+    }
+}
