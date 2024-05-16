@@ -19,26 +19,20 @@ import com.bitmovin.streams.ui.theme.StreamsandroidsdkTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        super.onCreate(savedInstanceState) //
+//        enableEdgeToEdge needed for a real fullscreen experience.
+        // TODO Real fullscreen experience with Insets
+//        enableEdgeToEdge()
         setContent {
             StreamsandroidsdkTheme {
-                Box(modifier = Modifier.size(300.dp)) {
-                    StreamsPlayer(
+                Box(modifier = Modifier.size(400.dp).padding(40.dp)) {
+                StreamsPlayer(
                         streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
                         subtitles = listOf(
                             SubtitleTrack(
                                 language = "francais",
                                 url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"
-                            ),
-                            SubtitleTrack(
-                                language = "German",
-                                url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt"
-                            ),
-                            SubtitleTrack(
-                                label = "Spanish",
-                                url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_es.vtt"
-                            ),
+                            )
                         ),
                         // Top padding and centered
                         modifier = Modifier

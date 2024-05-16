@@ -4,6 +4,14 @@ import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -70,7 +78,11 @@ fun StreamsPlayer(
             TextVideoPlayerFiller("Initializing player", modifier)
         }
         StreamDataBridgeState.DISPLAYING_ERROR -> {
-            TextVideoPlayerFiller("Error fetching stream data", modifier)
+            when (viewModel.streamResponseError) {
+                401 -> TextVideoPlayerFiller("Unauthorized access to stream", modifier)
+                403 -> TextVideoPlayerFiller("Forbidden access to stream", modifier)
+                else -> TextVideoPlayerFiller( viewModel.streamResponseError.toString() + "Error fetching stream config data", modifier)
+            }
         }
         StreamDataBridgeState.DISPLAYING -> {
             val playerView = viewModel.playerView!!
@@ -91,7 +103,7 @@ fun StreamsPlayer(
                         usePlatformDefaultWidth = false
                     )
                 ) {
-                    Column(modifier = modifier) {
+                    Column(modifier = Modifier.fillMaxSize()) {
                         AndroidView(factory = { playerView })
                         AndroidView(factory = { subtitlesView })
                     }
