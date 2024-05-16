@@ -20,13 +20,11 @@ class ViewModelStream : ViewModel() {
     var streamConfigData by mutableStateOf<StreamConfigData?>(null)
     var streamResponseError by mutableIntStateOf(0)
     var state by mutableStateOf(StreamDataBridgeState.FETCHING)
+    var context by mutableStateOf<Context?>(null)
 
     var playerView by mutableStateOf<PlayerView?>(null)
     var subtitlesView by mutableStateOf<SubtitleView?>(null)
 
-    init {
-        fetchStreamConfigData("streamId", "jwToken")
-    }
     fun fetchStreamConfigData(streamId: String, jwToken: String?) {
         viewModelScope.launch {
             // Fetch the stream config data
@@ -46,7 +44,7 @@ class ViewModelStream : ViewModel() {
                     state = StreamDataBridgeState.DISPLAYING_ERROR
                 }
                 else -> {
-                    Log.e("StreamsPlayer", "Error fetching stream config data.")
+                    Log.e("StreamsPlayer", streamResponseError.toString() + "Error fetching stream config data.")
                     state = StreamDataBridgeState.DISPLAYING_ERROR
                 }
             }
@@ -56,6 +54,7 @@ class ViewModelStream : ViewModel() {
     fun initializePlayer(context: Context, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>) {
         val player = createPlayer(streamConfig, context)
         val streamSource = createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
+        this.context = context
 
         // Loading the stream source
         player.load(streamSource)
@@ -69,7 +68,7 @@ class ViewModelStream : ViewModel() {
         player.seek(start)
 
         // UI
-        val fullscreenHandler = FullScreenHandler(isFullScreen)
+        val fullscreenHandler = FullScreenHandler(isFullScreen, context)
         subtitlesView = SubtitleView(context)
         subtitlesView!!.setPlayer(player)
 
