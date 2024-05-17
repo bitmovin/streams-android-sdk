@@ -11,6 +11,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -134,4 +135,13 @@ fun ImmersiveFullScreen(
             }
         }
     )
+}
+
+/**
+ * Video player replacement element for handling errors and waiting time.
+ * @param text The text to be displayed.
+ */
+@Composable
+fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier) {
+    Text(text = "Not implemented yet : $text", modifier = modifier)
 }

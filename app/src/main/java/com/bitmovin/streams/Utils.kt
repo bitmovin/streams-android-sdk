@@ -6,6 +6,7 @@ import android.content.ContextWrapper
 import android.util.Log
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
@@ -35,11 +36,14 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 
 /**
- * Fetches the stream config data from the Bitmovin API
- * @param streamId the id of the stream
- * @return the stream config data
- * @throws IOException if the request fails
+ * Removes the view from its parent.
  */
+fun FrameLayout.removeFromParent() {
+    this.parent?.let {
+        (it as? ViewGroup)?.removeView(this)
+    }
+}
+
 
 // Window utils, credits goes to the stackoverflow-guy
 @Composable
