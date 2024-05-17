@@ -89,21 +89,3 @@ fun StreamsPlayer(
         }
     }
 }
-
-/**
- * Video player replacement element for handling errors and waiting time.
- * @param text The text to be displayed.
- */
-@Composable
-fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier) {
-    Text(text =  "Not implemented yet : $text", modifier = modifier)
-}
-
-/**
- * Removes the view from its parent.
- */
-fun FrameLayout.removeFromParent() {
-    this.parent?.let {
-        (it as? ViewGroup)?.removeView(this)
-    }
-}
