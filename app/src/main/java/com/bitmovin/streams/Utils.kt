@@ -1,8 +1,14 @@
 package com.bitmovin.streams
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.util.Log
 import android.view.ViewGroup
+import android.view.Window
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogWindowProvider
 import com.bitmovin.analytics.api.AnalyticsConfig
 import com.bitmovin.analytics.api.SourceMetadata
 import com.bitmovin.player.PlayerView
@@ -35,6 +41,19 @@ import okhttp3.Request
  * @throws IOException if the request fails
  */
 
+// Window utils, credits goes to the stackoverflow-guy
+@Composable
+fun getDialogWindow(): Window? = (LocalView.current.parent as? DialogWindowProvider)?.window
+
+@Composable
+fun getActivityWindow(): Window? = LocalView.current.context.getActivityWindow()
+
+private tailrec fun Context.getActivityWindow(): Window? =
+    when (this) {
+        is Activity -> window
+        is ContextWrapper -> baseContext.getActivityWindow()
+        else -> null
+    }
 
 
 suspend fun getStreamConfigData(streamId: String, jwToken: String?) : StreamConfigDataResponse {
