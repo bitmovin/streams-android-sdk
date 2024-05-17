@@ -9,26 +9,22 @@ import com.bitmovin.player.api.ui.FullscreenHandler
 
 
 class FullScreenHandler(var fullscreen: MutableState<Boolean>, val context: Context) : FullscreenHandler {
-    override var isFullscreen: Boolean = false
     override fun onDestroy() {
         TODO("Not yet implemented")
     }
 
     override fun onFullscreenExitRequested() {
-        isFullscreen = false
         fullscreen.value = false
         handleFullScreen(false)
     }
 
     override fun onFullscreenRequested() {
-        isFullscreen = true
         fullscreen.value = true
         handleFullScreen(true)
     }
 
     private fun handleFullScreen(b: Boolean) {
         doSystemUiVisibility(b)
-
     }
 
     override fun onPause() {
@@ -40,11 +36,13 @@ class FullScreenHandler(var fullscreen: MutableState<Boolean>, val context: Cont
         }
     }
 
+    override val isFullscreen: Boolean
+        get() = fullscreen.value
+
     /**
      * This method toggles the system UI visibility.
      * cf : hide the status bar and the navigation bar
      */
-
     private fun doSystemUiVisibility(fullscreen: Boolean) {
         val activity = context.getActivity()
         if (activity == null) {
