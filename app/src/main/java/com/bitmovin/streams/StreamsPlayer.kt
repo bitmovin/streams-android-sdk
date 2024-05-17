@@ -3,36 +3,14 @@ package com.bitmovin.streams
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.material3.DismissValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.bitmovin.player.PlayerView
-import com.bitmovin.player.SubtitleView
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
-import com.bitmovin.streams.streamsjson.StreamConfigData
 
 const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
 
@@ -47,17 +25,17 @@ const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
  * @param poster The poster image to be displayed before the player starts.
  * @param start The time in seconds at which the player should start playing.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StreamsPlayer(
-    streamId: String,
-    modifier: Modifier = Modifier,
+    streamId : String,
+    modifier : Modifier = Modifier,
     jwToken : String? = null,
     autoPlay : Boolean = false,
     muted : Boolean = false,
     poster : String? = null,
     start : Double = 0.0,
     subtitles : List<SubtitleTrack> = emptyList(),
+    immersiveFullScreen : Boolean = true
 ) {
     Log.d("StreamsPlayer", "StreamsPlayer called")
     val context = LocalContext.current
@@ -95,24 +73,18 @@ fun StreamsPlayer(
             subtitlesView.removeFromParent()
 
             if (viewModel.isFullScreen.value) {
-                Dialog(
-                    onDismissRequest = { viewModel.isFullScreen.value = false },
-                    properties = DialogProperties(
-                        dismissOnBackPress = true,
-                        dismissOnClickOutside = false,
-                        usePlatformDefaultWidth = false
-                    )
-                ) {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        AndroidView(factory = { playerView })
-                        AndroidView(factory = { subtitlesView })
+                if (immersiveFullScreen)
+                    ImmersiveFullScreen(
+                        onDismissRequest = { viewModel.isFullScreen.value = false }
+                    ) {
+                        StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView)
                     }
-                }
+                else
+                    FullScreen(onDismissRequest = { viewModel.isFullScreen.value = false }) {
+                        StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView, modifier = Modifier.fillMaxSize())
+                    }
             } else {
-                Column(modifier = modifier) {
-                    AndroidView(factory = { playerView })
-                    AndroidView(factory = { subtitlesView })
-                }
+                StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView, modifier)
             }
         }
     }
