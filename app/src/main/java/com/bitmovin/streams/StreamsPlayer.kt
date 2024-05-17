@@ -43,25 +43,6 @@ fun StreamsPlayer(
     val state = viewModel.state
 
     when (state) {
-        StreamDataBridgeState.FETCHING -> {
-            LaunchedEffect(Unit) {
-                viewModel.fetchStreamConfigData(streamId, jwToken)
-            }
-            TextVideoPlayerFiller("Fetching stream data", modifier)
-        }
-        StreamDataBridgeState.INITIALIZING -> {
-            LaunchedEffect(Unit) {
-                viewModel.initializePlayer(context, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles)
-            }
-            TextVideoPlayerFiller("Initializing player", modifier)
-        }
-        StreamDataBridgeState.DISPLAYING_ERROR -> {
-            when (viewModel.streamResponseError) {
-                401 -> TextVideoPlayerFiller("Unauthorized access to stream", modifier)
-                403 -> TextVideoPlayerFiller("Forbidden access to stream", modifier)
-                else -> TextVideoPlayerFiller( viewModel.streamResponseError.toString() + "Error fetching stream config data", modifier)
-            }
-        }
         StreamDataBridgeState.DISPLAYING -> {
             val playerView = viewModel.playerView!!
             val subtitlesView = viewModel.subtitlesView!!
@@ -80,12 +61,31 @@ fun StreamsPlayer(
                         StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView)
                     }
                 else
-                    FullScreen(onDismissRequest = { viewModel.isFullScreen.value = false }) {
+                    FullScreen(
+                        onDismissRequest = { viewModel.isFullScreen.value = false }
+                    ) {
                         StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView, modifier = Modifier.fillMaxSize())
                     }
             } else {
                 StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView, modifier)
             }
+        }
+
+        // One-time actions for fetching and initializing the player
+        StreamDataBridgeState.FETCHING -> {
+            LaunchedEffect(Unit) {
+                viewModel.fetchStreamConfigData(streamId, jwToken)
+            }
+            TextVideoPlayerFiller("Fetching stream data", modifier)
+        }
+        StreamDataBridgeState.INITIALIZING -> {
+            LaunchedEffect(Unit) {
+                viewModel.initializePlayer(context, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles)
+            }
+            TextVideoPlayerFiller("Initializing player", modifier)
+        }
+        StreamDataBridgeState.DISPLAYING_ERROR -> {
+            ErrorHandling(error = viewModel.streamResponseError, modifier)
         }
     }
 }

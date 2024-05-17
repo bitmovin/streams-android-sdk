@@ -143,5 +143,19 @@ fun ImmersiveFullScreen(
  */
 @Composable
 fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier) {
-    Text(text = "Not implemented yet : $text", modifier = modifier)
+    //TODO: Replace the text by a player with the error message in it
+    Text(text = text, modifier = modifier)
+}
+@Composable
+fun ErrorHandling(error : Int, modifier: Modifier = Modifier) {
+    val message =
+        when (error) {
+            401 -> "Unauthorized access to stream\nThis stream may require a token."
+            403 -> "Forbidden access to stream\nThe domain may not be allowed to access the stream or the token you provided may be invalid."
+            404 -> "Stream not found\nThe stream you are trying to access does not exist."
+            500 -> "Internal server error\nThe server encountered an error while processing your request."
+            503 -> "Service unavailable\nPlease try again in few minutes."
+            else -> "Error $error"
+        }
+    TextVideoPlayerFiller("Error $error\n$message", modifier)
 }
