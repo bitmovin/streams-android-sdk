@@ -1,6 +1,7 @@
 package com.bitmovin.streams
 
 import android.content.Context
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -12,6 +13,8 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.SubtitleView
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.player.api.ui.FullscreenHandler
+import com.bitmovin.player.api.ui.PictureInPictureHandler
+import com.bitmovin.player.ui.DefaultPictureInPictureHandler
 import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.launch
 
@@ -21,7 +24,8 @@ class ViewModelStream : ViewModel() {
     var streamResponseError by mutableIntStateOf(0)
     var state by mutableStateOf(StreamDataBridgeState.FETCHING)
     var context by mutableStateOf<Context?>(null)
-
+    var pipHandler : PictureInPictureHandler? = null
+    var immersiveFullScreen = true
     var playerView by mutableStateOf<PlayerView?>(null)
     var subtitlesView by mutableStateOf<SubtitleView?>(null)
 
@@ -51,11 +55,12 @@ class ViewModelStream : ViewModel() {
         }
     }
 
-    fun initializePlayer(context: Context, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>) {
+    fun initializePlayer(context: Context, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>, immersiveFullScreen: Boolean) {
         val player = createPlayer(streamConfig, context)
         val streamSource = createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
         this.context = context
 
+        this.immersiveFullScreen = immersiveFullScreen
         // Loading the stream source
         player.load(streamSource)
 
@@ -69,13 +74,21 @@ class ViewModelStream : ViewModel() {
 
         // UI
         val fullscreenHandler = FullScreenHandler(isFullScreen, context)
+
         subtitlesView = SubtitleView(context)
         subtitlesView!!.setPlayer(player)
 
         playerView = createPlayerView(context, player)
         playerView!!.setFullscreenHandler(fullscreenHandler)
-
+        pipHandler = PiPHandler(this, context.getActivity()!!, player)
+        playerView!!.setPictureInPictureHandler(pipHandler)
         state = StreamDataBridgeState.DISPLAYING
+    }
+
+    fun onPictureInPictureModeChanged(inPipMode: Boolean, newConfig: Configuration?) {
+        if (!inPipMode) {
+            pipHandler?.exitPictureInPicture()
+        }
     }
 }
 
