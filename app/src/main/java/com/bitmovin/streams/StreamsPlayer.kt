@@ -7,11 +7,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import java.util.UUID
+import kotlin.reflect.KProperty
 
 const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
 
@@ -42,8 +44,10 @@ fun StreamsPlayer(
     val context = LocalContext.current
 
     // Make the ViewModel unique for each instance of the Streams Player
-    val uuid by remember { mutableStateOf(UUID.randomUUID().toString()) }
-    val viewModel: ViewModelStream = viewModel(key = uuid)
+    // The UPID (Unique Player ID) is maintained through recompositions to keep the ViewModel alive and used.
+    // We do not use the streamId to allow to user to have multiple players with the same streamId.
+    val upid: String by rememberSaveable { UUID.randomUUID().toString() }
+    val viewModel: ViewModelStream = viewModel(key = upid)
     val state = viewModel.state
     when (state) {
         StreamDataBridgeState.DISPLAYING -> {
@@ -79,4 +83,8 @@ fun StreamsPlayer(
             ErrorHandling(error = viewModel.streamResponseError, modifier)
         }
     }
+}
+
+private operator fun String.getValue(nothing: Nothing?, property: KProperty<*>): String {
+    return this
 }
