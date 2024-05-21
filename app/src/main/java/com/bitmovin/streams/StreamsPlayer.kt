@@ -49,6 +49,7 @@ fun StreamsPlayer(
     val upid: String by rememberSaveable { UUID.randomUUID().toString() }
     val viewModel: ViewModelStream = viewModel(key = upid)
     val state = viewModel.state
+    VMNotifierForPiP(viewModel = viewModel)
     when (state) {
         StreamDataBridgeState.DISPLAYING -> {
             val playerView = viewModel.playerView!!
@@ -57,7 +58,7 @@ fun StreamsPlayer(
             if (viewModel.isFullScreen.value) {
                 FullScreen(
                     onDismissRequest = { viewModel.isFullScreen.value = false },
-                    immersive = immersiveFullScreen
+                    immersive = viewModel.immersiveFullScreen
                 ) {
                     StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView)
                 }
@@ -75,7 +76,7 @@ fun StreamsPlayer(
         }
         StreamDataBridgeState.INITIALIZING -> {
             LaunchedEffect(Unit) {
-                viewModel.initializePlayer(context, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles)
+                viewModel.initializePlayer(context, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen)
             }
             TextVideoPlayerFiller("Initializing player", modifier)
         }
