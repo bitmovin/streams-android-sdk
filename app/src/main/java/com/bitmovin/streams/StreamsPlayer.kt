@@ -1,16 +1,17 @@
 package com.bitmovin.streams
 
 import android.util.Log
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
+import java.util.UUID
 
 const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
 
@@ -39,14 +40,16 @@ fun StreamsPlayer(
 ) {
     Log.d("StreamsPlayer", "StreamsPlayer called")
     val context = LocalContext.current
-    val viewModel: ViewModelStream = viewModel()
+
+    // Make the ViewModel unique for each instance of the Streams Player
+    val uuid by remember { mutableStateOf(UUID.randomUUID().toString()) }
+    val viewModel: ViewModelStream = viewModel(key = uuid)
     val state = viewModel.state
 
     when (state) {
         StreamDataBridgeState.DISPLAYING -> {
             val playerView = viewModel.playerView!!
             val subtitlesView = viewModel.subtitlesView!!
-
             // Remove the views from their parent
             // This is necessary to avoid the current child to be
             // added to the parent again while leaving full screen mode
