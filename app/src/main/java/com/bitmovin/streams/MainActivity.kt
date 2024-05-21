@@ -3,12 +3,10 @@ package com.bitmovin.streams
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,18 +21,38 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             StreamsandroidsdkTheme {
-                Box(modifier = Modifier.size(400.dp).padding(40.dp)) {
-                StreamsPlayer(
-                        streamId = TEST_STREAMS_ID.BIG_BUCK_BUNNY,
-                        subtitles = listOf(
-                            SubtitleTrack(
-                                language = "francais",
-                                url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"
-                            )
-                        ),
-                        modifier = Modifier
-                    )
+                Column {
+
+                    Box(modifier = Modifier
+                        .size(400.dp)
+                        .padding(40.dp)) {
+                        StreamsPlayer(
+                            streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
+                            subtitles = listOf(
+                                SubtitleTrack(
+                                    language = "francais",
+                                    url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"
+                                )
+                            ),
+                            modifier = Modifier
+                        )
+                    }
+                    Box(modifier = Modifier
+                        .size(400.dp)
+                        .padding(40.dp)) {
+                        StreamsPlayer(
+                            streamId = TEST_STREAMS_ID.SINTEL,
+                            subtitles = listOf(
+                                SubtitleTrack(
+                                    language = "francais",
+                                    url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"
+                                )
+                            ),
+                            modifier = Modifier
+                        )
+                    }
                 }
+
             }
         }
     }
