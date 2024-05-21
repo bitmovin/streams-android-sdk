@@ -50,11 +50,6 @@ fun StreamsPlayer(
         StreamDataBridgeState.DISPLAYING -> {
             val playerView = viewModel.playerView!!
             val subtitlesView = viewModel.subtitlesView!!
-            // Remove the views from their parent
-            // This is necessary to avoid the current child to be
-            // added to the parent again while leaving full screen mode
-            playerView.removeFromParent()
-            subtitlesView.removeFromParent()
 
             if (viewModel.isFullScreen.value) {
                 if (immersiveFullScreen)
