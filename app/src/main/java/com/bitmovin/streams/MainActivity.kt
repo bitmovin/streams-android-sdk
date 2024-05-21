@@ -34,7 +34,8 @@ class MainActivity : ComponentActivity() {
                                     url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"
                                 )
                             ),
-                            modifier = Modifier
+                            modifier = Modifier,
+                            immersiveFullScreen = false
                         )
                     }
                     Box(modifier = Modifier

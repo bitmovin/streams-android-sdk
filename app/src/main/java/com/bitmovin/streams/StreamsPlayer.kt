@@ -45,27 +45,20 @@ fun StreamsPlayer(
     val uuid by remember { mutableStateOf(UUID.randomUUID().toString()) }
     val viewModel: ViewModelStream = viewModel(key = uuid)
     val state = viewModel.state
-
     when (state) {
         StreamDataBridgeState.DISPLAYING -> {
             val playerView = viewModel.playerView!!
             val subtitlesView = viewModel.subtitlesView!!
 
             if (viewModel.isFullScreen.value) {
-                if (immersiveFullScreen)
-                    ImmersiveFullScreen(
-                        onDismissRequest = { viewModel.isFullScreen.value = false }
-                    ) {
-                        StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView)
-                    }
-                else
-                    FullScreen(
-                        onDismissRequest = { viewModel.isFullScreen.value = false }
-                    ) {
-                        StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView, modifier = Modifier.fillMaxSize())
-                    }
+                FullScreen(
+                    onDismissRequest = { viewModel.isFullScreen.value = false },
+                    immersive = immersiveFullScreen
+                ) {
+                    StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView)
+                }
             } else {
-                StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView, modifier)
+                StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView, modifier = modifier)
             }
         }
 
