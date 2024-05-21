@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
             StreamsandroidsdkTheme {
                 Box(modifier = Modifier.size(400.dp).padding(40.dp)) {
                 StreamsPlayer(
-                        streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
+                        streamId = TEST_STREAMS_ID.BIG_BUCK_BUNNY,
                         subtitles = listOf(
                             SubtitleTrack(
                                 language = "francais",

@@ -10,16 +10,25 @@ import com.bitmovin.player.SubtitleView
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.bitmovin.player.api.Player
+import com.bitmovin.player.api.PlayerConfig
 
 
 /**
@@ -143,11 +152,32 @@ fun ImmersiveFullScreen(
  */
 @Composable
 fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier) {
-    //TODO: Replace the text by a player with the error message in it
-    Text(text = text, modifier = modifier)
+    //TODO: Match the native errors better
+    val player = Player(LocalContext.current, PlayerConfig(key = "FILLER"))
+    val playerView = PlayerView(LocalContext.current, player)
+    playerView.alpha = 0.0f
+    Box(
+        modifier = Modifier.background(color = Color.Black)
+    )
+    {
+        AndroidView(factory = { playerView }, modifier = modifier)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = text,
+                modifier = Modifier.padding(16.dp),
+                color = Color.White,
+                style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+        }
+    }
 }
 @Composable
-fun ErrorHandling(error : Int, modifier: Modifier = Modifier) {
+fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
     val message =
         when (error) {
             401 -> "Unauthorized access to stream\nThis stream may require a token."
@@ -155,7 +185,7 @@ fun ErrorHandling(error : Int, modifier: Modifier = Modifier) {
             404 -> "Stream not found\nThe stream you are trying to access does not exist."
             500 -> "Internal server error\nThe server encountered an error while processing your request."
             503 -> "Service unavailable\nPlease try again in few minutes."
-            else -> "Error $error"
+            else -> "An error occurred while fetching the stream data."
         }
     TextVideoPlayerFiller("Error $error\n$message", modifier)
 }
