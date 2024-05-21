@@ -37,8 +37,8 @@ import com.bitmovin.player.api.PlayerConfig
 @Composable
 fun StreamVideoPlayer(playerView: PlayerView, subtitleView: SubtitleView, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
-        AndroidView(factory = { playerView })
-        AndroidView(factory = { subtitleView })
+        AndroidView(factory = { _ -> playerView.apply { if (parent != null) this.removeFromParent() } })
+        AndroidView(factory = { _ -> subtitleView.apply { if (parent != null) this.removeFromParent() } })
     }
 }
 
@@ -160,7 +160,11 @@ fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier) {
         modifier = Modifier.background(color = Color.Black)
     )
     {
-        AndroidView(factory = { playerView }, modifier = modifier)
+        AndroidView(factory =
+        { _ -> playerView.apply {
+            if (parent != null)
+                this.removeFromParent() }
+        }, modifier = modifier)
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
