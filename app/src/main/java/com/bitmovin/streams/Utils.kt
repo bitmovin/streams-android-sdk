@@ -178,25 +178,28 @@ fun createSource(streamConfigData: StreamConfigData, customPosterSource: String?
     )
 }
 
-fun createPlayerView(context: Context, player: Player, jsLocation: String? = null, cssLocation : String?= null) : PlayerView{
+fun createPlayerView(context: Context, player: Player, jsLocation: String? = null, cssLocation : String? = null) : PlayerView{
     var playerViewConfig = PlayerViewConfig(UiConfig.WebUi(forceSubtitlesIntoViewContainer = true))
     if (jsLocation != null && cssLocation != null) {
         playerViewConfig = PlayerViewConfig(
             UiConfig.WebUi(
                 jsLocation = jsLocation,
-                cssLocation = cssLocation
+                cssLocation = cssLocation,
+                forceSubtitlesIntoViewContainer = true
             )
         )
     } else if (jsLocation != null) {
         playerViewConfig = PlayerViewConfig(
             UiConfig.WebUi(
-                jsLocation = jsLocation
+                jsLocation = jsLocation,
+                forceSubtitlesIntoViewContainer = true
             )
         )
     } else if (cssLocation != null) {
         playerViewConfig = PlayerViewConfig(
             UiConfig.WebUi(
-                cssLocation = cssLocation
+                cssLocation = cssLocation,
+                forceSubtitlesIntoViewContainer = true
             )
         )
     }
