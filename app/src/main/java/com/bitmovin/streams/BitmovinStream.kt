@@ -28,7 +28,7 @@ const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
  * @param start The time in seconds at which the player should start playing.
  */
 @Composable
-fun StreamsPlayer(
+fun BitmovinStream(
     streamId : String,
     modifier : Modifier = Modifier,
     jwToken : String? = null,
@@ -63,7 +63,7 @@ fun StreamsPlayer(
     })
 
     when (viewModel.state) {
-        StreamDataBridgeState.DISPLAYING -> {
+        BitmovinStreamState.DISPLAYING -> {
             val playerView = viewModel.playerView!!
             val subtitlesView = viewModel.subtitlesView!!
 
@@ -80,19 +80,19 @@ fun StreamsPlayer(
         }
 
         // One-time actions for fetching and initializing the player
-        StreamDataBridgeState.FETCHING -> {
+        BitmovinStreamState.FETCHING -> {
             LaunchedEffect(Unit) {
                 viewModel.fetchStreamConfigData(streamId, jwToken)
             }
             TextVideoPlayerFiller("Fetching stream data", modifier)
         }
-        StreamDataBridgeState.INITIALIZING -> {
+        BitmovinStreamState.INITIALIZING -> {
             LaunchedEffect(Unit) {
                 viewModel.initializePlayer(context, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen)
             }
             TextVideoPlayerFiller("Initializing player", modifier)
         }
-        StreamDataBridgeState.DISPLAYING_ERROR -> {
+        BitmovinStreamState.DISPLAYING_ERROR -> {
             ErrorHandling(error = viewModel.streamResponseError, modifier)
         }
     }

@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier
                         .size(400.dp)
                         .padding(40.dp)) {
-                        StreamsPlayer(
+                        BitmovinStream(
                             streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
                             subtitles = listOf(
                                 SubtitleTrack(
@@ -40,14 +40,8 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier
                         .size(400.dp)
                         .padding(40.dp)) {
-                        StreamsPlayer(
+                        BitmovinStream(
                             streamId = TEST_STREAMS_ID.SINTEL,
-                            subtitles = listOf(
-                                SubtitleTrack(
-                                    language = "francais",
-                                    url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"
-                                )
-                            ),
                             modifier = Modifier
                         )
                     }
