@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                         .size(400.dp)
                         .padding(40.dp)) {
                         BitmovinStream(
-                            streamId = "cp6uqgl100s5p8qijmug",
+                            streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
                             subtitles = listOf(
                                 SubtitleTrack(
                                     language = "francais",
