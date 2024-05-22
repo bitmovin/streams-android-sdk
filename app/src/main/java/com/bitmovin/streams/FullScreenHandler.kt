@@ -12,17 +12,11 @@ class FullScreenHandler(val context: Context, var fullscreen: MutableState<Boole
 
     override fun onFullscreenExitRequested() {
         fullscreen.value = false
-        handleFullScreen(false)
     }
 
     override fun onFullscreenRequested() {
         fullscreen.value = true
-        handleFullScreen(true)
     }
-
-    private fun handleFullScreen(b: Boolean) {
-    }
-
     override fun onPause() {
         TODO("Not yet implemented")
     }
