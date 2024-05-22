@@ -34,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import kotlin.reflect.KProperty
 
 /**
  * Removes the view from its parent.
@@ -213,4 +214,8 @@ fun createPlayerView(context: Context, player: Player, jsLocation: String? = nul
         keepScreenOn = true
     }
     return playerView
+}
+
+operator fun String.getValue(nothing: Nothing?, property: KProperty<*>): String {
+    return this
 }

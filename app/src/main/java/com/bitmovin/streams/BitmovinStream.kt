@@ -14,6 +14,7 @@ import com.bitmovin.streams.pipmode.PiPExitListener
 import java.util.UUID
 import kotlin.reflect.KProperty
 
+
 const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
 
 /**
@@ -21,11 +22,14 @@ const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
  *
  * @param streamId The id of the stream to be played.
  *
- * @param jwToken The token to be used for authentication.
+ * @param modifier The modifier to be applied to the player.
+ * @param jwToken The token to be used for authentication if the stream is protected.
  * @param autoPlay Whether the player should start playing automatically.
  * @param muted Whether the player should be muted.
  * @param poster The poster image to be displayed before the player starts.
  * @param start The time in seconds at which the player should start playing.
+ * @param subtitles The list of subtitle tracks available for the stream.
+ * @param immersiveFullScreen Whether the player should be in immersive full screen mode.
  */
 @Composable
 fun BitmovinStream(
@@ -42,28 +46,18 @@ fun BitmovinStream(
     Log.d("StreamsPlayer", "StreamsPlayer called")
     val context = LocalContext.current
 
-    // Make the ViewModel unique for each instance of the Streams Player
     // The UPID (Unique Player ID) is maintained through recompositions to keep the ViewModel alive and used.
     // We do not use the streamId to allow to user to have multiple players with the same streamId.
     val upid: String by rememberSaveable { UUID.randomUUID().toString() }
+    // Make the StreamViewModel unique for each instance of the Streams Player (1:1 relationship)
     val viewModel: ViewModelStream = viewModel(key = upid)
 
-    // There is only one PiPManager for the whole application
-    val pipManager: PiPChangesObserver = viewModel()
-    LocalLifecycleOwner.current.lifecycle.addObserver(pipManager)
-    pipManager.addListener(object : PiPExitListener {
-        override fun onPiPExit() {
-            Log.d("StreamsPlayer", "onPiPExit called")
-            viewModel.pipHandler?.exitPictureInPicture()
-        }
-
-        override fun isInPiPMode(): Boolean {
-            return viewModel.pipHandler?.isPictureInPicture ?: false
-        }
-    })
+    // PiP related stuffs
+    PictureInPictureHandlerForStreams(viewModel)
 
     when (viewModel.state) {
         BitmovinStreamState.DISPLAYING -> {
+            // Should be safe to unwrap as we are in the DISPLAYING state and the playerView should NEVER be null at this point
             val playerView = viewModel.playerView!!
             val subtitlesView = viewModel.subtitlesView!!
 
@@ -96,8 +90,4 @@ fun BitmovinStream(
             ErrorHandling(error = viewModel.streamResponseError, modifier)
         }
     }
-}
-
-private operator fun String.getValue(nothing: Nothing?, property: KProperty<*>): String {
-    return this
 }
