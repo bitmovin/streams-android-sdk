@@ -45,7 +45,7 @@ fun FrameLayout.removeFromParent() {
 }
 
 
-// Window utils, credits goes to the stackoverflow-guy
+// Window getter utils for Composable, credits goes to the stackoverflow-guy
 @Composable
 fun getDialogWindow(): Window? = (LocalView.current.parent as? DialogWindowProvider)?.window
 
@@ -58,6 +58,24 @@ private tailrec fun Context.getActivityWindow(): Window? =
         is ContextWrapper -> baseContext.getActivityWindow()
         else -> null
     }
+
+
+
+/**
+ * Getting the Activity from a random Context
+ * (Home made, need to be tested with different contexts types)
+ */
+fun Context.getActivity(): Activity? {
+    val context = this
+    if (context is ContextWrapper) {
+        return if (context is Activity) {
+            context
+        } else {
+            context.baseContext.getActivity()
+        }
+    }
+    return null
+}
 
 
 suspend fun getStreamConfigData(streamId: String, jwToken: String?) : StreamConfigDataResponse {
