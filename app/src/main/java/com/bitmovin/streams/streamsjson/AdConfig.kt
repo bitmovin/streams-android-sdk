@@ -1,6 +1,6 @@
 package com.bitmovin.streams.streamsjson
 
 class AdConfig {
-    lateinit var id: String
+    var id: String? = null
     lateinit var ads: List<Ad>
 }

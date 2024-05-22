@@ -107,14 +107,19 @@ fun addURLParam(url: String, attribute: String, value: String): String {
 }
 
 fun createPlayer(streamConfigData: StreamConfigData, context: Context): Player {
-    val analyticsConfig : AnalyticsConfig = getAnalyticsConfig(streamConfigData)
+    val analyticsConfig : AnalyticsConfig? = getAnalyticsConfig(streamConfigData)
     val advertisingConfig : AdvertisingConfig = getAdvertisingConfig(streamConfigData)
-    val playerConfig : PlayerConfig = PlayerConfig(
+    val playerConfig = PlayerConfig(
         key = streamConfigData.key,
         advertisingConfig = advertisingConfig,
     )
 
-    return Player(
+    return if (analyticsConfig == null) {
+        Player(
+            context,
+            playerConfig = playerConfig,
+        )
+    } else Player(
         context,
         playerConfig = playerConfig,
         analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig),
@@ -140,10 +145,16 @@ fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
     return AdvertisingConfig(ads)
 }
 
-fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig {
-    return AnalyticsConfig(
-        licenseKey = streamConfig.analytics.key
-    )
+fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig? {
+    streamConfig.analytics.let { analytics ->
+        if (analytics == null) {
+            return null
+        } else {
+            return AnalyticsConfig(
+                licenseKey = analytics.key
+            )
+        }
+    }
 }
 
 
@@ -157,8 +168,9 @@ fun createSource(streamConfigData: StreamConfigData, customPosterSource: String?
         subtitleTracks = subtitlesSources,
     )
     val sourceMetadata = SourceMetadata(
-        videoId = streamConfigData.analytics.videoId,
-        title = streamConfigData.analytics.videoTitle,
+        videoId = streamConfigData.analytics?.videoId,
+        title = streamConfigData.analytics?.videoTitle,
+        isLive = streamConfigData.type == "LIVE",
     )
     return Source(
         sourceConfig,
