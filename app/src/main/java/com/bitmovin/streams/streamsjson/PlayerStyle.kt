@@ -4,11 +4,11 @@ import android.util.Log
 
 // This class might not be useful if we create a custom endpoint for the css.
 class PlayerStyle {
-    lateinit var playbackMarkerBgColor: String
-    lateinit var playbackMarkerBorderColor: String
-    lateinit var playbackTrackPlayedColor: String
-    lateinit var playbackTrackBufferedColor: String
-    lateinit var playbackTrackBgColor: String
-    lateinit var textColor: String
-    lateinit var backgroundColor: String
+    var playbackMarkerBgColor: String? = null
+    var playbackMarkerBorderColor: String? = null
+    var playbackTrackPlayedColor: String? = null
+    var playbackTrackBufferedColor: String? = null
+    var playbackTrackBgColor: String? = null
+    var textColor: String? = null
+    var backgroundColor: String? = null
 }

@@ -2,7 +2,7 @@ package com.bitmovin.streams.streamsjson
 
 
 class StyleConfig {
-    lateinit var playerStyle: PlayerStyle
-    lateinit var watermarkUrl: String
-    lateinit var watermarkTargetLink: String
+    var playerStyle: PlayerStyle? = null
+    var watermarkUrl: String? = null
+    var watermarkTargetLink: String? = null
 }
