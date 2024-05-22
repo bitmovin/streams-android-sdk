@@ -1,7 +1,6 @@
 package com.bitmovin.streams
 
 import android.content.Context
-import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -12,9 +11,8 @@ import androidx.lifecycle.viewModelScope
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.SubtitleView
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
-import com.bitmovin.player.api.ui.FullscreenHandler
 import com.bitmovin.player.api.ui.PictureInPictureHandler
-import com.bitmovin.player.ui.DefaultPictureInPictureHandler
+import com.bitmovin.streams.pipmode.PiPHandler
 import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.launch
 
@@ -39,14 +37,6 @@ class ViewModelStream : ViewModel() {
                 200 -> {
                     streamConfigData = streamConfigDataResp.streamConfigData
                     state = StreamDataBridgeState.INITIALIZING
-                }
-                401 -> {
-                    Log.e("StreamsPlayer", "Unauthorized access to stream\nThis stream may be private or require a token.")
-                    state = StreamDataBridgeState.DISPLAYING_ERROR
-                }
-                403 -> {
-                    Log.e("StreamsPlayer", "Forbidden access to stream\nThe domain may not be allowed to access the stream or the token you provided may be invalid.")
-                    state = StreamDataBridgeState.DISPLAYING_ERROR
                 }
                 else -> {
                     Log.e("StreamsPlayer", streamResponseError.toString() + "Error fetching stream config data.")
@@ -84,12 +74,6 @@ class ViewModelStream : ViewModel() {
         pipHandler = PiPHandler(this, context.getActivity()!!, player)
         playerView!!.setPictureInPictureHandler(pipHandler)
         state = StreamDataBridgeState.DISPLAYING
-    }
-
-    fun onPictureInPictureModeChanged(inPipMode: Boolean, newConfig: Configuration?) {
-        if (!inPipMode) {
-            pipHandler?.exitPictureInPicture()
-        }
     }
 }
 
