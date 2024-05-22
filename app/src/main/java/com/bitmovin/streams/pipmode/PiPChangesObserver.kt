@@ -24,7 +24,7 @@ class PiPChangesObserver() : ViewModel(), LifecycleEventObserver {
             }
             val newConfig = context?.resources?.configuration ?: Configuration()
             onPictureInPictureModeChanged(isInPipMode, newConfig)
-            Log.d("com.bitmovin.streams.pipmode.PiPChangesObserver", "Lifecycle event: $event, isInPiPMode: $isInPipMode")
+            Log.d("PiPChangesObserver", "Lifecycle event: $event, isInPiPMode: $isInPipMode")
         }
     }
 
@@ -36,7 +36,7 @@ class PiPChangesObserver() : ViewModel(), LifecycleEventObserver {
     }
 
     private fun onPictureInPictureModeChanged(inPipMode: Boolean, newConfig: Configuration) {
-        Log.d("com.bitmovin.streams.pipmode.PiPChangesObserver", "onPictureInPictureModeChanged: $inPipMode")
+        Log.d("PiPChangesObserver", "onPictureInPictureModeChanged: $inPipMode")
         if (!inPipMode) {
             Listeners.forEach { if (it.isInPiPMode()) {
                 it.onPiPExit()
