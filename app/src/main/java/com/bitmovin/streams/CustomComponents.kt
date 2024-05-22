@@ -1,9 +1,5 @@
 package com.bitmovin.streams
 
-import android.app.Activity
-import android.content.Context
-import android.content.res.Configuration
-import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +11,7 @@ import com.bitmovin.player.SubtitleView
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,27 +19,29 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModel
-import com.bitmovin.player.api.Player
-import com.bitmovin.player.api.PlayerConfig
-import com.bitmovin.player.ui.DefaultPictureInPictureHandler
-import kotlin.collections.MutableSet as MutableSet1
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bitmovin.streams.pipmode.PiPChangesObserver
+import com.bitmovin.streams.pipmode.PiPExitListener
+import com.google.common.annotations.VisibleForTesting
+import kotlinx.coroutines.delay
 
 
 /**
@@ -155,20 +154,22 @@ fun FullScreen(
  * @param text The text to be displayed.
  */
 @Composable
-fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier) {
-    //TODO: Match the native errors better
-    val player = Player(LocalContext.current, PlayerConfig(key = "FILLER"))
-    val playerView = PlayerView(LocalContext.current, player)
-    playerView.alpha = 0.0f
+fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier, noiseEffect: Boolean = false) {
+    // This is a hack to assert the same behavior as the PlayerView even when it don't exists to avoid breaking the layout of the users.
+//    val player = Player(LocalContext.current, PlayerConfig(key = "__FILLER_KEY__"))
+//    val playerView = PlayerView(LocalContext.current, player)
+//    playerView.alpha = 0.0f
     Box(
         modifier = Modifier.background(color = Color.Black)
     )
     {
-        AndroidView(factory =
-        { _ -> playerView.apply {
-            if (parent != null)
-                this.removeFromParent() }
-        }, modifier = modifier)
+        if (noiseEffect)
+            NoiseEffect() // Seems to be a bit heavy so I just let this here for now
+//        AndroidView(factory =
+//        { _ -> playerView.apply {
+//            if (parent != null)
+//                this.removeFromParent() }
+//        }, modifier = modifier)
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -195,5 +196,89 @@ fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
             503 -> "Service unavailable\nPlease try again in few minutes."
             else -> "An error occurred while fetching the stream data."
         }
-    TextVideoPlayerFiller("Error $error\n$message", modifier)
+    TextVideoPlayerFiller("Error $error\n$message", modifier, noiseEffect = false)
+}
+
+@Composable
+fun PictureInPictureHandlerForStreams(viewModel: ViewModelStream) {
+    // There is only one PiPManager for the whole application
+    val pipManager: PiPChangesObserver = viewModel()
+    LocalLifecycleOwner.current.lifecycle.addObserver(pipManager) // /!\ It only matters the first time a BitmovinStream is created, afterwards it is ignored
+
+    pipManager.addListener(object : PiPExitListener {
+        override fun onPiPExit() {
+            Log.d("StreamsPlayer", "onPiPExit called")
+            viewModel.pipHandler?.exitPictureInPicture()
+        }
+
+        override fun isInPiPMode(): Boolean {
+            return viewModel.pipHandler?.isPictureInPicture ?: false
+        }
+    })
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// LABORATORY
+@Deprecated("Too heavy for now, need to be optimized or just not used.")
+@Composable
+fun NoiseEffect(
+    modifier: Modifier = Modifier,
+    noiseFactor: Float = 0.5f
+) {
+    Box(modifier = modifier.fillMaxSize()) {
+        val noiseSeed = remember { mutableLongStateOf(0) }
+
+        LaunchedEffect(noiseSeed) {
+            while (true) {
+                noiseSeed.longValue = (noiseSeed.longValue + 1) % 1000
+                delay(75)
+            }
+        }
+
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawNoise(
+                noiseValue = noiseFactor,
+                noiseSeed = (noiseSeed.longValue),
+                size = size
+            )
+        }
+    }
+}
+
+internal fun DrawScope.drawNoise(
+    noiseValue: Float,
+    noiseSeed: Long,
+    size: Size
+) {
+    val random = java.util.Random(noiseSeed)
+    val pixelSize = 3.dp.toPx()
+    val width = (size.width / pixelSize).toInt()
+    val height = (size.height / pixelSize).toInt()
+
+    for (x in 0 until width) {
+        for (y in 0 until height) {
+            val noiseThreshold = random.nextFloat()
+            val color = if (noiseThreshold < noiseValue) Color.Black else Color.DarkGray
+            // Too Heavy
+            drawRect(
+                color = color,
+                topLeft = Offset(x * pixelSize, y * pixelSize),
+                size = Size(pixelSize, pixelSize)
+            )
+        }
+    }
 }
