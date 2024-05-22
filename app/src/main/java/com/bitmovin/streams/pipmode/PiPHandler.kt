@@ -1,22 +1,21 @@
-package com.bitmovin.streams
+package com.bitmovin.streams.pipmode
 
 import android.app.Activity
 import com.bitmovin.player.api.Player
 import com.bitmovin.player.ui.DefaultPictureInPictureHandler
-import java.util.UUID
+import com.bitmovin.streams.ViewModelStream
 
 class PiPHandler(val viewModelStream: ViewModelStream, activity: Activity?, player: Player?) : DefaultPictureInPictureHandler(activity,
     player
 ) {
-    companion object {
-        var currentPiP: String? = null
-    }
-    val id = UUID.randomUUID().toString()
+
     private var oldFullScreen = viewModelStream.isFullScreen.value
     private var oldImmersiveFullScreen = viewModelStream.immersiveFullScreen
+    private var isInPictureInPicture = false
+
     override fun enterPictureInPicture() {
         super.enterPictureInPicture()
-        currentPiP = id
+        isInPictureInPicture = true
         oldFullScreen = viewModelStream.isFullScreen.value
         oldImmersiveFullScreen = viewModelStream.immersiveFullScreen
         // Being in immersive full screen mode cause the PiP to sometimes need another recomposition to be displayed correctly, so we just avoid it
@@ -29,14 +28,15 @@ class PiPHandler(val viewModelStream: ViewModelStream, activity: Activity?, play
 
     override fun exitPictureInPicture() {
         super.exitPictureInPicture()
-        // Because of my impl, but should be refactored for a better separation of concerns
-        if (PiPHandler.currentPiP == id) {
-            // Restore the previous values
-            viewModelStream.isFullScreen.value = oldFullScreen
-            viewModelStream.immersiveFullScreen = oldImmersiveFullScreen
-            PiPHandler.currentPiP = null
-            viewModelStream.playerView?.isUiVisible = true
-
-        }
+        // Restore the previous values
+        isInPictureInPicture = false
+        viewModelStream.isFullScreen.value = oldFullScreen
+        viewModelStream.immersiveFullScreen = oldImmersiveFullScreen
+        viewModelStream.playerView?.isUiVisible = true
     }
+
+    override val isPictureInPicture: Boolean
+        get() = isInPictureInPicture
+
+
 }

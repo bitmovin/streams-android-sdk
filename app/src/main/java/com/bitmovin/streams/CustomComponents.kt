@@ -1,6 +1,8 @@
 package com.bitmovin.streams
 
 import android.app.Activity
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -33,9 +36,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
 import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.PlayerConfig
 import com.bitmovin.player.ui.DefaultPictureInPictureHandler
+import kotlin.collections.MutableSet as MutableSet1
 
 
 /**
@@ -189,39 +196,4 @@ fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
             else -> "An error occurred while fetching the stream data."
         }
     TextVideoPlayerFiller("Error $error\n$message", modifier)
-}
-
-@Composable
-fun VMNotifierForPiP(viewModel: ViewModelStream) {
-    // Observe lifecycle events
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME, Lifecycle.Event.ON_PAUSE -> {
-                    Log.d("StreamsPlayer", "Lifecycle event: $event")
-                    // Check if in PiP mode
-                    val activity = context as? Activity
-                    val isInPipMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        activity?.isInPictureInPictureMode ?: false
-                    } else {
-                        TODO("VERSION.SDK_INT < N")
-                    }
-                    val newConfig = context.resources.configuration
-                    viewModel.onPictureInPictureModeChanged(isInPipMode, newConfig)
-                }
-
-                else -> Unit
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        // Remove observer on dispose
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
 }

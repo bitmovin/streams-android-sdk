@@ -1,17 +1,16 @@
 package com.bitmovin.streams
 
+import com.bitmovin.streams.pipmode.PiPChangesObserver
 import android.util.Log
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
+import com.bitmovin.streams.pipmode.PiPExitListener
 import java.util.UUID
 import kotlin.reflect.KProperty
 
@@ -48,9 +47,22 @@ fun StreamsPlayer(
     // We do not use the streamId to allow to user to have multiple players with the same streamId.
     val upid: String by rememberSaveable { UUID.randomUUID().toString() }
     val viewModel: ViewModelStream = viewModel(key = upid)
-    val state = viewModel.state
-    VMNotifierForPiP(viewModel = viewModel)
-    when (state) {
+
+    // There is only one PiPManager for the whole application
+    val pipManager: PiPChangesObserver = viewModel()
+    LocalLifecycleOwner.current.lifecycle.addObserver(pipManager)
+    pipManager.addListener(object : PiPExitListener {
+        override fun onPiPExit() {
+            Log.d("StreamsPlayer", "onPiPExit called")
+            viewModel.pipHandler?.exitPictureInPicture()
+        }
+
+        override fun isInPiPMode(): Boolean {
+            return viewModel.pipHandler?.isPictureInPicture ?: false
+        }
+    })
+
+    when (viewModel.state) {
         StreamDataBridgeState.DISPLAYING -> {
             val playerView = viewModel.playerView!!
             val subtitlesView = viewModel.subtitlesView!!
