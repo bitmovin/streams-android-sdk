@@ -19,13 +19,14 @@ import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.launch
 
 class ViewModelStream : ViewModel() {
+    // These values are all set as mutableStateOf to trigger recompositions when they change
     val isFullScreen = mutableStateOf(false)
     var streamConfigData by mutableStateOf<StreamConfigData?>(null)
     var streamResponseError by mutableIntStateOf(0)
     var state by mutableStateOf(StreamDataBridgeState.FETCHING)
     var context by mutableStateOf<Context?>(null)
     var pipHandler : PictureInPictureHandler? = null
-    var immersiveFullScreen = true
+    var immersiveFullScreen by mutableStateOf(true)
     var playerView by mutableStateOf<PlayerView?>(null)
     var subtitlesView by mutableStateOf<SubtitleView?>(null)
 
