@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.SubtitleView
+import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.player.api.ui.PictureInPictureHandler
 import com.bitmovin.streams.pipmode.PiPHandler
@@ -21,11 +22,13 @@ class ViewModelStream : ViewModel() {
     val isFullScreen = mutableStateOf(false)
     var streamConfigData by mutableStateOf<StreamConfigData?>(null)
     var streamResponseError by mutableIntStateOf(0)
-    var state by mutableStateOf(StreamDataBridgeState.FETCHING)
+    var state by mutableStateOf(BitmovinStreamState.FETCHING)
     var context by mutableStateOf<Context?>(null)
     var pipHandler : PictureInPictureHandler? = null
+    var fullscreenHandler : FullScreenHandler? = null
     var immersiveFullScreen by mutableStateOf(true)
     var playerView by mutableStateOf<PlayerView?>(null)
+    var player : Player? = null
     var subtitlesView by mutableStateOf<SubtitleView?>(null)
 
     fun fetchStreamConfigData(streamId: String, jwToken: String?) {
@@ -36,26 +39,28 @@ class ViewModelStream : ViewModel() {
             when (streamResponseError) {
                 200 -> {
                     streamConfigData = streamConfigDataResp.streamConfigData
-                    state = StreamDataBridgeState.INITIALIZING
+                    state = BitmovinStreamState.INITIALIZING
                 }
                 else -> {
                     Log.e("StreamsPlayer", streamResponseError.toString() + "Error fetching stream config data.")
-                    state = StreamDataBridgeState.DISPLAYING_ERROR
+                    state = BitmovinStreamState.DISPLAYING_ERROR
                 }
             }
         }
     }
 
     fun initializePlayer(context: Context, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>, immersiveFullScreen: Boolean) {
-        val player = createPlayer(streamConfig, context)
-        val streamSource = createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
         this.context = context
+        player = createPlayer(streamConfig, context)
+        val player = player!! // Garanteed to be createPlayer
 
-        this.immersiveFullScreen = immersiveFullScreen
+
         // Loading the stream source
+        val streamSource = createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
         player.load(streamSource)
 
         // Handling properties
+        this.immersiveFullScreen = immersiveFullScreen
         if (autoPlay)
             player.play()
         if (muted)
@@ -63,21 +68,29 @@ class ViewModelStream : ViewModel() {
 
         player.seek(start)
 
-        // UI
-        val fullscreenHandler = FullScreenHandler(isFullScreen, context)
+        // Setting up the player view
+        playerView = createPlayerView(context, player)
 
+        // Setting up the fullscreen feature
+        fullscreenHandler = FullScreenHandler(context, isFullScreen)
+        playerView!!.setFullscreenHandler(fullscreenHandler)
+
+        // Setting up the PiP feature
+        pipHandler = PiPHandler(this, context.getActivity()!!, player)
+        playerView!!.setPictureInPictureHandler(pipHandler)
+
+        // Setting up the subtitles view
         subtitlesView = SubtitleView(context)
         subtitlesView!!.setPlayer(player)
 
-        playerView = createPlayerView(context, player)
-        playerView!!.setFullscreenHandler(fullscreenHandler)
-        pipHandler = PiPHandler(this, context.getActivity()!!, player)
-        playerView!!.setPictureInPictureHandler(pipHandler)
-        state = StreamDataBridgeState.DISPLAYING
+        // Setup done, we can display the player
+        state = BitmovinStreamState.DISPLAYING
     }
+
 }
 
-enum class StreamDataBridgeState {
+
+enum class BitmovinStreamState {
     FETCHING,
     INITIALIZING,
     DISPLAYING,
