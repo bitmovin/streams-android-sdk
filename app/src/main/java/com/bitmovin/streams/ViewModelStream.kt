@@ -72,7 +72,7 @@ class ViewModelStream : ViewModel() {
         playerView = createPlayerView(context, player)
 
         // Setting up the fullscreen feature
-        fullscreenHandler = FullScreenHandler(context, isFullScreen)
+        fullscreenHandler = FullScreenHandler(player, isFullScreen)
         playerView!!.setFullscreenHandler(fullscreenHandler)
 
         // Setting up the PiP feature
