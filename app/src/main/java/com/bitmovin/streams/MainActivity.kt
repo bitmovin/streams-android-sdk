@@ -3,6 +3,7 @@ package com.bitmovin.streams
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import com.bitmovin.streams.ui.theme.StreamsandroidsdkTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             StreamsandroidsdkTheme {
                 Column {
@@ -26,7 +28,7 @@ class MainActivity : ComponentActivity() {
                         .size(400.dp)
                         .padding(40.dp)) {
                         BitmovinStream(
-                            streamId = TEST_STREAMS_ID.BIG_BUCK_BUNNY,
+                            streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
                             subtitles = listOf(
                                 SubtitleTrack(
                                     language = "francais",
@@ -34,7 +36,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             ),
                             modifier = Modifier,
-                            immersiveFullScreen = false
+                            immersiveFullScreen = true
                         )
                     }
                     Box(modifier = Modifier
