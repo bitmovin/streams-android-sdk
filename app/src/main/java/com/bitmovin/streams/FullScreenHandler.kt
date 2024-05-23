@@ -12,6 +12,7 @@ import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.ui.FullscreenHandler
 import kotlinx.coroutines.delay
 import okhttp3.internal.wait
+import java.lang.IndexOutOfBoundsException
 
 
 class FullScreenHandler(val viewModelStream: ViewModelStream, val activity: Activity?, var fullscreen: MutableState<Boolean> = mutableStateOf(false)) : FullscreenHandler {
@@ -29,25 +30,33 @@ class FullScreenHandler(val viewModelStream: ViewModelStream, val activity: Acti
     override fun onFullscreenExitRequested() {
         activity?.requestedOrientation = oldOrientation
         fullscreen.value = false
-
     }
 
     override fun onFullscreenRequested() {
         // Store the user orientation to restore it when exiting fullscreen
-        oldOrientation = activity?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        val ratio = viewModelStream.player?.source?.availableVideoQualities?.get(0).let { it?.width?.toFloat()?.div(it.height) }
+        if (!fullscreen.value)
+            oldOrientation = activity?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 
-        if (ratio != null && ratio < FORCE_PORTRAIT_RATIO) {
-            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        } else if (ratio != null && ratio > FORCE_LANDSCAPE_RATIO) {
-            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        } else if (ratio == null) {
-            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        } else {
-            // Stick with the user configuration
+        var ratio : Float? = null
+        try {
+            ratio = viewModelStream.player?.source?.availableVideoQualities?.get(0)
+                .let { it?.width?.toFloat()?.div(it.height) }
+        } catch (e : IndexOutOfBoundsException) {
+
         }
-        fullscreen.value = true
 
+
+            if (ratio != null && ratio < FORCE_PORTRAIT_RATIO) {
+                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            } else if (ratio != null && ratio > FORCE_LANDSCAPE_RATIO) {
+                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else if (ratio == null) {
+                // Supposing this is the default behavior if the ratio is not available
+                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                // Stick with the user configuration
+            }
+            fullscreen.value = true
     }
     override fun onPause() {
         Log.d("FullScreenHandler", "onPause")

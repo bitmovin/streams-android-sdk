@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bitmovin.player.PlayerView
+import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.ui.theme.StreamsandroidsdkTheme
 
@@ -28,9 +30,9 @@ class MainActivity : ComponentActivity() {
                         .size(400.dp)
                         .padding(40.dp)) {
                         Column {
-                        Text(text = "Immersive Full Screen")
+                        Text(text = "Video 1")
                         BitmovinStream(
-                            streamId = TEST_STREAMS_ID.SQUARE_VIDEO,
+                            streamId = TEST_STREAMS_ID.VERTICAL_VIDEO,
                             subtitles = listOf(
                                 SubtitleTrack(
                                     language = "francais",
@@ -38,7 +40,16 @@ class MainActivity : ComponentActivity() {
                                 )
                             ),
                             modifier = Modifier,
-                            immersiveFullScreen = true
+                            immersiveFullScreen = true,
+                            bitmovinStreamEventListener = object : BitmovinStreamEventListener {
+                                override fun onPlayerReady(player: Player) {
+                                    player.play()
+                                }
+
+                                override fun onPlayerViewReady(playerView: PlayerView) {
+                                }
+
+                            }
                         )
 
                         }
@@ -47,10 +58,11 @@ class MainActivity : ComponentActivity() {
                         .size(400.dp)
                         .padding(40.dp)) {
                         Column {
-                        Text(text = "Fake Full Screen")
+                        Text(text = "Video 2")
                         BitmovinStream(
                             streamId = TEST_STREAMS_ID.SINTEL,
-                            modifier = Modifier
+                            modifier = Modifier,
+                            immersiveFullScreen = true
                         )
                         }
                     }

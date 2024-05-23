@@ -47,7 +47,9 @@ fun BitmovinStream(
     poster : String? = null,
     start : Double = 0.0,
     subtitles : List<SubtitleTrack> = emptyList(),
-    immersiveFullScreen : Boolean = false
+    immersiveFullScreen : Boolean = false,
+    bitmovinStreamEventListener: BitmovinStreamEventListener? = null
+
 ) {
     Log.d("StreamsPlayer", "StreamsPlayer called")
     val context = LocalContext.current
@@ -88,7 +90,7 @@ fun BitmovinStream(
         }
         BitmovinStreamState.INITIALIZING -> {
             LaunchedEffect(Unit) {
-                viewModel.initializePlayer(context, lifecycleOwner = lifecycleOwner, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen)
+                viewModel.initializePlayer(context, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen)
             }
             TextVideoPlayerFiller("Initializing player", modifier)
         }
