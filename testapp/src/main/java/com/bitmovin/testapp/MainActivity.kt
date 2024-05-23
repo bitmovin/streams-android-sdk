@@ -12,7 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.streams.TEST_STREAMS_ID
+import com.bitmovin.streams.TestStreamsIds
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                         Column {
                             Text(text = "Video 1")
                             BitmovinStream(
-                                streamId = TEST_STREAMS_ID.VERTICAL_VIDEO,
+                                streamId = TestStreamsIds.VERTICAL_VIDEO,
                                 subtitles = emptyList(),
                                 modifier = Modifier,
                                 immersiveFullScreen = true
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
                         Column {
                             Text(text = "Video 2")
                             BitmovinStream(
-                                streamId = TEST_STREAMS_ID.SINTEL,
+                                streamId = TestStreamsIds.SINTEL,
                                 modifier = Modifier,
                                 immersiveFullScreen = true
                             )
