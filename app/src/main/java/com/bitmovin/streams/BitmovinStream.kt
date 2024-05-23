@@ -29,7 +29,7 @@ const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
  * @param poster The poster image to be displayed before the player starts.
  * @param start The time in seconds at which the player should start playing.
  * @param subtitles The list of subtitle tracks available for the stream.
- * @param immersiveFullScreen Whether the player should be in immersive full screen mode.
+ * @param immersiveFullScreen Whether the player should be in immersive full screen mode. Should only be true if edgeToEdge is enabled.
  */
 @Composable
 fun BitmovinStream(
@@ -41,11 +41,10 @@ fun BitmovinStream(
     poster : String? = null,
     start : Double = 0.0,
     subtitles : List<SubtitleTrack> = emptyList(),
-    immersiveFullScreen : Boolean = true
+    immersiveFullScreen : Boolean = false
 ) {
     Log.d("StreamsPlayer", "StreamsPlayer called")
     val context = LocalContext.current
-
     // The UPID (Unique Player ID) is maintained through recompositions to keep the ViewModel alive and used.
     // We do not use the streamId to allow to user to have multiple players with the same streamId.
     val upid: String by rememberSaveable { UUID.randomUUID().toString() }
