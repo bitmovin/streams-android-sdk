@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,10 +30,10 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -40,7 +41,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bitmovin.streams.pipmode.PiPChangesObserver
 import com.bitmovin.streams.pipmode.PiPExitListener
-import com.google.common.annotations.VisibleForTesting
 import kotlinx.coroutines.delay
 
 
@@ -84,69 +84,73 @@ fun FullScreen(
             decorFitsSystemWindows = false
         )
     }
-    Dialog(
-        onDismissRequest = onDismissRequest,
-        properties = properties,
-        content = {
-            if (immersive) {
-                val activityWindow = getActivityWindow()
-                val dialogWindow = getDialogWindow()
-                val parentView = LocalView.current.parent as View
+    val orientation = LocalConfiguration.current.orientation
+    // Recompose when orientation changes
+    key(orientation) {
+        Dialog(
+            onDismissRequest = onDismissRequest,
+            properties = properties,
+            content = {
+                if (immersive) {
+                    val activityWindow = getActivityWindow()
+                    val dialogWindow = getDialogWindow()
+                    val parentView = LocalView.current.parent as View
 
-                SideEffect {
-                    if (activityWindow != null && dialogWindow != null) {
-                        val attributes = WindowManager.LayoutParams().apply {
-                            copyFrom(activityWindow.attributes)
-                            type = dialogWindow.attributes.type
+                    SideEffect {
+                        if (activityWindow != null && dialogWindow != null) {
+                            val attributes = WindowManager.LayoutParams().apply {
+                                copyFrom(activityWindow.attributes)
+                                type = dialogWindow.attributes.type
+                            }
+                            dialogWindow.attributes = attributes
+                            parentView.layoutParams = FrameLayout.LayoutParams(
+                                activityWindow.decorView.width,
+                                activityWindow.decorView.height
+                            )
                         }
-                        dialogWindow.attributes = attributes
-                        parentView.layoutParams = FrameLayout.LayoutParams(
-                            activityWindow.decorView.width,
-                            activityWindow.decorView.height
-                        )
                     }
-                }
 
-                val context = LocalContext.current
-                val window = getDialogWindow()
+                    val context = LocalContext.current
+                    val window = getDialogWindow()
 
-                DisposableEffect(Unit) {
-                    val originalStatusBarColor = window?.statusBarColor
-                    window?.statusBarColor = Color.Transparent.toArgb()
-                    window?.decorView?.systemUiVisibility =
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    DisposableEffect(Unit) {
+                        val originalStatusBarColor = window?.statusBarColor
+                        window?.statusBarColor = Color.Transparent.toArgb()
+                        window?.decorView?.systemUiVisibility =
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
-                    onDispose {
-                        if (originalStatusBarColor != null) {
-                            window.statusBarColor = originalStatusBarColor
+                        onDispose {
+                            if (originalStatusBarColor != null) {
+                                window.statusBarColor = originalStatusBarColor
+                            }
+                            window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
                         }
-                        window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
                     }
-                }
 
-                DisposableEffect(Unit) {
-                    window?.decorView?.systemUiVisibility =
-                        (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+                    DisposableEffect(Unit) {
+                        window?.decorView?.systemUiVisibility =
+                            (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                    or View.SYSTEM_UI_FLAG_FULLSCREEN
+                                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
 
-                    onDispose {
-                        window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+                        onDispose {
+                            window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+                        }
                     }
-                }
 
-                Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {
+                    Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {
+                        content()
+                    }
+                } else {
                     content()
                 }
-            } else {
-                content()
             }
-        }
-    )
+        )
+    }
 }
 
 /**
