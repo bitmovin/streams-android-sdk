@@ -24,5 +24,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "streams-android-sdk"
-include(":app")
- 
+include(":streamplayer")
+include(":testapp")
