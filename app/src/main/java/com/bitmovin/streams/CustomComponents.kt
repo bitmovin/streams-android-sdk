@@ -48,7 +48,7 @@ import kotlinx.coroutines.delay
  * Player wrapped into a compose element
  */
 @Composable
-fun StreamVideoPlayer(playerView: PlayerView, subtitleView: SubtitleView, modifier: Modifier = Modifier) {
+internal fun StreamVideoPlayer(playerView: PlayerView, subtitleView: SubtitleView, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         AndroidView(factory = { _ -> playerView.apply { if (parent != null) this.removeFromParent() } })
         AndroidView(factory = { _ -> subtitleView.apply { if (parent != null) this.removeFromParent() } })
@@ -65,7 +65,7 @@ fun StreamVideoPlayer(playerView: PlayerView, subtitleView: SubtitleView, modifi
  * TODO: More flexible parameters to allow for more use-cases, but it's doing the job well for the video player
  */
 @Composable
-fun FullScreen(
+internal fun FullScreen(
     onDismissRequest: () -> Unit,
     immersive: Boolean = true,
     content: @Composable () -> Unit
@@ -158,7 +158,7 @@ fun FullScreen(
  * @param text The text to be displayed.
  */
 @Composable
-fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier, noiseEffect: Boolean = false) {
+internal fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier, noiseEffect: Boolean = false) {
     // This is a hack to assert the same behavior as the PlayerView even when it don't exists to avoid breaking the layout of the users.
 //    val player = Player(LocalContext.current, PlayerConfig(key = "__FILLER_KEY__"))
 //    val playerView = PlayerView(LocalContext.current, player)
@@ -190,7 +190,7 @@ fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier, noiseEff
     }
 }
 @Composable
-fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
+internal fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
     val message =
         when (error) {
             401 -> "Unauthorized access to stream\nThis stream may require a token."
@@ -204,7 +204,7 @@ fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun PictureInPictureHandlerForStreams(viewModel: ViewModelStream) {
+internal fun PictureInPictureHandlerForStreams(viewModel: ViewModelStream) {
     // There is only one PiPManager for the whole application
     val pipManager: PiPChangesObserver = viewModel()
     LocalLifecycleOwner.current.lifecycle.addObserver(pipManager) // /!\ It only matters the first time a BitmovinStream is created, afterwards it is ignored

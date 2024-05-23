@@ -6,7 +6,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.bitmovin.player.PlayerView
 
-class LifeCycleRedirectForPlayer(
+internal class LifeCycleRedirectForPlayer(
     val playerView : PlayerView,
 ) : LifecycleEventObserver {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
