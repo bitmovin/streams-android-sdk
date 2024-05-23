@@ -50,7 +50,7 @@ class ViewModelStream : ViewModel() {
         }
     }
 
-    fun initializePlayer(context: Context, lifecycleOwner: LifecycleOwner, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>, immersiveFullScreen: Boolean) {
+    fun initializePlayer( context: Context, lifecycleOwner: LifecycleOwner, streamEventListener: BitmovinStreamEventListener?, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>, immersiveFullScreen: Boolean) {
         this.context = context
         val activity = context.getActivity()
         player = createPlayer(streamConfig, context)
@@ -69,21 +69,26 @@ class ViewModelStream : ViewModel() {
 
         player.seek(start)
 
+        streamEventListener?.onPlayerReady(player)
+
         // Setting up the player view
         playerView = createPlayerView(context, player)
+        val playerView = playerView!!
         lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView!!))
 
         // Setting up the fullscreen feature
         fullscreenHandler = FullScreenHandler(this, activity, isFullScreen)
-        playerView!!.setFullscreenHandler(fullscreenHandler)
+        playerView.setFullscreenHandler(fullscreenHandler)
 
         // Setting up the PiP feature
         pipHandler = PiPHandler(this, context.getActivity()!!, player)
-        playerView!!.setPictureInPictureHandler(pipHandler)
+        playerView.setPictureInPictureHandler(pipHandler)
 
         // Setting up the subtitles view
         subtitlesView = SubtitleView(context)
         subtitlesView!!.setPlayer(player)
+
+        streamEventListener?.onPlayerViewReady(playerView)
 
         // Setup done, we can display the player
         state = BitmovinStreamState.DISPLAYING
