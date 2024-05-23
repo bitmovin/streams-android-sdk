@@ -1,6 +1,6 @@
 package com.bitmovin.streams.pipmode
 
-interface PiPExitListener {
+internal interface PiPExitListener {
     fun onPiPExit()
     fun isInPiPMode(): Boolean
 }

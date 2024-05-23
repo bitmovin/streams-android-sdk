@@ -5,7 +5,7 @@ import com.bitmovin.player.api.Player
 import com.bitmovin.player.ui.DefaultPictureInPictureHandler
 import com.bitmovin.streams.ViewModelStream
 
-class PiPHandler(val viewModelStream: ViewModelStream, activity: Activity?, player: Player?) : DefaultPictureInPictureHandler(activity,
+internal class PiPHandler(val viewModelStream: ViewModelStream, activity: Activity?, player: Player?) : DefaultPictureInPictureHandler(activity,
     player
 ) {
 

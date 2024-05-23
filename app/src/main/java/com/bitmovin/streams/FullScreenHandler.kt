@@ -15,7 +15,7 @@ import okhttp3.internal.wait
 import java.lang.IndexOutOfBoundsException
 
 
-class FullScreenHandler(val viewModelStream: ViewModelStream, val activity: Activity?, var fullscreen: MutableState<Boolean> = mutableStateOf(false)) : FullscreenHandler {
+internal class FullScreenHandler(val viewModelStream: ViewModelStream, val activity: Activity?, var fullscreen: MutableState<Boolean> = mutableStateOf(false)) : FullscreenHandler {
 
     companion object {
         const val FORCE_PORTRAIT_RATIO = 0.9

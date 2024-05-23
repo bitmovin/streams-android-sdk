@@ -10,7 +10,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 
-class PiPChangesObserver() : ViewModel(), LifecycleEventObserver {
+internal class PiPChangesObserver() : ViewModel(), LifecycleEventObserver {
 
     private val Listeners = mutableSetOf<PiPExitListener>()
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

@@ -39,7 +39,7 @@ import kotlin.reflect.KProperty
 /**
  * Removes the view from its parent.
  */
-fun FrameLayout.removeFromParent() {
+internal fun FrameLayout.removeFromParent() {
     this.parent?.let {
         (it as? ViewGroup)?.removeView(this)
     }
@@ -48,10 +48,10 @@ fun FrameLayout.removeFromParent() {
 
 // Window getter utils for Composable, credits goes to the stackoverflow-guy
 @Composable
-fun getDialogWindow(): Window? = (LocalView.current.parent as? DialogWindowProvider)?.window
+internal fun getDialogWindow(): Window? = (LocalView.current.parent as? DialogWindowProvider)?.window
 
 @Composable
-fun getActivityWindow(): Window? = LocalView.current.context.getActivityWindow()
+internal fun getActivityWindow(): Window? = LocalView.current.context.getActivityWindow()
 
 private tailrec fun Context.getActivityWindow(): Window? =
     when (this) {
@@ -66,7 +66,7 @@ private tailrec fun Context.getActivityWindow(): Window? =
  * Getting the Activity from a random Context
  * (Home made, need to be tested with different contexts types)
  */
-fun Context.getActivity(): Activity? {
+internal fun Context.getActivity(): Activity? {
     val context = this
     if (context is ContextWrapper) {
         return if (context is Activity) {
@@ -79,7 +79,7 @@ fun Context.getActivity(): Activity? {
 }
 
 
-suspend fun getStreamConfigData(streamId: String, jwToken: String?) : StreamConfigDataResponse {
+internal suspend fun getStreamConfigData(streamId: String, jwToken: String?) : StreamConfigDataResponse {
     return withContext(Dispatchers.IO) {
         val client = OkHttpClient()
         var url = "https://streams.bitmovin.com/${streamId}/config"
@@ -102,12 +102,12 @@ suspend fun getStreamConfigData(streamId: String, jwToken: String?) : StreamConf
     }
 }
 
-fun addURLParam(url: String, attribute: String, value: String): String {
+internal fun addURLParam(url: String, attribute: String, value: String): String {
     val separator = if (url.contains("?")) "&" else "?"
     return "$url$separator$attribute=$value"
 }
 
-fun createPlayer(streamConfigData: StreamConfigData, context: Context): Player {
+internal fun createPlayer(streamConfigData: StreamConfigData, context: Context): Player {
     val analyticsConfig : AnalyticsConfig? = getAnalyticsConfig(streamConfigData)
     val advertisingConfig : AdvertisingConfig = getAdvertisingConfig(streamConfigData)
     val playerConfig = PlayerConfig(
@@ -126,7 +126,7 @@ fun createPlayer(streamConfigData: StreamConfigData, context: Context): Player {
         analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig),
     )
 }
-fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
+internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
     // Bitmovin and Progressive ads only for now
     val ads = streamConfig.adConfig?.ads?.map { ad ->
         val fileExt = ad.url.split(".").last()
@@ -146,7 +146,7 @@ fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
     return AdvertisingConfig(ads)
 }
 
-fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig? {
+internal fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig? {
     streamConfig.analytics.let { analytics ->
         if (analytics == null) {
             return null
@@ -160,7 +160,7 @@ fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig? {
 
 
 
-fun createSource(streamConfigData: StreamConfigData, customPosterSource: String?, subtitlesSources: List<SubtitleTrack> = emptyList()): Source {
+internal fun createSource(streamConfigData: StreamConfigData, customPosterSource: String?, subtitlesSources: List<SubtitleTrack> = emptyList()): Source {
     val sourceConfig = SourceConfig(
         url = streamConfigData.sources.hls,
         type = SourceType.Hls, // Might be different in some cases but let's pretend it's always HLS for now
@@ -179,7 +179,7 @@ fun createSource(streamConfigData: StreamConfigData, customPosterSource: String?
     )
 }
 
-fun createPlayerView(context: Context, player: Player, jsLocation: String? = null, cssLocation : String? = null) : PlayerView{
+internal fun createPlayerView(context: Context, player: Player, jsLocation: String? = null, cssLocation : String? = null) : PlayerView{
     var playerViewConfig = PlayerViewConfig(UiConfig.WebUi(forceSubtitlesIntoViewContainer = true))
     if (jsLocation != null && cssLocation != null) {
         playerViewConfig = PlayerViewConfig(
@@ -216,6 +216,6 @@ fun createPlayerView(context: Context, player: Player, jsLocation: String? = nul
     return playerView
 }
 
-operator fun String.getValue(nothing: Nothing?, property: KProperty<*>): String {
+internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>): String {
     return this
 }
