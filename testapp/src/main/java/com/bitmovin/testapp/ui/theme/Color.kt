@@ -1,4 +1,4 @@
-package com.bitmovin.streams.ui.theme
+package com.bitmovin.testapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,4 +1,4 @@
-package com.bitmovin.streams.ui.theme
+package com.bitmovin.testapp.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
