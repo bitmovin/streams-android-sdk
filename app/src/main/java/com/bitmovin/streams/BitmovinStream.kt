@@ -1,13 +1,19 @@
 package com.bitmovin.streams
 
+import android.app.Activity
+import android.content.res.Configuration.ORIENTATION_LANDSCAPE
+import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import com.bitmovin.streams.pipmode.PiPChangesObserver
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalView
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.pipmode.PiPExitListener
@@ -45,6 +51,7 @@ fun BitmovinStream(
 ) {
     Log.d("StreamsPlayer", "StreamsPlayer called")
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     // The UPID (Unique Player ID) is maintained through recompositions to keep the ViewModel alive and used.
     // We do not use the streamId to allow to user to have multiple players with the same streamId.
     val upid: String by rememberSaveable { UUID.randomUUID().toString() }
@@ -53,7 +60,6 @@ fun BitmovinStream(
 
     // PiP related stuffs
     PictureInPictureHandlerForStreams(viewModel)
-
     when (viewModel.state) {
         BitmovinStreamState.DISPLAYING -> {
             // Should be safe to unwrap as we are in the DISPLAYING state and the playerView should NEVER be null at this point
@@ -72,6 +78,7 @@ fun BitmovinStream(
             }
         }
 
+
         // One-time actions for fetching and initializing the player
         BitmovinStreamState.FETCHING -> {
             LaunchedEffect(Unit) {
@@ -81,7 +88,7 @@ fun BitmovinStream(
         }
         BitmovinStreamState.INITIALIZING -> {
             LaunchedEffect(Unit) {
-                viewModel.initializePlayer(context, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen)
+                viewModel.initializePlayer(context, lifecycleOwner = lifecycleOwner, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen)
             }
             TextVideoPlayerFiller("Initializing player", modifier)
         }
