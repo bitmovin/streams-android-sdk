@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bitmovin.player.PlayerView
@@ -49,11 +50,11 @@ class ViewModelStream : ViewModel() {
         }
     }
 
-    fun initializePlayer(context: Context, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>, immersiveFullScreen: Boolean) {
+    fun initializePlayer(context: Context, lifecycleOwner: LifecycleOwner, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>, immersiveFullScreen: Boolean) {
         this.context = context
+        val activity = context.getActivity()
         player = createPlayer(streamConfig, context)
         val player = player!! // Garanteed to be createPlayer
-
 
         // Loading the stream source
         val streamSource = createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
@@ -70,9 +71,10 @@ class ViewModelStream : ViewModel() {
 
         // Setting up the player view
         playerView = createPlayerView(context, player)
+        lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView!!))
 
         // Setting up the fullscreen feature
-        fullscreenHandler = FullScreenHandler(player, isFullScreen)
+        fullscreenHandler = FullScreenHandler(this, activity, isFullScreen)
         playerView!!.setFullscreenHandler(fullscreenHandler)
 
         // Setting up the PiP feature
