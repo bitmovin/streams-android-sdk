@@ -27,8 +27,10 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier
                         .size(400.dp)
                         .padding(40.dp)) {
+                        Column {
+                        Text(text = "Immersive Full Screen")
                         BitmovinStream(
-                            streamId = TEST_STREAMS_ID.TEAR_OF_STEEL,
+                            streamId = TEST_STREAMS_ID.SQUARE_VIDEO,
                             subtitles = listOf(
                                 SubtitleTrack(
                                     language = "francais",
@@ -38,14 +40,19 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier,
                             immersiveFullScreen = true
                         )
+
+                        }
                     }
                     Box(modifier = Modifier
                         .size(400.dp)
                         .padding(40.dp)) {
+                        Column {
+                        Text(text = "Fake Full Screen")
                         BitmovinStream(
                             streamId = TEST_STREAMS_ID.SINTEL,
                             modifier = Modifier
                         )
+                        }
                     }
                 }
 
