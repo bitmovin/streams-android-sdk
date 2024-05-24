@@ -26,7 +26,7 @@ internal class ViewModelStream : ViewModel() {
     var state by mutableStateOf(BitmovinStreamState.FETCHING)
     var context by mutableStateOf<Context?>(null)
     var pipHandler : PictureInPictureHandler? = null
-    var fullscreenHandler : FullScreenHandler? = null
+    var fullscreenHandler : DefaultStreamFullscreenHandler? = null
     var immersiveFullScreen by mutableStateOf(true)
     var playerView by mutableStateOf<PlayerView?>(null)
     var player : Player? = null
@@ -35,7 +35,8 @@ internal class ViewModelStream : ViewModel() {
     fun fetchStreamConfigData(streamId: String, jwToken: String?) {
         viewModelScope.launch {
             // Fetch the stream config data
-            val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
+            try {
+                val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
             streamResponseError = streamConfigDataResp.responseHttpCode
             when (streamResponseError) {
                 200 -> {
@@ -46,6 +47,10 @@ internal class ViewModelStream : ViewModel() {
                     Log.e("StreamsPlayer", streamResponseError.toString() + "Error fetching stream config data.")
                     state = BitmovinStreamState.DISPLAYING_ERROR
                 }
+            }
+            } catch (e: Exception) {
+                Log.e("StreamsPlayer", "No Internet Connection", e)
+                state = BitmovinStreamState.DISPLAYING_ERROR
             }
         }
     }
@@ -69,15 +74,18 @@ internal class ViewModelStream : ViewModel() {
 
         player.seek(start)
 
+
         streamEventListener?.onPlayerReady(player)
+
 
         // Setting up the player view
         playerView = createPlayerView(context, player)
         val playerView = playerView!!
-        lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView!!))
+        lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
+
 
         // Setting up the fullscreen feature
-        fullscreenHandler = FullScreenHandler(this, activity, isFullScreen)
+        fullscreenHandler = DefaultStreamFullscreenHandler(playerView, activity, isFullScreen)
         playerView.setFullscreenHandler(fullscreenHandler)
 
         // Setting up the PiP feature
