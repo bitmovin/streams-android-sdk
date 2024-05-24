@@ -164,7 +164,7 @@ internal fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier,
 //    val playerView = PlayerView(LocalContext.current, player)
 //    playerView.alpha = 0.0f
     Box(
-        modifier = Modifier.background(color = Color.Black)
+        modifier = modifier.background(color = Color.Black)
     )
     {
         if (noiseEffect)
@@ -191,8 +191,9 @@ internal fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier,
 }
 @Composable
 internal fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
-    val message =
+    var message =
         when (error) {
+            0 -> "No Internet Connection"
             401 -> "Unauthorized access to stream\nThis stream may require a token."
             403 -> "Forbidden access to stream\nThe domain may not be allowed to access the stream or the token you provided may be invalid."
             404 -> "Stream not found\nThe stream you are trying to access does not exist."
@@ -200,7 +201,9 @@ internal fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
             503 -> "Service unavailable\nPlease try again in few minutes."
             else -> "An error occurred while fetching the stream data."
         }
-    TextVideoPlayerFiller("Error $error\n$message", modifier, noiseEffect = false)
+    if (error != 0)
+        message = "Error $error\n$message"
+    TextVideoPlayerFiller(message, modifier, noiseEffect = false)
 }
 
 @Composable
