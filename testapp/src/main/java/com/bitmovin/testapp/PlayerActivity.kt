@@ -48,7 +48,7 @@ class PlayerActivity : ComponentActivity() {
             }
         }
 
-        val list = object : OrientationEventListener(this) {
+        object : OrientationEventListener(this) {
             val activity = this@PlayerActivity
             var last_mode = 0
             val ROTATION_THRESHOLD = 8
