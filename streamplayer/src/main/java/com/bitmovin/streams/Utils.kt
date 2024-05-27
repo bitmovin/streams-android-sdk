@@ -107,12 +107,16 @@ internal fun addURLParam(url: String, attribute: String, value: String): String 
     return "$url$separator$attribute=$value"
 }
 
-internal fun createPlayer(streamConfigData: StreamConfigData, context: Context): Player {
+internal fun createPlayer(streamConfigData: StreamConfigData, context: Context, enableAds: Boolean): Player {
     val analyticsConfig : AnalyticsConfig? = getAnalyticsConfig(streamConfigData)
-    val advertisingConfig : AdvertisingConfig = getAdvertisingConfig(streamConfigData)
+    val advertisingConfig : AdvertisingConfig? = when (enableAds) {
+                                                        true -> getAdvertisingConfig(streamConfigData)
+                                                        false -> null
+                                                    }
+
     val playerConfig = PlayerConfig(
         key = streamConfigData.key,
-        advertisingConfig = advertisingConfig,
+        advertisingConfig = advertisingConfig?: AdvertisingConfig(),
     )
 
     return if (analyticsConfig == null) {
