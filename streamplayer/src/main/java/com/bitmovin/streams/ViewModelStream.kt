@@ -56,10 +56,10 @@ internal class ViewModelStream : ViewModel() {
         }
     }
 
-    fun initializePlayer( context: Context, lifecycleOwner: LifecycleOwner, streamEventListener: BitmovinStreamEventListener?, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>, immersiveFullScreen: Boolean) {
+    fun initializePlayer( context: Context, lifecycleOwner: LifecycleOwner, streamEventListener: BitmovinStreamEventListener?, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>, immersiveFullScreen: Boolean, screenOrientationOnFullscreenEscape: Int?, enableAds : Boolean) {
         this.context = context
         val activity = context.getActivity()
-        player = createPlayer(streamConfig, context)
+        player = createPlayer(streamConfig, context, enableAds)
         val player = player!! // Garanteed to be createPlayer
 
         // Loading the stream source
@@ -86,7 +86,7 @@ internal class ViewModelStream : ViewModel() {
 
 
         // Setting up the fullscreen feature
-        fullscreenHandler = AutoOrientationStreamFullscreenHandler(playerView, activity)
+        fullscreenHandler = AutoOrientationStreamFullscreenHandler(playerView, activity, screenOrientationOnFullscreenEscape)
         playerView.setFullscreenHandler(fullscreenHandler)
 
         // Setting up the PiP feature

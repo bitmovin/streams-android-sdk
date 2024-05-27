@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.bitmovin.testapp"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(project(":streamplayer"))
+    implementation(libs.bitmovin.player)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
