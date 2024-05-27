@@ -13,21 +13,22 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.SubtitleView
 import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
+import com.bitmovin.player.api.ui.FullscreenHandler
 import com.bitmovin.player.api.ui.PictureInPictureHandler
+import com.bitmovin.streams.fullscreenmode.AutoOrientationStreamFullscreenHandler
 import com.bitmovin.streams.pipmode.PiPHandler
 import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.launch
 
 internal class ViewModelStream : ViewModel() {
     // These values are all set as mutableStateOf to trigger recompositions when they change
-    val isFullScreen = mutableStateOf(false)
     var streamConfigData by mutableStateOf<StreamConfigData?>(null)
     var streamResponseError by mutableIntStateOf(0)
     var state by mutableStateOf(BitmovinStreamState.FETCHING)
     var context by mutableStateOf<Context?>(null)
     var pipHandler : PictureInPictureHandler? = null
-    var fullscreenHandler : DefaultStreamFullscreenHandler? = null
-    var immersiveFullScreen by mutableStateOf(true)
+    var fullscreenHandler : FullscreenHandler? = null
+    var immersiveFullScreen = mutableStateOf(true)
     var playerView by mutableStateOf<PlayerView?>(null)
     var player : Player? = null
     var subtitlesView by mutableStateOf<SubtitleView?>(null)
@@ -66,7 +67,7 @@ internal class ViewModelStream : ViewModel() {
         player.load(streamSource)
 
         // Handling properties
-        this.immersiveFullScreen = immersiveFullScreen
+        this.immersiveFullScreen.value = immersiveFullScreen
         if (autoPlay)
             player.play()
         if (muted)
@@ -85,11 +86,11 @@ internal class ViewModelStream : ViewModel() {
 
 
         // Setting up the fullscreen feature
-        fullscreenHandler = DefaultStreamFullscreenHandler(playerView, activity, isFullScreen)
+        fullscreenHandler = AutoOrientationStreamFullscreenHandler(playerView, activity)
         playerView.setFullscreenHandler(fullscreenHandler)
 
         // Setting up the PiP feature
-        pipHandler = PiPHandler(this, context.getActivity()!!, player)
+        pipHandler = PiPHandler(context.getActivity()!!, playerView, this.immersiveFullScreen )
         playerView.setPictureInPictureHandler(pipHandler)
 
         // Setting up the subtitles view

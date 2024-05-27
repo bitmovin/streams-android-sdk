@@ -7,6 +7,7 @@ import com.bitmovin.streams.pipmode.PiPChangesObserver
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -59,7 +60,6 @@ fun BitmovinStream(
     val upid: String by rememberSaveable { UUID.randomUUID().toString() }
     // Make the StreamViewModel unique for each instance of the Streams Player (1:1 relationship)
     val viewModel: ViewModelStream = viewModel(key = upid)
-
     // PiP related stuffs
     PictureInPictureHandlerForStreams(viewModel)
     when (viewModel.state) {
@@ -68,15 +68,21 @@ fun BitmovinStream(
             val playerView = viewModel.playerView!!
             val subtitlesView = viewModel.subtitlesView!!
 
-            if (viewModel.isFullScreen.value) {
-                FullScreen(
-                    onDismissRequest = { viewModel.isFullScreen.value = false },
-                    immersive = viewModel.immersiveFullScreen
-                ) {
-                    StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView)
+            key (playerView.isFullscreen, playerView.isPictureInPicture) {
+                if (playerView.isFullscreen) {
+                    FullScreen(
+                        onDismissRequest = { viewModel.playerView?.exitFullscreen() },
+                        immersive = viewModel.immersiveFullScreen.value
+                    ) {
+                        StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView)
+                    }
+                } else {
+                    StreamVideoPlayer(
+                        playerView = playerView,
+                        subtitleView = subtitlesView,
+                        modifier = modifier
+                    )
                 }
-            } else {
-                StreamVideoPlayer(playerView = playerView, subtitleView = subtitlesView, modifier = modifier)
             }
         }
 
