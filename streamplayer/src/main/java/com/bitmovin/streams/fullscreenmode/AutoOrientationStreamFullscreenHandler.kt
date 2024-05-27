@@ -1,4 +1,4 @@
-package com.bitmovin.streams
+package com.bitmovin.streams.fullscreenmode
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.util.Log
@@ -9,11 +9,12 @@ import com.bitmovin.player.api.ui.FullscreenHandler
 import java.lang.IndexOutOfBoundsException
 
 
-class DefaultStreamFullscreenHandler(val playerView: PlayerView, val activity: Activity?, var fullscreen: MutableState<Boolean> = mutableStateOf(false)) : FullscreenHandler {
+class AutoOrientationStreamFullscreenHandler(val playerView: PlayerView, val activity: Activity?) : FullscreenHandler {
     companion object {
         const val FORCE_PORTRAIT_RATIO = 0.9
         const val FORCE_LANDSCAPE_RATIO = 1.2
     }
+    private var fullscreen: MutableState<Boolean> = mutableStateOf(false)
 
     override fun onDestroy() {
         fullscreen.value = false
@@ -29,7 +30,7 @@ class DefaultStreamFullscreenHandler(val playerView: PlayerView, val activity: A
     override fun onFullscreenRequested() {
         // Store the user orientation to restore it when exiting fullscreen
         if (!fullscreen.value)
-            oldOrientation = activity?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            oldOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         var ratio : Float? = null
         try {
@@ -43,10 +44,10 @@ class DefaultStreamFullscreenHandler(val playerView: PlayerView, val activity: A
         if (ratio != null && ratio < FORCE_PORTRAIT_RATIO) {
             activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         } else if (ratio != null && ratio > FORCE_LANDSCAPE_RATIO) {
-            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
         } else if (ratio == null) {
             // Supposing this is the default behavior if the ratio is not available
-            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
         } else {
             // Stick with the user configuration
         }
