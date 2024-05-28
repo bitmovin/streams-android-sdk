@@ -110,23 +110,7 @@ internal fun FullScreen(
                         }
                     }
 
-                    val context = LocalContext.current
                     val window = getDialogWindow()
-
-                    DisposableEffect(Unit) {
-                        val originalStatusBarColor = window?.statusBarColor
-                        window?.statusBarColor = Color.Transparent.toArgb()
-                        window?.decorView?.systemUiVisibility =
-                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-                        onDispose {
-                            if (originalStatusBarColor != null) {
-                                window.statusBarColor = originalStatusBarColor
-                            }
-                            window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
-                        }
-                    }
 
                     DisposableEffect(Unit) {
                         window?.decorView?.systemUiVisibility =
