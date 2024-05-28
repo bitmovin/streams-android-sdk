@@ -10,7 +10,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.bitmovin.testapp.databinding.ActivityViewFragBinding
 
-class ViewFragActivity : AppCompatActivity() {
+class FragmentTest : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityViewFragBinding

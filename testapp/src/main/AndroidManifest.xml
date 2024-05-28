@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Streamsandroidsdk">
         <activity
-            android:name=".ViewFragActivity"
+            android:name=".FragmentTest"
             android:exported="true"
             android:theme="@style/Theme.Streamsandroidsdk"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PlayerActivity"
+            android:name=".utils.PlayerActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:label="@string/title_activity_player"
@@ -50,7 +50,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".DefaultTest"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="true"
             android:label="@string/app_name"
