@@ -27,6 +27,15 @@ class AutoOrientationStreamFullscreenHandler(val playerView: PlayerView, val act
             Thread.sleep(100)
             fullscreen.value = false
         }
+        //doVisibilityFlags(false)
+    }
+
+    /*
+    Does not work better than my current impl.
+     */
+    private fun doVisibilityFlags(fullscreen: Boolean) {
+        val uiParams = getSystemUiVisibilityFlags(fullscreen, false)
+        activity?.window?.decorView?.systemUiVisibility = uiParams
     }
 
     override fun onFullscreenRequested() {
@@ -53,6 +62,7 @@ class AutoOrientationStreamFullscreenHandler(val playerView: PlayerView, val act
                 // Stick with the user configuration
             }
         }
+        //doVisibilityFlags(true)
     }
 
     override fun onPause() {
