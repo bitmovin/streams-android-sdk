@@ -11,6 +11,7 @@ composeBom = "2024.05.00"
 gson = "2.11.0"
 bitmovin-player = "3.68.0"
 lifecycleViewmodelCompose = "2.8.0"
+graphicsShapesAndroid = "1.0.0-beta01"
 
 
 [libraries]
@@ -32,6 +33,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson"}
 bitmovin-player = { module = "com.bitmovin.player:player", version.ref = "bitmovin-player"}
+androidx-graphics-shapes-android = { group = "androidx.graphics", name = "graphics-shapes-android", version.ref = "graphicsShapesAndroid" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }

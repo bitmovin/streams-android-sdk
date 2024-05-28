@@ -17,6 +17,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,12 +37,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.graphics.shapes.CornerRounding
+import androidx.graphics.shapes.RoundedPolygon
+import androidx.graphics.shapes.toPath
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
@@ -66,16 +73,22 @@ class TestApp2 : ComponentActivity() {
 @Composable
 fun StreamsList() {
     var unfoldedStreamId = remember { mutableStateOf<String?>(null) }
-    Column(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .safeDrawingPadding()
+    ) {
         StreamElem("Sintel", TestStreamsIds.SINTEL, unfoldedStreamId)
         StreamElem("Vertical Video", TestStreamsIds.VERTICAL_VIDEO, unfoldedStreamId)
         StreamElem(name = "Squared Video", streamId = TestStreamsIds.SQUARE_VIDEO, unfoldedStreamId)
+        StreamElem (name = "Tears of Steel", streamId = TestStreamsIds.TEAR_OF_STEEL, unfoldedStreamId)
+        StreamElem(name = "Big Buck Bunny", streamId = TestStreamsIds.BIG_BUCK_BUNNY, unfoldedStreamId)
     }
 }
 @Composable
 fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<String?>, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var playerHolder: Player? by remember { mutableStateOf(null) }
+    var isVisible = playerHolder != null
 
     val bgColor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         dynamicLightColorScheme(LocalContext.current).background
@@ -89,21 +102,28 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
         null -> Color.Gray
         else -> bgColor
     }
-
-    if (unfoldedStreamId.value != streamId)
-        playerHolder?.pause()
-    Column(Modifier.background(color = buttonColor).clickable {
-        if (unfoldedStreamId.value != streamId) {
-            // Show the stream preview
-            playerHolder?.play()
-            unfoldedStreamId.value = streamId
-        } else {
-            // Trigger the action
-            switchToPlayerActivity(streamId, context)
+    Column(
+        Modifier
+            .background(color = buttonColor)
+            .clickable {
+                if (isVisible)
+                    if (unfoldedStreamId.value != streamId) {
+                        // Show the stream preview
+                        playerHolder?.play()
+                        unfoldedStreamId.value = streamId
+                    } else {
+                        // Trigger the action
+                        switchToPlayerActivity(streamId, context)
+                    }
+            }
+            .alpha(if (isVisible) 1f else 0.5f)
+            .padding(8.dp))
+    {
+        Row {
+            Text(text = name, modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp), color = Color.Black, fontSize = 24.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+            if (!isVisible)
+                Text(text = "Loading...", modifier = Modifier.padding(16.dp, 0.dp, 0.dp, 0.dp), color = Color.DarkGray, fontSize = 24.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
         }
-    }) {
-
-        Text(text = name, color = Color.Black, fontSize = 24.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
 
 
         Box(
@@ -114,8 +134,8 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
         ) {
             BitmovinStream(
                 streamId = streamId,
+                modifier = Modifier.fillMaxSize(),
                 subtitles = emptyList(),
-                modifier = modifier,
                 enableAds = false,
                 start = 5.0,
                 bitmovinStreamEventListener = object : BitmovinStreamEventListener {
@@ -131,6 +151,10 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
             )
         }
     }
+    if (unfoldedStreamId.value != streamId)
+        playerHolder?.pause()
+    else
+        playerHolder?.play()
 }
 
 

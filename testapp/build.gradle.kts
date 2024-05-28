@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(project(":streamplayer"))
     implementation(libs.bitmovin.player)
+    implementation(libs.androidx.graphics.shapes.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
