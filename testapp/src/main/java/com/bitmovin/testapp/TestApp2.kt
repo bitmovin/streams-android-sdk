@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -42,6 +43,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -134,10 +136,11 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
         ) {
             BitmovinStream(
                 streamId = streamId,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().background(Color(0, 106, 237)),
                 subtitles = emptyList(),
                 enableAds = false,
                 start = 5.0,
+                muted = true,
                 bitmovinStreamEventListener = object : BitmovinStreamEventListener {
                     override fun onPlayerReady(player: Player) {
                         playerHolder = player

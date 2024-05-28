@@ -51,9 +51,8 @@ class PlayerActivity : ComponentActivity() {
         }
     }
 
-    @SuppressLint("SourceLockedOrientationActivity")
     @Composable
-    fun Player(streamId: String, modifier: Modifier = Modifier) {
+    fun Player(streamId: String) {
         var name by remember { mutableStateOf("Loading...") }
         var description by remember { mutableStateOf("Loading...") }
         val config = LocalConfiguration.current
@@ -62,7 +61,7 @@ class PlayerActivity : ComponentActivity() {
         var playerViewHolder by remember { mutableStateOf<PlayerView?>(null) }
 
         // Simple example of how to use OrientationEventListener to force landscape mode
-        var orientationEventListener by remember { mutableStateOf<OrientationEventListener?>(
+        remember { mutableStateOf<OrientationEventListener?>(
         object : OrientationEventListener(activity) {
             var AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
             override fun onOrientationChanged(orientation: Int) {
@@ -78,7 +77,7 @@ class PlayerActivity : ComponentActivity() {
                         if (playerViewHolder?.isFullscreen == false) {
                             AUTO_ROTATE_STATE = AutoRotateState.WaitingForReset
                         } else {
-                            if (abs(orientation - 90) > TREESHOLD && abs(orientation - 270) > TREESHOLD) {
+                            if (abs(orientation - 0) < TREESHOLD || abs(orientation - 360) < TREESHOLD || abs(orientation - 180) < TREESHOLD) {
                                 playerViewHolder?.exitFullscreen()
                                 AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
                             }
@@ -97,7 +96,7 @@ class PlayerActivity : ComponentActivity() {
         }.apply { enable() }
         )}
 
-        Column(Modifier) {
+        Column(Modifier.safeDrawingPadding()) {
             BitmovinStream(
                 streamId = streamId,
                 modifier = Modifier
