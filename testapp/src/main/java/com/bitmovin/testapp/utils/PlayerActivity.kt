@@ -31,6 +31,7 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.BitmovinStreamEventListener
+import com.bitmovin.streams.MAX_FOR_PORTRAIT_FORCING
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import kotlin.math.abs
 
@@ -62,6 +63,7 @@ class PlayerActivity : ComponentActivity() {
             var AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
             override fun onOrientationChanged(orientation: Int) {
                 val TREESHOLD = 8
+                if (aspectRatio <= MAX_FOR_PORTRAIT_FORCING) return
                 when (AUTO_ROTATE_STATE) {
                     AutoRotateState.WaitingForEnter -> {
                         if (playerViewHolder?.isFullscreen == false && (abs(orientation - 90) < TREESHOLD || abs(orientation - 270) < TREESHOLD)) {
