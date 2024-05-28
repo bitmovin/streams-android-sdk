@@ -1,4 +1,4 @@
-package com.bitmovin.testapp
+package com.bitmovin.testapp.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,9 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
-import androidx.navigation.fragment.findNavController
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.TestStreamsIds
+import com.bitmovin.testapp.R
 import com.bitmovin.testapp.databinding.FragmentFirstBinding
 
 /**

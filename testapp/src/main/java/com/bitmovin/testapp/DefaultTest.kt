@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.TestStreamsIds
 
-class MainActivity : ComponentActivity() {
+class DefaultTest : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
