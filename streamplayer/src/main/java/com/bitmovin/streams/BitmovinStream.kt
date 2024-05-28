@@ -15,6 +15,8 @@ import java.util.UUID
 
 
 const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
+const val MIN_FOR_LANDSCAPE_FORCING = 1.1
+const val MAX_FOR_PORTRAIT_FORCING = 0.8
 
 /**
  * Bitmovin Streams Player Component.

@@ -7,13 +7,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.ui.FullscreenHandler
+import com.bitmovin.streams.MAX_FOR_PORTRAIT_FORCING
+import com.bitmovin.streams.MIN_FOR_LANDSCAPE_FORCING
 import java.lang.IndexOutOfBoundsException
 
 class AutoOrientationStreamFullscreenHandler(val playerView: PlayerView, val activity: Activity?, var defaultScreenOrientation : Int?) : FullscreenHandler {
-    companion object {
-        const val FORCE_PORTRAIT_RATIO = 0.9
-        const val FORCE_LANDSCAPE_RATIO = 1.2
-    }
+
 
     private var fullscreen: MutableState<Boolean> = mutableStateOf(false)
     private var previousOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
@@ -43,13 +42,13 @@ class AutoOrientationStreamFullscreenHandler(val playerView: PlayerView, val act
 
             }
 
-            if (ratio != null && ratio < FORCE_PORTRAIT_RATIO) {
-                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
-            } else if (ratio != null && ratio > FORCE_LANDSCAPE_RATIO) {
-                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
+            if (ratio != null && ratio < MAX_FOR_PORTRAIT_FORCING) {
+                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+            } else if (ratio != null && ratio > MIN_FOR_LANDSCAPE_FORCING) {
+                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             } else if (ratio == null) {
                 // Set to default orientation if ratio is not available
-                activity?.requestedOrientation = defaultScreenOrientation ?: previousOrientation
+                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             } else {
                 // Stick with the user configuration
             }
