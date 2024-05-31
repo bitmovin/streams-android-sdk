@@ -101,7 +101,7 @@ class PlayerActivity : ComponentActivity() {
                     .aspectRatio(aspectRatio)
                     .fillMaxHeight(0.7f),
                 immersiveFullScreen = true,
-                screenOrientationOnFullscreenEscape = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT,
+                appDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT,
                 bitmovinStreamEventListener = object : BitmovinStreamEventListener {
                     override fun onPlayerReady(player: Player) {
                         name = player.source?.config?.title ?: "Unknown"
