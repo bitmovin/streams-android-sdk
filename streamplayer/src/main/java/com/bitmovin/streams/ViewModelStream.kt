@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.SubtitleView
 import com.bitmovin.player.api.Player
+import com.bitmovin.player.api.event.*
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.player.api.ui.FullscreenHandler
 import com.bitmovin.player.api.ui.PictureInPictureHandler
@@ -26,11 +27,11 @@ internal class ViewModelStream : ViewModel() {
     var streamResponseError by mutableIntStateOf(0)
     var state by mutableStateOf(BitmovinStreamState.FETCHING)
     var context by mutableStateOf<Context?>(null)
-    var pipHandler : PictureInPictureHandler? = null
-    var fullscreenHandler : FullscreenHandler? = null
+    var pipHandler: PictureInPictureHandler? = null
+    var fullscreenHandler: FullscreenHandler? = null
     var immersiveFullScreen = mutableStateOf(true)
     var playerView by mutableStateOf<PlayerView?>(null)
-    var player : Player? = null
+    var player: Player? = null
     var subtitlesView by mutableStateOf<SubtitleView?>(null)
 
     fun fetchStreamConfigData(streamId: String, jwToken: String?) {
@@ -38,17 +39,21 @@ internal class ViewModelStream : ViewModel() {
             // Fetch the stream config data
             try {
                 val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
-            streamResponseError = streamConfigDataResp.responseHttpCode
-            when (streamResponseError) {
-                200 -> {
-                    streamConfigData = streamConfigDataResp.streamConfigData
-                    state = BitmovinStreamState.INITIALIZING
+                streamResponseError = streamConfigDataResp.responseHttpCode
+                when (streamResponseError) {
+                    200 -> {
+                        streamConfigData = streamConfigDataResp.streamConfigData
+                        state = BitmovinStreamState.INITIALIZING
+                    }
+
+                    else -> {
+                        Log.e(
+                            "StreamsPlayer",
+                            streamResponseError.toString() + "Error fetching stream config data."
+                        )
+                        state = BitmovinStreamState.DISPLAYING_ERROR
+                    }
                 }
-                else -> {
-                    Log.e("StreamsPlayer", streamResponseError.toString() + "Error fetching stream config data.")
-                    state = BitmovinStreamState.DISPLAYING_ERROR
-                }
-            }
             } catch (e: Exception) {
                 Log.e("StreamsPlayer", "No Internet Connection", e)
                 state = BitmovinStreamState.DISPLAYING_ERROR
@@ -56,14 +61,34 @@ internal class ViewModelStream : ViewModel() {
         }
     }
 
-    fun initializePlayer( context: Context, lifecycleOwner: LifecycleOwner, streamEventListener: BitmovinStreamEventListener?, streamConfig: StreamConfigData, autoPlay: Boolean, muted: Boolean, start: Double, poster: String?, subtitles: List<SubtitleTrack>, immersiveFullScreen: Boolean, screenOrientationOnFullscreenEscape: Int?, enableAds : Boolean) {
+    fun initializePlayer(
+        context: Context,
+        streamId: String,
+        lifecycleOwner: LifecycleOwner,
+        streamEventListener: BitmovinStreamEventListener?,
+        streamConfig: StreamConfigData,
+        autoPlay: Boolean,
+        muted: Boolean,
+        start: Double,
+        poster: String?,
+        subtitles: List<SubtitleTrack>,
+        immersiveFullScreen: Boolean,
+        screenOrientationOnFullscreenEscape: Int?,
+        enableAds: Boolean
+    ) {
         this.context = context
         val activity = context.getActivity()
         player = createPlayer(streamConfig, context, enableAds)
-        val player = player!! // Garanteed to be createPlayer
+        val player = player!! // Garanteed by createPlayer
+
+        player.on(PlayerEvent.Ready::class.java) {
+            streamEventListener?.onPlayerReady(player)
+        }
+
 
         // Loading the stream source
-        val streamSource = createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
+        val streamSource =
+            createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
         player.load(streamSource)
 
         // Handling properties
@@ -75,22 +100,24 @@ internal class ViewModelStream : ViewModel() {
 
         player.seek(start)
 
-
-        streamEventListener?.onPlayerReady(player)
-
+        val suppCss = getCustomCss(context, streamId, streamConfig)
 
         // Setting up the player view
-        playerView = createPlayerView(context, player)
+        playerView = createPlayerView(context, player, suppCss)
         val playerView = playerView!!
         lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
 
 
         // Setting up the fullscreen feature
-        fullscreenHandler = AutoOrientationStreamFullscreenHandler(playerView, activity, screenOrientationOnFullscreenEscape)
+        fullscreenHandler = AutoOrientationStreamFullscreenHandler(
+            playerView,
+            activity,
+            screenOrientationOnFullscreenEscape
+        )
         playerView.setFullscreenHandler(fullscreenHandler)
 
         // Setting up the PiP feature
-        pipHandler = PiPHandler(context.getActivity()!!, playerView, this.immersiveFullScreen )
+        pipHandler = PiPHandler(context.getActivity()!!, playerView, this.immersiveFullScreen)
         playerView.setPictureInPictureHandler(pipHandler)
 
         // Setting up the subtitles view
@@ -104,7 +131,6 @@ internal class ViewModelStream : ViewModel() {
     }
 
 }
-
 
 enum class BitmovinStreamState {
     FETCHING,

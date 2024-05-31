@@ -27,6 +27,7 @@ import com.bitmovin.player.api.source.SourceConfig
 import com.bitmovin.player.api.source.SourceType
 import com.bitmovin.player.api.ui.PlayerViewConfig
 import com.bitmovin.player.api.ui.UiConfig
+import com.bitmovin.streams.streamsjson.PlayerStyle
 import com.bitmovin.streams.streamsjson.StreamConfigData
 import com.bitmovin.streams.streamsjson.StreamConfigDataResponse
 import com.google.gson.Gson
@@ -34,6 +35,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import kotlin.reflect.KProperty
 
 /**
@@ -183,31 +187,16 @@ internal fun createSource(streamConfigData: StreamConfigData, customPosterSource
     )
 }
 
-internal fun createPlayerView(context: Context, player: Player, jsLocation: String? = null, cssLocation : String? = null) : PlayerView{
-    var playerViewConfig = PlayerViewConfig(UiConfig.WebUi(forceSubtitlesIntoViewContainer = true))
-    if (jsLocation != null && cssLocation != null) {
-        playerViewConfig = PlayerViewConfig(
+internal fun createPlayerView(context: Context, player: Player, suppCssLocation : String? = null) : PlayerView{
+    val playerViewConfig = PlayerViewConfig(
             UiConfig.WebUi(
-                jsLocation = jsLocation,
-                cssLocation = cssLocation,
-                forceSubtitlesIntoViewContainer = true
+                supplementalCssLocation = suppCssLocation,
+                forceSubtitlesIntoViewContainer = true,
+                cssLocation = "https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.css"
             )
         )
-    } else if (jsLocation != null) {
-        playerViewConfig = PlayerViewConfig(
-            UiConfig.WebUi(
-                jsLocation = jsLocation,
-                forceSubtitlesIntoViewContainer = true
-            )
-        )
-    } else if (cssLocation != null) {
-        playerViewConfig = PlayerViewConfig(
-            UiConfig.WebUi(
-                cssLocation = cssLocation,
-                forceSubtitlesIntoViewContainer = true
-            )
-        )
-    }
+
+
 
     val playerView = PlayerView(context, player, config = playerViewConfig)
         .apply {
@@ -217,9 +206,146 @@ internal fun createPlayerView(context: Context, player: Player, jsLocation: Stri
         )
         keepScreenOn = true
     }
+
     return playerView
 }
 
 internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>): String {
     return this
 }
+
+
+fun writeCssToFile(context: Context, css: String, streamId: String): File? {
+    return try {
+        // Create a file in the app's private storage
+        val cssFile = File(context.filesDir, "custom_css_${streamId}.css")
+        Log.d("CSS", "Writing CSS to file: $cssFile")
+        if (cssFile.exists()) {
+            cssFile.delete()
+        }
+        // Write the CSS content to the file
+        FileOutputStream(cssFile).use { output ->
+            output.write(css.toByteArray())
+        }
+
+        cssFile
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
+}
+
+const val DEFAULT_TEST_FILE_URL = "file:///android_asset/custom.css"
+internal fun getCustomCss(context : Context, streamId : String, streamConfig: StreamConfigData) : String? {
+    // custom.css is a file that is an android asset file
+
+    if (streamConfig.styleConfig == null) {
+        return null
+    }
+    val style = streamConfig.styleConfig!!
+    val css = StringBuilder()
+    if (style.playerStyle != null)
+        css.append(playerStyle(style.playerStyle!!))
+
+    // Water marks things after...
+    Log.d("CSS", "Writing CSS to file: \n$css")
+    return writeCssToFile(context, css.toString(), streamId)?.toURL().toString()
+}
+
+internal fun playerStyle(playerStyle: PlayerStyle) : String
+{
+
+    val playerStyles : StringBuilder = StringBuilder()
+    playerStyle.playbackMarkerBgColor?.let {
+        playerStyles.append(stylePlaybackMarkerBgColor(it))
+    }
+    playerStyle.playbackMarkerBorderColor?.let {
+        playerStyles.append(stylePlaybackMarkerBorderColor(it))
+    }
+    playerStyle.playbackTrackPlayedColor?.let {
+        playerStyles.append(stylePlaybackTrackPlayedColor(it))
+    }
+    playerStyle.playbackTrackBufferedColor?.let {
+        playerStyles.append(stylePlaybackTrackBufferedColor(it))
+    }
+    playerStyle.playbackTrackBgColor?.let {
+        playerStyles.append(stylePlaybackTrackBgColor(it))
+    }
+    playerStyle.textColor?.let {
+        playerStyles.append(styleTextColor(it))
+    }
+
+    return playerStyles.toString()
+}
+
+
+internal fun stylePlaybackMarkerBgColor(color: String) : String
+{
+    return """
+        .bmpui-ui-listbox .bmpui-ui-listbox-button.bmpui-selected {
+           background-color: $color !important;
+        }
+        .bmpui-ui-listbox .bmpui-ui-listbox-button:hover {
+           background-color: $color !important;
+        }
+        .bmpui-ui-seekbar .bmpui-seekbar .bmpui-seekbar-playbackposition-marker,
+        .bmpui-ui-volumeslider .bmpui-seekbar .bmpui-seekbar-playbackposition-marker {
+           background-color: $color !important;
+        }
+    """.trimIndent()
+}
+
+internal fun stylePlaybackMarkerBorderColor(color: String): String {
+    return """
+        .bmpui-ui-seekbar .bmpui-seekbar .bmpui-seekbar-playbackposition-marker {
+           border-color: $color !important;
+        }
+        .bmpui-ui-volumeslider .bmpui-seekbar .bmpui-seekbar-playbackposition-marker {
+           border-color: $color !important;
+        }
+    """.trimIndent()
+}
+
+internal fun stylePlaybackTrackPlayedColor(color: String): String {
+    return """
+        .bmpui-seekbar .bmpui-seekbar-playbackposition {
+           background-color: $color !important;
+        }
+    """.trimIndent()
+}
+
+internal fun stylePlaybackTrackBufferedColor(color: String): String {
+    return """
+        .bmpui-seekbar .bmpui-seekbar-bufferlevel {
+           background-color: $color !important;
+        }
+    """.trimIndent()
+}
+
+
+internal fun stylePlaybackTrackBgColor(color: String): String {
+    return """
+        .bmpui-seekbar .bmpui-seekbar-backdrop {
+           background-color: $color !important;
+        }
+    """.trimIndent()
+}
+
+internal fun styleTextColor(color: String): String {
+    return """
+        .bmpui-ui-label, 
+        .bmpui-ui-playbacktimelabel, 
+        .bmpui-ui-titlebar {
+           color: $color !important;
+        }
+    """.trimIndent()
+}
+
+
+
+
+//internal fun StringBuilder.addAttribute(name: String, value: String?) {
+//    if (value != null) {
+//        append("$name: $value; !important\n")
+//    }
+//}

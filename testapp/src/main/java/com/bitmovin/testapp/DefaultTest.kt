@@ -45,9 +45,10 @@ class DefaultTest : ComponentActivity() {
                         Column {
                             Text(text = "Video 2")
                             BitmovinStream(
-                                streamId = TestStreamsIds.SINTEL,
+                                streamId = TestStreamsIds.TEAR_OF_STEEL,
                                 modifier = Modifier,
-                                immersiveFullScreen = true
+                                immersiveFullScreen = true,
+                                enableAds = false
                             )
                         }
                     }

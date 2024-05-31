@@ -31,7 +31,7 @@ class FirstFragment : Fragment() {
         val view = binding.root
         val composeView = view.findViewById<ComposeView>(R.id.compose_view)
         composeView.setContent {
-            BitmovinStream(streamId = TestStreamsIds.SINTEL, immersiveFullScreen = true)
+            BitmovinStream(streamId = TestStreamsIds.SINTEL)
         }
         return binding.root
 
