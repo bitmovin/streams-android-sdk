@@ -33,10 +33,10 @@ class AutoOrientationStreamFullscreenHandler(val playerView: PlayerView, val act
     /*
     Does not work better than my current impl.
      */
-    private fun doVisibilityFlags(fullscreen: Boolean) {
-        val uiParams = getSystemUiVisibilityFlags(fullscreen, false)
-        activity?.window?.decorView?.systemUiVisibility = uiParams
-    }
+//    private fun doVisibilityFlags(fullscreen: Boolean) {
+//        val uiParams = getSystemUiVisibilityFlags(fullscreen, false)
+//        activity?.window?.decorView?.systemUiVisibility = uiParams
+//    }
 
     override fun onFullscreenRequested() {
         // Store the user orientation to restore it when exiting fullscreen
