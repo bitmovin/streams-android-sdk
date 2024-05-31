@@ -247,9 +247,27 @@ internal fun getCustomCss(context : Context, streamId : String, streamConfig: St
     if (style.playerStyle != null)
         css.append(playerStyle(style.playerStyle!!))
 
+    if (style.watermarkUrl != null)
+        css.append(watermarkCss(style.watermarkUrl!!))
+
     // Water marks things after...
     Log.d("CSS", "Writing CSS to file: \n$css")
     return writeCssToFile(context, css.toString(), streamId)?.toURL().toString()
+}
+
+internal fun watermarkCss(watermarkImg: String) : String {
+    return """
+        .bmpui-ui-watermark {
+            background-image: url("$watermarkImg") !important;
+            background-size: contain !important;
+            background-repeat: no-repeat !important;
+            background-position: center center !important;
+            font-size: .7em !important;
+            display: block !important;
+            pointer-events: none !important;
+            top: 20 !important;
+        }
+    """.trimIndent()
 }
 
 internal fun playerStyle(playerStyle: PlayerStyle) : String
