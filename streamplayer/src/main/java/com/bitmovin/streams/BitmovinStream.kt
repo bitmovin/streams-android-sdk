@@ -31,6 +31,9 @@ const val MAX_FOR_PORTRAIT_FORCING = 0.8
  * @param start The time in seconds at which the player should start playing.
  * @param subtitles The list of subtitle tracks available for the stream.
  * @param immersiveFullScreen Whether the player should be in immersive full screen mode. Should only be true if edgeToEdge is enabled.
+ * @param bitmovinStreamEventListener The listener for the player events.
+ * @param screenOrientationOnFullscreenEscape The screen orientation to be set when the player exits full screen.
+ * @param enableAds Whether ads should be enabled.
  */
 @Composable
 fun BitmovinStream(
@@ -42,7 +45,7 @@ fun BitmovinStream(
     poster : String? = null,
     start : Double = 0.0,
     subtitles : List<SubtitleTrack> = emptyList(),
-    immersiveFullScreen : Boolean = false,
+    immersiveFullScreen : Boolean = true,
     bitmovinStreamEventListener: BitmovinStreamEventListener? = null,
     screenOrientationOnFullscreenEscape: Int? = null,
     enableAds : Boolean = true
@@ -92,7 +95,7 @@ fun BitmovinStream(
         }
         BitmovinStreamState.INITIALIZING -> {
             LaunchedEffect(Unit) {
-                viewModel.initializePlayer(context, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen, screenOrientationOnFullscreenEscape, enableAds)
+                viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen, screenOrientationOnFullscreenEscape, enableAds)
             }
             TextVideoPlayerFiller("Initializing player", modifier)
         }
