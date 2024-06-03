@@ -61,6 +61,10 @@ internal class ViewModelStream : ViewModel() {
         }
     }
 
+    /*
+        * Initialize the player with the stream config data and Stream Player attributes
+        * Should be called after the stream config data has been fetched.
+     */
     fun initializePlayer(
         context: Context,
         streamId: String,
@@ -85,25 +89,18 @@ internal class ViewModelStream : ViewModel() {
             streamEventListener?.onPlayerReady(player)
         }
 
-
         // Loading the stream source
         val streamSource =
             createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
         player.load(streamSource)
 
         // Handling properties
+        player.handleAttributes(autoPlay, muted, start)
+
         this.immersiveFullScreen.value = immersiveFullScreen
-        if (autoPlay)
-            player.play()
-        if (muted)
-            player.mute()
-
-        if (start > 0)
-            player.seek(start)
-
-        val suppCss = getCustomCss(context, streamId, streamConfig)
 
         // Setting up the player view
+        val suppCss = getCustomCss(context, streamId, streamConfig)
         playerView = createPlayerView(context, player, suppCss)
         val playerView = playerView!!
         lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
@@ -130,8 +127,22 @@ internal class ViewModelStream : ViewModel() {
         // Setup done, we can display the player
         state = BitmovinStreamState.DISPLAYING
     }
-
 }
+
+private fun Player.handleAttributes(
+    autoPlay: Boolean,
+    muted: Boolean,
+    start: Double,
+) {
+    if (autoPlay)
+        this.play()
+    if (muted)
+        this.mute()
+
+    if (start > 0)
+        this.seek(start)
+}
+
 
 enum class BitmovinStreamState {
     FETCHING,

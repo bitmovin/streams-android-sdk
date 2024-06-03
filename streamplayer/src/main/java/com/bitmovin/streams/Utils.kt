@@ -192,7 +192,6 @@ internal fun createPlayerView(context: Context, player: Player, suppCssLocation 
             UiConfig.WebUi(
                 supplementalCssLocation = suppCssLocation,
                 forceSubtitlesIntoViewContainer = true,
-                cssLocation = "https://cdn.bitmovin.com/player/web/8/bitmovinplayer-ui.css"
             )
         )
 
