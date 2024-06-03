@@ -69,20 +69,12 @@ internal fun FullScreen(
     immersive: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    var properties = DialogProperties(
+    val properties = DialogProperties(
         dismissOnBackPress = true,
         dismissOnClickOutside = false,
-        usePlatformDefaultWidth = false,
+        usePlatformDefaultWidth = immersive,
         decorFitsSystemWindows = false
     )
-    if (immersive) {
-        properties = DialogProperties(
-            dismissOnBackPress = true,
-            dismissOnClickOutside = false,
-            usePlatformDefaultWidth = true,
-            decorFitsSystemWindows = false
-        )
-    }
     val orientation = LocalConfiguration.current.orientation
     // Recompose when orientation changes
     key(orientation) {

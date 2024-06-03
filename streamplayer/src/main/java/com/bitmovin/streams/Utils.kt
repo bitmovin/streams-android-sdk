@@ -214,10 +214,8 @@ internal fun writeCssToFile(context: Context, css: String, streamId: String): Fi
         FileOutputStream(cssFile).use { output ->
             output.write(css.toByteArray())
         }
-
         cssFile
     } catch (e: IOException) {
-        e.printStackTrace()
         null
     }
 }
