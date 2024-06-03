@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.bitmovin.player.PlayerView
-import com.bitmovin.player.SubtitleView
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
@@ -29,9 +28,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
@@ -58,7 +55,7 @@ internal fun StreamVideoPlayer(playerView: PlayerView, modifier: Modifier = Modi
  * Make the content fill the screen
  *
  * @param onDismissRequest: Callback to dismiss the dialog
- * @param immersive: true to make the content immersive by hiding the Android UI and being Borderless
+ * @param isImmersive: true to make the content immersive by hiding the Android UI and being Borderless
  * @param content: The content to display
  *
  * TODO: More flexible parameters to allow for more use-cases, but it's doing the job well for the video player
@@ -66,13 +63,13 @@ internal fun StreamVideoPlayer(playerView: PlayerView, modifier: Modifier = Modi
 @Composable
 internal fun FullScreen(
     onDismissRequest: () -> Unit,
-    immersive: Boolean = true,
+    isImmersive: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val properties = DialogProperties(
         dismissOnBackPress = true,
         dismissOnClickOutside = false,
-        usePlatformDefaultWidth = immersive,
+        usePlatformDefaultWidth = isImmersive,
         decorFitsSystemWindows = false
     )
     val orientation = LocalConfiguration.current.orientation
@@ -82,7 +79,7 @@ internal fun FullScreen(
             onDismissRequest = onDismissRequest,
             properties = properties,
             content = {
-                if (immersive) {
+                if (isImmersive) {
                     val activityWindow = getActivityWindow()
                     val dialogWindow = getDialogWindow()
                     val parentView = LocalView.current.parent as View
@@ -117,7 +114,7 @@ internal fun FullScreen(
                         }
                     }
 
-                    Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {
+                    Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
                         content()
                     }
                 } else {

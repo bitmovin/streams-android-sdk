@@ -1,6 +1,5 @@
 package com.bitmovin.streams
 
-import android.content.pm.ActivityInfo
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,7 +69,7 @@ fun BitmovinStream(
                 if (playerView.isFullscreen) {
                     FullScreen(
                         onDismissRequest = { viewModel.playerView?.exitFullscreen() },
-                        immersive = viewModel.immersiveFullScreen.value
+                        isImmersive = viewModel.immersiveFullScreen.value
                     ) {
                         StreamVideoPlayer(playerView = playerView)
                     }

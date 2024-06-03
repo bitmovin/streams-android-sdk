@@ -1,5 +1,6 @@
 package com.bitmovin.streams.fullscreenmode
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.util.Log
@@ -30,14 +31,7 @@ class AutoOrientationStreamFullscreenHandler(val playerView: PlayerView, val act
         //doVisibilityFlags(false)
     }
 
-    /*
-    Does not work better than my current impl.
-     */
-//    private fun doVisibilityFlags(fullscreen: Boolean) {
-//        val uiParams = getSystemUiVisibilityFlags(fullscreen, false)
-//        activity?.window?.decorView?.systemUiVisibility = uiParams
-//    }
-
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onFullscreenRequested() {
         // Store the user orientation to restore it when exiting fullscreen
         if (!fullscreen.value) {
@@ -48,7 +42,7 @@ class AutoOrientationStreamFullscreenHandler(val playerView: PlayerView, val act
                 ratio = playerView.player?.source?.availableVideoQualities?.get(0)
                     .let { it?.width?.toFloat()?.div(it.height) }
             } catch (e: IndexOutOfBoundsException) {
-
+                // Do nothing, it is not a big deal if the ratio is null
             }
 
             if (ratio != null && ratio < MAX_FOR_PORTRAIT_FORCING) {
@@ -62,7 +56,6 @@ class AutoOrientationStreamFullscreenHandler(val playerView: PlayerView, val act
                 // Stick with the user configuration
             }
         }
-        //doVisibilityFlags(true)
     }
 
     override fun onPause() {
