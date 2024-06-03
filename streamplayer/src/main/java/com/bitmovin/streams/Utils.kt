@@ -252,23 +252,22 @@ internal fun getCustomCss(context : Context, streamId : String, streamConfig: St
 
 internal fun watermarkCss(watermarkImg: String) : String {
     return """
-.bmpui-ui-watermark {
-    background-image: url("$watermarkImg") !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center center !important;
-    font-size: .7em !important;
-    display: block !important;
-    pointer-events: none !important;
-    top: 20px !important;
-    opacity: 1 !important;
-    transition: opacity 0.5s ease, top 0.5s ease !important;
-}
-.bmpui-controls-hidden .bmpui-ui-watermark {
-    top: 0px !important;
-    opacity: 0.2 !important;
-}
-
+        .bmpui-ui-watermark {
+            background-image: url("$watermarkImg") !important;
+            background-size: contain !important;
+            background-repeat: no-repeat !important;
+            background-position: center center !important;
+            font-size: .7em !important;
+            display: block !important;
+            pointer-events: none !important;
+            top: 20px !important;
+            opacity: 1 !important;
+            transition: opacity 0.5s ease, top 0.5s ease !important;
+        }
+        .bmpui-controls-hidden .bmpui-ui-watermark {
+            top: 0px !important;
+            opacity: 0.2 !important;
+        }
     """.trimIndent()
 }
 
