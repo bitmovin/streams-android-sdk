@@ -41,7 +41,7 @@ fun BitmovinStream(
     modifier : Modifier = Modifier,
     jwToken : String? = null,
     autoPlay : Boolean = false,
-    muted : Boolean = false,
+    muted : Boolean = true, // temporary to avoid loud noises in the office when I forget to turn off the sound
     poster : String? = null,
     start : Double = 0.0,
     subtitles : List<SubtitleTrack> = emptyList(),
