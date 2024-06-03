@@ -113,25 +113,21 @@ internal fun addURLParam(url: String, attribute: String, value: String): String 
 
 internal fun createPlayer(streamConfigData: StreamConfigData, context: Context, enableAds: Boolean): Player {
     val analyticsConfig : AnalyticsConfig? = getAnalyticsConfig(streamConfigData)
-    val advertisingConfig : AdvertisingConfig? = when (enableAds) {
-                                                        true -> getAdvertisingConfig(streamConfigData)
-                                                        false -> null
-                                                    }
+    val advertisingConfig : AdvertisingConfig? =
+        when (enableAds) {
+            true -> getAdvertisingConfig(streamConfigData)
+            false -> null
+        }
 
     val playerConfig = PlayerConfig(
         key = streamConfigData.key,
         advertisingConfig = advertisingConfig?: AdvertisingConfig(),
     )
 
-    return if (analyticsConfig == null) {
-        Player(
-            context,
-            playerConfig = playerConfig,
-        )
-    } else Player(
+    return Player(
         context,
         playerConfig = playerConfig,
-        analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig),
+        analyticsConfig = analyticsConfig?.let { AnalyticsPlayerConfig.Enabled(it) } ?: AnalyticsPlayerConfig.Enabled(),
     )
 }
 internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
@@ -146,23 +142,14 @@ internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingCo
         }
         AdItem(ad.position, adSource)
     } ?: emptyList()
-
-    if (ads.isEmpty()) {
-        Log.d("Ads", "No ads found")
-        return AdvertisingConfig()
-    }
     return AdvertisingConfig(ads)
 }
 
 internal fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig? {
-    streamConfig.analytics.let { analytics ->
-        if (analytics == null) {
-            return null
-        } else {
-            return AnalyticsConfig(
-                licenseKey = analytics.key
-            )
-        }
+    return streamConfig.analytics?.let { analytics ->
+        AnalyticsConfig(
+            analytics.key,
+        )
     }
 }
 
@@ -187,7 +174,8 @@ internal fun createSource(streamConfigData: StreamConfigData, customPosterSource
     )
 }
 
-internal fun createPlayerView(context: Context, player: Player, suppCssLocation : String? = null) : PlayerView{
+internal fun createPlayerView(context: Context, player: Player, streamConfig : StreamConfigData? = null) : PlayerView{
+    val suppCssLocation = streamConfig?.let { getCustomCss(context, it.key, it) }
     val playerViewConfig = PlayerViewConfig(
             UiConfig.WebUi(
                 supplementalCssLocation = suppCssLocation,
@@ -234,7 +222,7 @@ internal fun writeCssToFile(context: Context, css: String, streamId: String): Fi
     }
 }
 
-internal fun getCustomCss(context : Context, streamId : String, streamConfig: StreamConfigData) : String? {
+internal fun getCustomCss(context : Context, id : String, streamConfig: StreamConfigData) : String? {
     if (streamConfig.styleConfig == null) {
         return null
     }
@@ -250,7 +238,7 @@ internal fun getCustomCss(context : Context, streamId : String, streamConfig: St
 
     Log.d("CSS", "Writing CSS to file: \n$css")
 
-    return writeCssToFile(context, css.toString(), streamId)?.toURL().toString()
+    return writeCssToFile(context, css.toString(), id)?.toURL().toString()
 }
 
 internal fun watermarkCss(watermarkImg: String) : String {

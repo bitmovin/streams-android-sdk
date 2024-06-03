@@ -82,29 +82,36 @@ internal class ViewModelStream : ViewModel() {
     ) {
         this.context = context
         val activity = context.getActivity()
-        player = createPlayer(streamConfig, context, enableAds)
-        val player = player!! // Guaranteed by createPlayer
 
+        // 1. Initializing the player
+        val player = createPlayer(streamConfig, context, enableAds)
+        this.player = player
         player.on(PlayerEvent.Ready::class.java) {
             streamEventListener?.onPlayerReady(player)
         }
 
-        // Loading the stream source
+
+        // 2. Loading the stream source
         val streamSource =
             createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
         player.load(streamSource)
 
-        // Handling properties
+        // 3. Handling properties
         player.handleAttributes(autoPlay, muted, start)
-
         this.immersiveFullScreen.value = immersiveFullScreen
 
-        // Setting up the player view
-        val suppCss = getCustomCss(context, streamId, streamConfig)
-        playerView = createPlayerView(context, player, suppCss)
-        val playerView = playerView!!
-        lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
+        // 4. Setting up Views
 
+        // Setting up the player view
+        playerView = createPlayerView(context, player, streamConfig)
+        val playerView = playerView!!
+        // Adding the playerView to the lifecycle
+        lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
+        // Setting up the subtitles view
+        subtitlesView = SubtitleView(context)
+        subtitlesView!!.setPlayer(player)
+
+        // 5. Initializing handlers
 
         // Setting up the fullscreen feature
         fullscreenHandler = AutoOrientationStreamFullscreenHandler(
@@ -118,14 +125,11 @@ internal class ViewModelStream : ViewModel() {
         pipHandler = PiPHandler(context.getActivity()!!, playerView, this.immersiveFullScreen)
         playerView.setPictureInPictureHandler(pipHandler)
 
-        // Setting up the subtitles view
-        subtitlesView = SubtitleView(context)
-        subtitlesView!!.setPlayer(player)
-
         streamEventListener?.onPlayerViewReady(playerView)
 
         // Setup done, we can display the player
         state = BitmovinStreamState.DISPLAYING
+
     }
 }
 
