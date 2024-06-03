@@ -240,13 +240,16 @@ internal fun getCustomCss(context : Context, streamId : String, streamConfig: St
     }
     val style = streamConfig.styleConfig!!
     val css = StringBuilder()
-    if (style.playerStyle != null)
-        css.append(playerStyle(style.playerStyle!!))
 
-    if (style.watermarkUrl != null)
-        css.append(watermarkCss(style.watermarkUrl!!))
+    style.playerStyle?.let {
+        css.append(playerStyle(it))
+    }
+    style.watermarkUrl?.let {
+        css.append(watermarkCss(it))
+    }
 
     Log.d("CSS", "Writing CSS to file: \n$css")
+
     return writeCssToFile(context, css.toString(), streamId)?.toURL().toString()
 }
 
