@@ -83,7 +83,7 @@ internal class ViewModelStream : ViewModel() {
         this.context = context
         val activity = context.getActivity()
         player = createPlayer(streamConfig, context, enableAds)
-        val player = player!! // Garanteed by createPlayer
+        val player = player!! // Guaranteed by createPlayer
 
         player.on(PlayerEvent.Ready::class.java) {
             streamEventListener?.onPlayerReady(player)
@@ -150,4 +150,3 @@ enum class BitmovinStreamState {
     DISPLAYING,
     DISPLAYING_ERROR,
 }
-
