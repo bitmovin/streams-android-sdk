@@ -48,10 +48,9 @@ import kotlinx.coroutines.delay
  * Player wrapped into a compose element
  */
 @Composable
-internal fun StreamVideoPlayer(playerView: PlayerView, subtitleView: SubtitleView, modifier: Modifier = Modifier) {
+internal fun StreamVideoPlayer(playerView: PlayerView, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
-        AndroidView(factory = { _ -> playerView.apply { if (parent != null) this.removeFromParent() } })
-        AndroidView(factory = { _ -> subtitleView.apply { if (parent != null) this.removeFromParent() } })
+        AndroidView(factory = { _ -> playerView.apply { this.removeFromParent() } })
     }
 }
 
