@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.TestStreamsIds
 
@@ -48,7 +49,11 @@ class DefaultTest : ComponentActivity() {
                                 streamId = TestStreamsIds.TEAR_OF_STEEL,
                                 modifier = Modifier,
                                 immersiveFullScreen = true,
-                                enableAds = false
+                                enableAds = false,
+                                subtitles = listOf(
+                                    SubtitleTrack(language = "French", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"),
+                                    SubtitleTrack(language = "German", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt"),
+                                )
                             )
                         }
                     }
