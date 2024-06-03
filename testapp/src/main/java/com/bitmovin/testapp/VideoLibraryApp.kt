@@ -68,11 +68,16 @@ fun StreamsList() {
         StreamElem("Vertical Video", TestStreamsIds.VERTICAL_VIDEO, unfoldedStreamId)
         StreamElem(name = "Squared Video", streamId = TestStreamsIds.SQUARE_VIDEO, unfoldedStreamId)
         StreamElem (name = "Tears of Steel", streamId = TestStreamsIds.TEAR_OF_STEEL, unfoldedStreamId)
-        StreamElem(name = "Big Buck Bunny", streamId = TestStreamsIds.BIG_BUCK_BUNNY, unfoldedStreamId)
+        StreamElem(
+            name = "Big Buck Bunny - token required",
+            streamId = TestStreamsIds.BIG_BUCK_BUNNY,
+            unfoldedStreamId,
+            token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTg2OTY0NDB9.J7ysnY4jc6cHHSTbfoqz3PApo2WlO36pi94mU92MAAp77iDYQuMDtqcuGwdE7OBMSwkFvvpmLEJNgFh02Q3bcpiQWtQZaH43uObsQpJnpnoDSwghq3BWXo0_F478lPk51L1-F7UBpYjctNJ9usmJD-c9hCOmd-gTLmvjBx0Ytveh4PY6kWbNjahZT1sHu-SGDwxJJEgqrf18PXDb1tO9GHU6xIgLrXa956m9yaz9XMFPvN55C7SMmvGZxkSFDa_0WQssikZo4Xa4z14ZuNGv5JpiE4pP7zBj6Ll0ri9Ofypof_aw1DJiR5O6MP7sK7nYRgZR0MrlJ2OrOcBxYCqbnA"
+        )
     }
 }
 @Composable
-fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<String?>, modifier: Modifier = Modifier) {
+fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<String?>, token: String? = null, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var playerHolder: Player? by remember { mutableStateOf(null) }
     var isVisible = playerHolder != null
@@ -82,7 +87,7 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
     } else {
         LightColorScheme.background
     }
-    val streamHeight by animateDpAsState(targetValue = if (unfoldedStreamId.value == streamId) 200.dp else 0.dp)
+    val streamHeight by animateDpAsState(targetValue = if (unfoldedStreamId.value == streamId) 200.dp else 0.dp, label = "Unfolding Anim")
     // Rounded corner 8dp
     val buttonColor = when (unfoldedStreamId.value) {
         streamId -> Color(0, 106, 237)
@@ -100,7 +105,7 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
                         unfoldedStreamId.value = streamId
                     } else {
                         // Trigger the action
-                        switchToPlayerActivity(streamId, context)
+                        switchToPlayerActivity(streamId, context, token)
                     }
             }
             .alpha(if (isVisible) 1f else 0.5f)
@@ -126,6 +131,7 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
                 enableAds = false,
                 start = 5.0,
                 muted = true,
+                jwToken = token,
                 bitmovinStreamEventListener = object : BitmovinStreamEventListener {
                     override fun onPlayerReady(player: Player) {
                         playerHolder = player
@@ -154,11 +160,12 @@ fun GreetingPreview() {
     }
 }
 
-fun switchToPlayerActivity(streamId: String, packageContext: Context) {
+fun switchToPlayerActivity(streamId: String, packageContext: Context, token: String?) {
 
     // Go to Activity PlayerActivity
     val intent = Intent(packageContext, PlayerActivity::class.java)
     intent.putExtra("streamId", streamId)
+    intent.putExtra("token", token)
     packageContext.startActivity(intent)
 
 }

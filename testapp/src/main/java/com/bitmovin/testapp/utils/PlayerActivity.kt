@@ -9,6 +9,7 @@ import android.view.OrientationEventListener
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -40,20 +41,24 @@ class PlayerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
         val streamId = intent.getStringExtra("streamId") ?: ""
+        val token = intent.getStringExtra("token")
         enableEdgeToEdge()
         setContent {
             StreamsandroidsdkTheme {
-                Player(streamId)
+                Player(streamId, token)
             }
         }
     }
 
     @Composable
-    fun Player(streamId: String) {
+    fun Player(streamId: String, token: String?) {
         var name by remember { mutableStateOf("Loading...") }
         var description by remember { mutableStateOf("Loading...") }
         val config = LocalConfiguration.current
-        var aspectRatio by remember { mutableFloatStateOf(1.0f) }
+
+        var aspectRatio by remember { mutableFloatStateOf(16f / 9f) }
+        // not really useful but it looks cleaner.
+        val aspectRatioAnim by animateFloatAsState(targetValue = aspectRatio, label = "Video Aspect Ratio Anim",)
         val activity = LocalContext.current as Activity
         var playerViewHolder by remember { mutableStateOf<PlayerView?>(null) }
 
@@ -98,9 +103,10 @@ class PlayerActivity : ComponentActivity() {
             BitmovinStream(
                 streamId = streamId,
                 modifier = Modifier
-                    .aspectRatio(aspectRatio)
+                    .aspectRatio(aspectRatioAnim)
                     .fillMaxHeight(0.7f),
                 immersiveFullScreen = true,
+                jwToken = token,
                 screenOrientationOnFullscreenEscape = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT,
                 bitmovinStreamEventListener = object : BitmovinStreamEventListener {
                     override fun onPlayerReady(player: Player) {
