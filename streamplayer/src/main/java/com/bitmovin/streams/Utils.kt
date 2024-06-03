@@ -215,7 +215,7 @@ internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>)
 }
 
 
-fun writeCssToFile(context: Context, css: String, streamId: String): File? {
+internal fun writeCssToFile(context: Context, css: String, streamId: String): File? {
     return try {
         // Create a file in the app's private storage
         val cssFile = File(context.filesDir, "custom_css_${streamId}.css")
@@ -235,10 +235,7 @@ fun writeCssToFile(context: Context, css: String, streamId: String): File? {
     }
 }
 
-const val DEFAULT_TEST_FILE_URL = "file:///android_asset/custom.css"
 internal fun getCustomCss(context : Context, streamId : String, streamConfig: StreamConfigData) : String? {
-    // custom.css is a file that is an android asset file
-
     if (streamConfig.styleConfig == null) {
         return null
     }
@@ -250,7 +247,6 @@ internal fun getCustomCss(context : Context, streamId : String, streamConfig: St
     if (style.watermarkUrl != null)
         css.append(watermarkCss(style.watermarkUrl!!))
 
-    // Water marks things after...
     Log.d("CSS", "Writing CSS to file: \n$css")
     return writeCssToFile(context, css.toString(), streamId)?.toURL().toString()
 }
@@ -299,13 +295,8 @@ internal fun playerStyle(playerStyle: PlayerStyle) : String
 
 internal fun stylePlaybackMarkerBgColor(color: String) : String
 {
+    // Volume slider is not used in this playerView but I based the impl on the web player UI.
     return """
-        .bmpui-ui-listbox .bmpui-ui-listbox-button.bmpui-selected {
-           background-color: $color !important;
-        }
-        .bmpui-ui-listbox .bmpui-ui-listbox-button:hover {
-           background-color: $color !important;
-        }
         .bmpui-ui-seekbar .bmpui-seekbar .bmpui-seekbar-playbackposition-marker,
         .bmpui-ui-volumeslider .bmpui-seekbar .bmpui-seekbar-playbackposition-marker {
            background-color: $color !important;
@@ -314,10 +305,9 @@ internal fun stylePlaybackMarkerBgColor(color: String) : String
 }
 
 internal fun stylePlaybackMarkerBorderColor(color: String): String {
+    // Volume slider is not used in this playerView but I based the impl on the web player UI.
     return """
-        .bmpui-ui-seekbar .bmpui-seekbar .bmpui-seekbar-playbackposition-marker {
-           border-color: $color !important;
-        }
+        .bmpui-ui-seekbar .bmpui-seekbar .bmpui-seekbar-playbackposition-marker,
         .bmpui-ui-volumeslider .bmpui-seekbar .bmpui-seekbar-playbackposition-marker {
            border-color: $color !important;
         }
@@ -350,20 +340,10 @@ internal fun stylePlaybackTrackBgColor(color: String): String {
 }
 
 internal fun styleTextColor(color: String): String {
-    return """
-        .bmpui-ui-label, 
+    return """ 
         .bmpui-ui-playbacktimelabel, 
         .bmpui-ui-titlebar {
            color: $color !important;
         }
     """.trimIndent()
 }
-
-
-
-
-//internal fun StringBuilder.addAttribute(name: String, value: String?) {
-//    if (value != null) {
-//        append("$name: $value; !important\n")
-//    }
-//}

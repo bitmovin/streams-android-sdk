@@ -98,7 +98,8 @@ internal class ViewModelStream : ViewModel() {
         if (muted)
             player.mute()
 
-        player.seek(start)
+        if (start > 0)
+            player.seek(start)
 
         val suppCss = getCustomCss(context, streamId, streamConfig)
 
