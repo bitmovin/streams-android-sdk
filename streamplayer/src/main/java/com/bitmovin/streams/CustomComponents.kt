@@ -183,17 +183,23 @@ internal fun PictureInPictureHandlerForStreams(viewModel: ViewModelStream) {
     // There is only one PiPManager for the whole application
     val pipManager: PiPChangesObserver = viewModel()
     LocalLifecycleOwner.current.lifecycle.addObserver(pipManager) // /!\ It only matters the first time a BitmovinStream is created, afterwards it is ignored
+    DisposableEffect(Unit) {
+        val obj = object : PiPExitListener {
+            override fun onPiPExit() {
+                Log.d("StreamsPlayer", "onPiPExit called")
+                viewModel.pipHandler?.exitPictureInPicture()
+            }
 
-    pipManager.addListener(object : PiPExitListener {
-        override fun onPiPExit() {
-            Log.d("StreamsPlayer", "onPiPExit called")
-            viewModel.pipHandler?.exitPictureInPicture()
+            override fun isInPiPMode(): Boolean {
+                return viewModel.pipHandler?.isPictureInPicture ?: false
+            }
         }
+        pipManager.addListener(obj)
 
-        override fun isInPiPMode(): Boolean {
-            return viewModel.pipHandler?.isPictureInPicture ?: false
+        onDispose {
+            pipManager.removeListener(obj)
         }
-    })
+    }
 
 }
 

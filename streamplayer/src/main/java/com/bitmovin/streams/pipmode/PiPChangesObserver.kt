@@ -30,6 +30,7 @@ internal class PiPChangesObserver() : ViewModel(), LifecycleEventObserver {
 
     fun addListener(listener: PiPExitListener) {
         Listeners.add(listener)
+        // Log.d("PiPHandler","number of listeners ${Listeners.size}")
     }
     fun removeListener(listener: PiPExitListener) {
         Listeners.remove(listener)
@@ -40,7 +41,7 @@ internal class PiPChangesObserver() : ViewModel(), LifecycleEventObserver {
         if (!inPipMode) {
             Listeners.forEach { if (it.isInPiPMode()) {
                 it.onPiPExit()
-                Log.d("com.bitmovin.streams.pipmode.PiPChangesObserver", "onPiPExit")
+                Log.d("PiPChangesObserver", "onPiPExit")
             } }
         }
     }
