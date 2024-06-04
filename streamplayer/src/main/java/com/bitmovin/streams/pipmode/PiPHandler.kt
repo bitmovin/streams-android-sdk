@@ -13,15 +13,16 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
     playerView.player
 ) {
 
-    private var oldFullScreen = playerView.isFullscreen
     private var isInPictureInPicture = false
     private var oldImmersiveFullScreen = immersiveFullScreen.value
+    private var previousUiVisibility = true
 
     override fun enterPictureInPicture() {
         super.enterPictureInPicture()
         isInPictureInPicture = true
-        oldFullScreen = playerView.isFullscreen == true
         oldImmersiveFullScreen = immersiveFullScreen.value
+
+        previousUiVisibility = playerView.isUiVisible
         playerView.isUiVisible = false
 
 //         Being in immersive full screen mode cause the PiP to sometimes need another recomposition to be displayed correctly, so we just avoid it
@@ -40,7 +41,7 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
         // Restore the previous values
         isInPictureInPicture = false
         //playerView.exitFullscreen()
-        playerView.isUiVisible = true
+        playerView.isUiVisible = previousUiVisibility
         super.exitPictureInPicture()
     }
 
