@@ -9,6 +9,7 @@ import android.view.Window
 import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
 import com.bitmovin.analytics.api.AnalyticsConfig
@@ -39,7 +40,6 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.regex.Pattern
 import kotlin.reflect.KProperty
 
 /**
@@ -65,8 +65,6 @@ private tailrec fun Context.getActivityWindow(): Window? =
         is ContextWrapper -> baseContext.getActivityWindow()
         else -> null
     }
-
-
 
 /**
  * Getting the Activity from a random Context
@@ -134,7 +132,7 @@ internal fun createPlayer(streamConfigData: StreamConfigData, context: Context, 
 }
 internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
     // Bitmovin and Progressive ads only for now
-    val ads = streamConfig.adConfig?.ads?.map { ad ->
+    val ads = streamConfig.adConfig.ads.map { ad ->
         val fileExt = ad.url.split(".").last()
         val adSource = when (fileExt) {
             "mp4" -> AdSource(AdSourceType.Progressive, ad.url)
@@ -148,11 +146,9 @@ internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingCo
 }
 
 internal fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig? {
-    return streamConfig.analytics?.let { analytics ->
-        AnalyticsConfig(
-            analytics.key,
-        )
-    }
+    return AnalyticsConfig(
+        streamConfig.analytics.key,
+    )
 }
 
 
@@ -166,8 +162,8 @@ internal fun createSource(streamConfigData: StreamConfigData, customPosterSource
         subtitleTracks = subtitlesSources,
     )
     val sourceMetadata = SourceMetadata(
-        videoId = streamConfigData.analytics?.videoId,
-        title = streamConfigData.analytics?.videoTitle,
+        videoId = streamConfigData.analytics.videoId,
+        title = streamConfigData.analytics.videoTitle,
         isLive = streamConfigData.type == "LIVE",
     )
     return Source(
@@ -176,16 +172,18 @@ internal fun createSource(streamConfigData: StreamConfigData, customPosterSource
     )
 }
 
-internal fun createPlayerView(context: Context, player: Player, streamConfig : StreamConfigData? = null) : PlayerView{
-    val suppCssLocation = streamConfig?.let { getCustomCss(context, it.key, it) }
+internal fun createPlayerView(context: Context, player: Player, streamConfig : StreamConfigData, styleConfigStream: StyleConfigStream) : PlayerView{
+
+    // Should be done at the beginning or the attributes values will be ignored.
+    streamConfig.styleConfig.affectConfig(styleConfigStream)
+
+    val suppCssLocation = streamConfig.let { getCustomCss(context, it.key, it) }
     val playerViewConfig = PlayerViewConfig(
             UiConfig.WebUi(
                 supplementalCssLocation = suppCssLocation,
                 forceSubtitlesIntoViewContainer = true,
             )
         )
-
-
 
     val playerView = PlayerView(context, player, config = playerViewConfig)
         .apply {
@@ -195,7 +193,10 @@ internal fun createPlayerView(context: Context, player: Player, streamConfig : S
         )
         keepScreenOn = true
     }
-
+    // Should be done at the end
+    streamConfig.styleConfig.playerStyle.backgroundColor?.let {
+        it.parseColor()?.toArgb()?.let { colorInt -> playerView.setBackgroundColor(colorInt) ; Log.d("Color", "Setting ALEERR color to $colorInt") }
+    }
     return playerView
 }
 
@@ -222,18 +223,20 @@ internal fun writeCssToFile(context: Context, css: String, streamId: String): Fi
     }
 }
 
-internal fun getCustomCss(context : Context, id : String, streamConfig: StreamConfigData) : String? {
-    if (streamConfig.styleConfig == null) {
-        return null
-    }
-    val style = streamConfig.styleConfig!!
+internal fun getCustomCss(context : Context, id : String, streamConfig: StreamConfigData) : String {
+
+    val style = streamConfig.styleConfig
     val css = StringBuilder()
 
-    style.playerStyle?.let {
+
+
+    style.playerStyle.let {
         css.append(playerStyle(it))
     }
     style.watermarkUrl?.let {
         css.append(watermarkCss(it))
+    } ?: {
+        style
     }
 
     Log.d("CSS", "Writing CSS to file: \n$css")
@@ -241,8 +244,8 @@ internal fun getCustomCss(context : Context, id : String, streamConfig: StreamCo
     return writeCssToFile(context, css.toString(), id)?.toURL().toString()
 }
 
-// TODO: Open the link.
-// Problem : It probably involves touching the html structure of the player, which I'm not sure is possible.
+
+
 internal fun watermarkCss(watermarkImg: String) : String {
     return """
         .bmpui-ui-watermark {
@@ -288,6 +291,7 @@ internal fun playerStyle(playerStyle: PlayerStyle) : String
 
     return playerStyles.toString()
 }
+
 
 
 internal fun stylePlaybackMarkerBgColor(color: String) : String
@@ -345,6 +349,27 @@ internal fun styleTextColor(color: String): String {
     """.trimIndent()
 }
 
-fun Color.css() : String {
-    return "rgba(${this.red}, ${this.blue}, ${this.green}, ${this.alpha})"
+fun Color.toCSS() : String {
+    val s = "rgba(${(this.red*255).toInt()}, ${(this.green*255).toInt()}, ${(this.blue*255).toInt()}, ${this.alpha})"
+    Log.d("Color", "Converting color to CSS: $s")
+    return s
+}
+
+
+// Credits to https://stackoverflow.com/questions/12643009/regular-expression-for-floating-point-numbers
+const val floatNumber = "([+-]?([0-9]+([.][0-9]*)?|[.][0-9]+))"
+
+// TODO: Add support for hex colors
+// TODO: Change the parsing without using Regex because it seems overkill
+fun String.parseColor() : Color? {
+    Log.d("Color", "Parsing color from string: $this")
+    val pattern = "rgba\\((\\d+), (\\d+), (\\d+), $floatNumber\\)".toRegex()
+    val match = pattern.find(this)
+    if (match != null) {
+        val (r,g,b,a) = match.destructured
+        return Color(r.toInt(), g.toInt(), b.toInt(), (a.toFloat()*255).toInt())
+    } else {
+        Log.e("Color", "Failed to parse color from string: $this")
+    }
+    return null
 }
