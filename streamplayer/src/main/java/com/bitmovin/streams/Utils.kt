@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
 import com.bitmovin.analytics.api.AnalyticsConfig
@@ -38,6 +39,7 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.regex.Pattern
 import kotlin.reflect.KProperty
 
 /**
@@ -262,7 +264,6 @@ internal fun watermarkCss(watermarkImg: String) : String {
 
 internal fun playerStyle(playerStyle: PlayerStyle) : String
 {
-
     val playerStyles : StringBuilder = StringBuilder()
     playerStyle.playbackMarkerBgColor?.let {
         playerStyles.append(stylePlaybackMarkerBgColor(it))
@@ -338,6 +339,10 @@ internal fun styleTextColor(color: String): String {
         .bmpui-ui-playbacktimelabel, 
         .bmpui-ui-titlebar {
            color: $color !important;
-        }
+        }r
     """.trimIndent()
+}
+
+fun Color.css() : String {
+    return "rgba(${this.red}, ${this.blue}, ${this.green}, ${this.alpha})"
 }
