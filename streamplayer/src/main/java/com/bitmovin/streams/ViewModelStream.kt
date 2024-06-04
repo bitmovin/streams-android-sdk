@@ -78,7 +78,8 @@ internal class ViewModelStream : ViewModel() {
         subtitles: List<SubtitleTrack>,
         immersiveFullScreen: Boolean,
         screenOrientationOnFullscreenEscape: Int?,
-        enableAds: Boolean
+        enableAds: Boolean,
+        styleConfigStream: StyleConfigStream
     ) {
         this.context = context
         val activity = context.getActivity()
@@ -103,7 +104,7 @@ internal class ViewModelStream : ViewModel() {
         // 4. Setting up Views
 
         // Setting up the player view
-        playerView = createPlayerView(context, player, streamConfig)
+        playerView = createPlayerView(context, player, streamConfig, styleConfigStream)
         val playerView = playerView!!
         // Adding the playerView to the lifecycle
         lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
