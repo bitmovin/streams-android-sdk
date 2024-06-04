@@ -39,6 +39,8 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.BitmovinStreamEventListener
+import com.bitmovin.streams.PlayerStyleConfigStream
+import com.bitmovin.streams.StyleConfigStream
 import com.bitmovin.streams.TestStreamsIds
 import com.bitmovin.testapp.ui.theme.LightColorScheme
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
@@ -139,9 +141,15 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
 
                     override fun onPlayerViewReady(playerView: PlayerView) {
                         playerView.isUiVisible = false
-                        playerView.setBackgroundColor(Color(0, 106, 237).toArgb())
                     }
-                }
+                },
+                styleConfig = StyleConfigStream(
+                    playerStyleConfigStream =
+                        PlayerStyleConfigStream(
+                            backgroundColor = Color(0, 106, 237)
+                        )
+
+                )
             )
         }
     }
