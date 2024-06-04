@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
 import com.bitmovin.analytics.api.AnalyticsConfig
+import com.bitmovin.analytics.api.CustomData
 import com.bitmovin.analytics.api.SourceMetadata
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
@@ -112,7 +113,7 @@ internal fun addURLParam(url: String, attribute: String, value: String): String 
 }
 
 internal fun createPlayer(streamConfigData: StreamConfigData, context: Context, enableAds: Boolean): Player {
-    val analyticsConfig : AnalyticsConfig? = getAnalyticsConfig(streamConfigData)
+    val analyticsConfig : AnalyticsConfig = getAnalyticsConfig(streamConfigData)
     val advertisingConfig : AdvertisingConfig? =
         when (enableAds) {
             true -> getAdvertisingConfig(streamConfigData)
@@ -127,7 +128,7 @@ internal fun createPlayer(streamConfigData: StreamConfigData, context: Context, 
     return Player(
         context,
         playerConfig = playerConfig,
-        analyticsConfig = analyticsConfig?.let { AnalyticsPlayerConfig.Enabled(it) } ?: AnalyticsPlayerConfig.Enabled(),
+        analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig)
     )
 }
 internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
@@ -145,7 +146,7 @@ internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingCo
     return AdvertisingConfig(ads)
 }
 
-internal fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig? {
+internal fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig {
     return AnalyticsConfig(
         streamConfig.analytics.key,
     )
@@ -165,6 +166,7 @@ internal fun createSource(streamConfigData: StreamConfigData, customPosterSource
         videoId = streamConfigData.analytics.videoId,
         title = streamConfigData.analytics.videoTitle,
         isLive = streamConfigData.type == "LIVE",
+        customData = CustomData("STREAMS-ANDROID-COMPONENT"),
     )
     return Source(
         sourceConfig,
