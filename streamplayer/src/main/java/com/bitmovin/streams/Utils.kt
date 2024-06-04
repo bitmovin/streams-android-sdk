@@ -241,6 +241,8 @@ internal fun getCustomCss(context : Context, id : String, streamConfig: StreamCo
     return writeCssToFile(context, css.toString(), id)?.toURL().toString()
 }
 
+// TODO: Open the link.
+// Problem : It probably involves touching the html structure of the player, which I'm not sure is possible.
 internal fun watermarkCss(watermarkImg: String) : String {
     return """
         .bmpui-ui-watermark {

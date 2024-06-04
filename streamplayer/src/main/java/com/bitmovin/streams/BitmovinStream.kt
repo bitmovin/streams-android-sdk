@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bitmovin.player.PlayerView
+import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import java.util.UUID
 
@@ -34,6 +36,35 @@ const val MAX_FOR_PORTRAIT_FORCING = 0.8
  * @param screenOrientationOnFullscreenEscape The screen orientation to be set when the player exits full screen. If null, the screen orientation will automatically reset to the state before entering full screen.
  * @param enableAds Whether ads should be enabled.
  */
+
+
+@Composable
+fun BitmovinStream(
+    config: BitmovinStreamConfig
+) {
+BitmovinStream(
+        streamId = config.streamId,
+        modifier = config.modifier,
+        jwToken = config.jwToken,
+        autoPlay = config.autoPlay,
+        muted = config.muted,
+        poster = config.poster,
+        start = config.start,
+        subtitles = config.subtitles,
+        immersiveFullScreen = config.immersiveFullScreen,
+        bitmovinStreamEventListener = object : BitmovinStreamEventListener {
+            override fun onPlayerReady(player: Player) {
+                config.onPlayerReady(player)
+            }
+
+            override fun onPlayerViewReady(playerView: PlayerView) {
+                config.onPlayerViewReady(playerView)
+            }
+        },
+        appDefaultOrientation = config.appDefaultOrientation,
+        enableAds = config.enableAds
+    )
+}
 @Composable
 fun BitmovinStream(
     streamId : String,
@@ -46,7 +77,7 @@ fun BitmovinStream(
     subtitles : List<SubtitleTrack> = emptyList(),
     immersiveFullScreen : Boolean = true,
     bitmovinStreamEventListener: BitmovinStreamEventListener? = null,
-    screenOrientationOnFullscreenEscape: Int? = null,
+    appDefaultOrientation: Int? = null,
     enableAds : Boolean = true
 
 ) {
@@ -92,7 +123,7 @@ fun BitmovinStream(
         }
         BitmovinStreamState.INITIALIZING -> {
             LaunchedEffect(Unit) {
-                viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen, screenOrientationOnFullscreenEscape, enableAds)
+                viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen, appDefaultOrientation, enableAds)
             }
             TextVideoPlayerFiller("Initializing player", modifier)
         }
