@@ -6,8 +6,8 @@ package com.bitmovin.streams.streamsjson
 class StreamConfigData {
     lateinit var key: String
     lateinit var sources: Sources
-    var analytics: Analytics? = null
+    var analytics: Analytics = Analytics()
     lateinit var type: String // VIDEO | LIVE
-    var styleConfig: StyleConfig? = null
-    var adConfig: AdConfig? = null
+    var styleConfig: StyleConfig = StyleConfig()
+    var adConfig: AdConfig = AdConfig()
 }
