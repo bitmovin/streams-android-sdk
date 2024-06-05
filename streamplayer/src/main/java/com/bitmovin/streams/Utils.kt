@@ -174,12 +174,12 @@ internal fun createSource(streamConfigData: StreamConfigData, customPosterSource
     )
 }
 
-internal fun createPlayerView(context: Context, player: Player, streamConfig : StreamConfigData, styleConfigStream: StyleConfigStream) : PlayerView{
+internal fun createPlayerView(context: Context, player: Player, streamId: String, streamConfig : StreamConfigData, styleConfigStream: StyleConfigStream) : PlayerView{
 
     // Should be done at the beginning or the attributes values will be ignored.
     streamConfig.styleConfig.affectConfig(styleConfigStream)
 
-    val suppCssLocation = streamConfig.let { getCustomCss(context, it.key, it, styleConfigStream.playerTheme.customCss) }
+    val suppCssLocation = getCustomCss(context, streamId, streamConfig, userSupplCss = styleConfigStream.playerTheme.customCss)
     val playerViewConfig = PlayerViewConfig(
             UiConfig.WebUi(
                 supplementalCssLocation = suppCssLocation,
@@ -239,8 +239,8 @@ internal fun getCustomCss(context : Context, id : String, streamConfig: StreamCo
         css.append(watermarkCss(it))
     }
     css.append("\n$userSupplCss")
-
-    Log.d("CSS", "Writing CSS to file: \n$css")
+    Log.d("CSS", css.toString())
+    Log.d("CSS", "Writing CSS to file: \n$userSupplCss")
 
     return writeCssToFile(context, css.toString(), id)?.toURL().toString()
 }
@@ -302,6 +302,7 @@ internal fun stylePlaybackMarkerBgColor(color: String) : String
         .bmpui-ui-volumeslider .bmpui-seekbar .bmpui-seekbar-playbackposition-marker {
            background-color: $color !important;
         }
+        
     """.trimIndent()
 }
 
@@ -312,6 +313,7 @@ internal fun stylePlaybackMarkerBorderColor(color: String): String {
         .bmpui-ui-volumeslider .bmpui-seekbar .bmpui-seekbar-playbackposition-marker {
            border-color: $color !important;
         }
+        
     """.trimIndent()
 }
 
@@ -320,6 +322,7 @@ internal fun stylePlaybackTrackPlayedColor(color: String): String {
         .bmpui-seekbar .bmpui-seekbar-playbackposition {
            background-color: $color !important;
         }
+        
     """.trimIndent()
 }
 
@@ -328,6 +331,7 @@ internal fun stylePlaybackTrackBufferedColor(color: String): String {
         .bmpui-seekbar .bmpui-seekbar-bufferlevel {
            background-color: $color !important;
         }
+        
     """.trimIndent()
 }
 
@@ -337,6 +341,7 @@ internal fun stylePlaybackTrackBgColor(color: String): String {
         .bmpui-seekbar .bmpui-seekbar-backdrop {
            background-color: $color !important;
         }
+        
     """.trimIndent()
 }
 
@@ -345,7 +350,8 @@ internal fun styleTextColor(color: String): String {
         .bmpui-ui-playbacktimelabel, 
         .bmpui-ui-titlebar {
            color: $color !important;
-        }r
+        }
+        
     """.trimIndent()
 }
 
