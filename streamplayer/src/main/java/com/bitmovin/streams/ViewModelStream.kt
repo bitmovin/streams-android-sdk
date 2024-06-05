@@ -146,6 +146,20 @@ private fun Player.handleAttributes(
 
     if (start > 0)
         this.seek(start)
+    // Prototype for an autoplay feature, but it's not looking great for now
+    if (false) {
+        this.on(PlayerEvent.PlaybackFinished::class.java) {
+            // Delay action
+            val player = this
+            object:Thread(){
+                override fun run() {
+                    Thread.sleep(50)
+                    player.seek(0.0)
+                    player.play()
+                }
+            }.start()
+        }
+    }
 }
 
 
