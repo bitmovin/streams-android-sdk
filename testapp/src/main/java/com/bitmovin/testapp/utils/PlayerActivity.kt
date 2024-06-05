@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +34,9 @@ import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.BitmovinStreamEventListener
 import com.bitmovin.streams.MAX_FOR_PORTRAIT_FORCING
+import com.bitmovin.streams.PlayerStyleConfigStream
+import com.bitmovin.streams.PlayerThemes
+import com.bitmovin.streams.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import kotlin.math.abs
 
@@ -139,7 +143,10 @@ class PlayerActivity : ComponentActivity() {
                                 playerView.enterFullscreen()
                         }
                     }
-                }
+                },
+                styleConfig = StyleConfigStream(
+                    playerTheme = PlayerThemes.RED_EXAMPLE_THEME
+                )
             )
             Text(
                 text = name, Modifier.padding(8.dp),
