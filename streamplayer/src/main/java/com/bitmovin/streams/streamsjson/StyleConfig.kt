@@ -9,7 +9,7 @@ class StyleConfig {
     var watermarkTargetLink: String? = null
 
     internal fun affectConfig(style : StyleConfigStream) {
-        playerStyle.affectConfig(style.playerStyleConfigStream)
+        playerStyle.affectConfig(style.playerTheme)
         style.watermarkUrl?.let {
             watermarkUrl = it
         }
