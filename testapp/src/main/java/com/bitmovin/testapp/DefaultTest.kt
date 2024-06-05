@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.BitmovinStream
+import com.bitmovin.streams.PlayerStyleConfigStream
+import com.bitmovin.streams.StyleConfigStream
 import com.bitmovin.streams.TestStreamsIds
 
 class DefaultTest : ComponentActivity() {
@@ -33,7 +35,16 @@ class DefaultTest : ComponentActivity() {
                                 streamId = TestStreamsIds.VERTICAL_VIDEO,
                                 subtitles = emptyList(),
                                 modifier = Modifier,
-                                immersiveFullScreen = true
+                                immersiveFullScreen = true,
+                                styleConfig = StyleConfigStream(
+                                    PlayerStyleConfigStream(
+                                        customCss = """
+                                            div {
+                                              font-size: 15pt !important;
+                                            }
+                                        """.trimIndent()
+                                    )
+                                )
                             )
 
                         }
@@ -46,7 +57,7 @@ class DefaultTest : ComponentActivity() {
                         Column {
                             Text(text = "Video 2")
                             BitmovinStream(
-                                streamId = TestStreamsIds.TEAR_OF_STEEL,
+                                streamId = TestStreamsIds.SQUARE_VIDEO,
                                 modifier = Modifier,
                                 immersiveFullScreen = true,
                                 enableAds = false,
