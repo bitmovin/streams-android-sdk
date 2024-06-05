@@ -52,6 +52,17 @@ class PlayerThemes {
             textColor = getColor(217, 217, 217, 1f),
             backgroundColor = getColor(0, 0, 0, 1f)
         )
+
+
+        val PINK_EXAMPLE_THEME = PlayerStyleConfigStream(
+            playbackMarkerBgColor = getColor(240, 17, 199, 1f),
+            playbackMarkerBorderColor = getColor(255, 102, 229, 1f),
+            playbackTrackPlayedColor = getColor(240, 17, 199, 1f),
+            playbackTrackBufferedColor = getColor(252, 61, 235, 0.4f),
+            playbackTrackBgColor = getColor(166, 0, 123, 0.35f),
+            textColor = getColor(253, 125, 255, 1f),
+            backgroundColor = getColor(0, 0, 0, 1f)
+        )
     }
 }
 
