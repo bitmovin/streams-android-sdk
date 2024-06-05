@@ -179,7 +179,7 @@ internal fun createPlayerView(context: Context, player: Player, streamConfig : S
     // Should be done at the beginning or the attributes values will be ignored.
     streamConfig.styleConfig.affectConfig(styleConfigStream)
 
-    val suppCssLocation = streamConfig.let { getCustomCss(context, it.key, it) }
+    val suppCssLocation = streamConfig.let { getCustomCss(context, it.key, it, styleConfigStream.playerTheme.customCss) }
     val playerViewConfig = PlayerViewConfig(
             UiConfig.WebUi(
                 supplementalCssLocation = suppCssLocation,
@@ -225,7 +225,7 @@ internal fun writeCssToFile(context: Context, css: String, streamId: String): Fi
     }
 }
 
-internal fun getCustomCss(context : Context, id : String, streamConfig: StreamConfigData) : String {
+internal fun getCustomCss(context : Context, id : String, streamConfig: StreamConfigData, userSupplCss: String) : String {
 
     val style = streamConfig.styleConfig
     val css = StringBuilder()
@@ -237,9 +237,8 @@ internal fun getCustomCss(context : Context, id : String, streamConfig: StreamCo
     }
     style.watermarkUrl?.let {
         css.append(watermarkCss(it))
-    } ?: {
-        style
     }
+    css.append("\n$userSupplCss")
 
     Log.d("CSS", "Writing CSS to file: \n$css")
 
@@ -290,7 +289,6 @@ internal fun playerStyle(playerStyle: PlayerStyle) : String
     playerStyle.textColor?.let {
         playerStyles.append(styleTextColor(it))
     }
-
     return playerStyles.toString()
 }
 

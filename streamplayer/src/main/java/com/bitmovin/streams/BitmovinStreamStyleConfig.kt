@@ -27,7 +27,7 @@ data class PlayerStyleConfigStream(
     val playbackTrackBgColor: Color? = null,
     val textColor: Color? = null,
     val backgroundColor: Color? = null,
-    val customCss : String? = ""
+    val customCss : String = ""
 )
 
 class PlayerThemes {
