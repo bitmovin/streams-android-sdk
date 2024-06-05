@@ -116,17 +116,21 @@ fun BitmovinStream(
 
 
         // One-time actions for fetching and initializing the player
-        BitmovinStreamState.FETCHING -> {
-            LaunchedEffect(Unit) {
-                viewModel.fetchStreamConfigData(streamId, jwToken)
-            }
-            TextVideoPlayerFiller("Fetching stream data", modifier)
-        }
+        BitmovinStreamState.FETCHING,
         BitmovinStreamState.INITIALIZING -> {
-            LaunchedEffect(Unit) {
-                viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen, appDefaultOrientation, enableAds, styleConfig)
+            var loadingMess = "__IMPOSSIBLE_VALUE__"
+            if (BitmovinStreamState.FETCHING == viewModel.state) {
+                LaunchedEffect(Unit) {
+                    viewModel.fetchStreamConfigData(streamId, jwToken)
+                }
+                loadingMess = "Fetching stream config data"
+            } else if (BitmovinStreamState.INITIALIZING == viewModel.state) {
+                LaunchedEffect(Unit) {
+                    viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen, appDefaultOrientation, enableAds, styleConfig)
+                }
+                loadingMess = "Initializing player"
             }
-            TextVideoPlayerFiller("Initializing player", modifier)
+            TextVideoPlayerFiller(loadingMess, modifier, loadingEffect = true)
         }
         BitmovinStreamState.DISPLAYING_ERROR -> {
             ErrorHandling(error = viewModel.streamResponseError, modifier)
