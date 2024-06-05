@@ -67,10 +67,7 @@ class PlayerThemes {
 }
 
 fun getColor(
-    red: Int,
-    green: Int,
-    blue: Int,
-    alpha: Float
+    red: Int, green: Int, blue: Int, alpha: Float
 ): Color {
     return Color(red, green, blue, (alpha*255).toInt())
 }

@@ -14,13 +14,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Streamsandroidsdk">
         <activity
-            android:name=".FragmentTest"
+            android:name=".ScrollingExampleActivity"
             android:exported="true"
-            android:theme="@style/Theme.Streamsandroidsdk"
+            android:label="@string/title_activity_scrolling_example"
+            android:theme="@style/Theme.Streamsandroidsdk">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".FragmentTest"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:exported="true"
             android:resizeableActivity="true"
             android:supportsPictureInPicture="true"
-            >
+            android:theme="@style/Theme.Streamsandroidsdk">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
