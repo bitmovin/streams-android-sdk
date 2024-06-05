@@ -104,7 +104,7 @@ internal class ViewModelStream : ViewModel() {
         // 4. Setting up Views
 
         // Setting up the player view
-        playerView = createPlayerView(context, player, streamConfig, styleConfigStream)
+        playerView = createPlayerView(context, player, streamId, streamConfig, styleConfigStream)
         val playerView = playerView!!
         // Adding the playerView to the lifecycle
         lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
