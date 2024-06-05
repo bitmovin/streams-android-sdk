@@ -12,6 +12,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -281,38 +282,34 @@ internal fun DrawScope.drawNoise(
 }
 
 
-
 @Composable
 fun CircularLoadingAnimation(
     modifier: Modifier = Modifier,
-    circleColor: Color = Color.Gray,
+    circleColor: Color = Color(32, 172, 227),
     circleStrokeWidth: Float = 12f
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "Infinite transition")
-
     val angle by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
         animationSpec = infiniteRepeatable(
             animation = tween(500, easing = LinearEasing)
-        ), label = "Original Circle"
+        ),
+        label = "Arc's Starting point"
     )
     val angleSize by infiniteTransition.animateFloat(
-        initialValue = 45f,
+        initialValue = 0f,
         targetValue = 235f,
         animationSpec = infiniteRepeatable(
-            animation = tween(650, easing = FastOutSlowInEasing)
-        ), label = "Angle Size"
+            animation = tween(650, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "Arc's Size (as angle)"
     )
 
     Canvas(modifier = modifier.size(30.dp)) {
-        drawCircle(
-            color = circleColor,
-            style = Stroke(width = circleStrokeWidth)
-        )
-
         drawArc(
-            color = Color.Black,
+            color = circleColor,
             startAngle = angle,
             sweepAngle = angleSize,
             useCenter = false,
