@@ -10,16 +10,24 @@ import com.bitmovin.player.PlayerView
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
@@ -28,9 +36,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -130,7 +140,7 @@ internal fun FullScreen(
  * @param text The text to be displayed.
  */
 @Composable
-internal fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier, noiseEffect: Boolean = false) {
+internal fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier, noiseEffect: Boolean = false, loadingEffect: Boolean = false) {
     // This is a hack to assert the same behavior as the PlayerView even when it don't exists to avoid breaking the layout of the users.
 //    val player = Player(LocalContext.current, PlayerConfig(key = "__FILLER_KEY__"))
 //    val playerView = PlayerView(LocalContext.current, player)
@@ -158,6 +168,8 @@ internal fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier,
                 style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
+            if (loadingEffect)
+                CircularLoadingAnimation(modifier.padding(16.dp))
         }
     }
 }
@@ -266,4 +278,51 @@ internal fun DrawScope.drawNoise(
             )
         }
     }
+}
+
+
+
+@Composable
+fun CircularLoadingAnimation(
+    modifier: Modifier = Modifier,
+    circleColor: Color = Color.Gray,
+    circleStrokeWidth: Float = 12f
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "Infinite transition")
+
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500, easing = LinearEasing)
+        ), label = "Original Circle"
+    )
+    val angleSize by infiniteTransition.animateFloat(
+        initialValue = 45f,
+        targetValue = 235f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(650, easing = FastOutSlowInEasing)
+        ), label = "Angle Size"
+    )
+
+    Canvas(modifier = modifier.size(30.dp)) {
+        drawCircle(
+            color = circleColor,
+            style = Stroke(width = circleStrokeWidth)
+        )
+
+        drawArc(
+            color = Color.Black,
+            startAngle = angle,
+            sweepAngle = angleSize,
+            useCenter = false,
+            style = Stroke(width = circleStrokeWidth)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+        CircularLoadingAnimation()
 }
