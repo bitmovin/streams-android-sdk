@@ -291,6 +291,10 @@ internal fun playerStyle(playerStyle: PlayerStyle) : String
     playerStyle.textColor?.let {
         playerStyles.append(styleTextColor(it))
     }
+    playerStyle.backgroundColor?.let {
+        // Not working for now
+        playerStyles.append(backgroundColor(it))
+    }
     return playerStyles.toString()
 }
 
@@ -352,6 +356,16 @@ internal fun styleTextColor(color: String): String {
         .bmpui-ui-playbacktimelabel, 
         .bmpui-ui-titlebar {
            color: $color !important;
+        }
+        
+    """.trimIndent()
+}
+internal fun backgroundColor(color: String): String {
+    return """ 
+        .bitmovin-stream-wrapper
+        .bitmovinplayer-container,
+         .bitmovinplayer-poster {
+           background-color: $color !important;
         }
         
     """.trimIndent()
