@@ -197,6 +197,7 @@ internal fun createPlayerView(context: Context, player: Player, streamId: String
         keepScreenOn = true
     }
     // Should be done at the end
+    //TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
     streamConfig.styleConfig.playerStyle.backgroundColor?.let {
         it.parseColor()?.toArgb()?.let { colorInt -> playerView.setBackgroundColor(colorInt) ; Log.d("Color", "Setting ALEERR color to $colorInt") }
     }
