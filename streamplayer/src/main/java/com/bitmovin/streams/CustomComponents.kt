@@ -170,7 +170,7 @@ internal fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
             if (loadingEffect)
-                CircularLoadingAnimation(modifier.padding(16.dp))
+                CircularLoadingAnimation(Modifier.padding(16.dp))
         }
     }
 }
