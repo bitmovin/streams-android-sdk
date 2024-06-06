@@ -1,12 +1,6 @@
-package com.bitmovin.streams
+package com.bitmovin.streams.config
 
 import androidx.compose.ui.graphics.Color
-
-data class StyleConfigStream(
-    val playerTheme: PlayerStyleConfigStream = PlayerStyleConfigStream(),
-    val watermarkUrl : String? = null
-)
-
 
 /**
  * This class is used to store the configuration data of a stream.
@@ -19,7 +13,7 @@ data class StyleConfigStream(
  * @param backgroundColor The color of the background.
  * @param customCss CSS rules that you can add to make the player look as you expect. Does not support URL or URI, has to be plain text. Please refer to the the Player UI documentation for more information : https://developer.bitmovin.com/playback/docs/player-ui-css-class-reference.
  */
-data class PlayerStyleConfigStream(
+data class StyleConfigStream(
     val playbackMarkerBgColor: Color? = null,
     val playbackMarkerBorderColor: Color? = null,
     val playbackTrackPlayedColor: Color? = null,
@@ -33,7 +27,7 @@ data class PlayerStyleConfigStream(
 class PlayerThemes {
     companion object {
 
-        val BITMOVIN_DEFAULT_THEME = PlayerStyleConfigStream(
+        val BITMOVIN_DEFAULT_THEME = StyleConfigStream(
             playbackMarkerBgColor = getColor(32, 172, 227, 0.5f),
             playbackMarkerBorderColor = getColor(32, 172, 227, 1f),
             playbackTrackPlayedColor = getColor(32, 172, 227, 1f),
@@ -43,7 +37,7 @@ class PlayerThemes {
             backgroundColor = getColor(0, 0, 0, 1f)
         )
 
-        val RED_EXAMPLE_THEME = PlayerStyleConfigStream(
+        val RED_EXAMPLE_THEME = StyleConfigStream(
             playbackMarkerBgColor = getColor(255, 0, 0, 0f),
             playbackMarkerBorderColor = getColor(255, 0, 0, 0f),
             playbackTrackPlayedColor = getColor(245, 7, 7, 1f),
@@ -54,7 +48,7 @@ class PlayerThemes {
         )
 
 
-        val PINK_EXAMPLE_THEME = PlayerStyleConfigStream(
+        val PINK_EXAMPLE_THEME = StyleConfigStream(
             playbackMarkerBgColor = getColor(240, 17, 199, 1f),
             playbackMarkerBorderColor = getColor(255, 102, 229, 1f),
             playbackTrackPlayedColor = getColor(240, 17, 199, 1f),

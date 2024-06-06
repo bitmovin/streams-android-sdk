@@ -13,8 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.streams.PlayerStyleConfigStream
-import com.bitmovin.streams.StyleConfigStream
+import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.TestStreamsIds
 
 class DefaultTest : ComponentActivity() {
@@ -37,14 +36,12 @@ class DefaultTest : ComponentActivity() {
                                 modifier = Modifier,
                                 immersiveFullScreen = true,
                                 styleConfig = StyleConfigStream(
-                                    PlayerStyleConfigStream(
                                         customCss = """
                                             div {
                                               font-size: 15pt !important;
                                             }
                                         """.trimIndent()
                                     )
-                                )
                             )
 
                         }

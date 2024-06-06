@@ -12,31 +12,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
+import com.bitmovin.streams.config.BitmovinStreamConfig
+import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.StyleConfigStream
 import java.util.UUID
 
 
 private const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
 const val MIN_FOR_LANDSCAPE_FORCING = 1.1
 const val MAX_FOR_PORTRAIT_FORCING = 0.8
-
-/**
- * Bitmovin Streams Player Component.
- *
- * @param streamId The id of the stream to be played.
- *
- * @param modifier The modifier to be applied to the player.
- * @param jwToken The token to be used for authentication if the stream is protected.
- * @param autoPlay Whether the player should start playing automatically.
- * @param muted Whether the player should be muted.
- * @param poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
- * @param start The time in seconds at which the player should start playing.
- * @param subtitles The list of subtitle tracks available for the stream.
- * @param immersiveFullScreen Whether the player should be in immersive full screen mode. Recommended to be false if the EdgeToEdge is disabled (may break on some devices).
- * @param bitmovinStreamEventListener The listener for the player events.
- * @param screenOrientationOnFullscreenEscape The screen orientation to be set when the player exits full screen. If null, the screen orientation will automatically reset to the state before entering full screen.
- * @param enableAds Whether ads should be enabled.
- * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
- */
 
 
 @Composable
@@ -66,6 +50,25 @@ BitmovinStream(
         enableAds = config.enableAds
     )
 }
+
+/**
+ * Bitmovin Streams Player Component.
+ *
+ * @param streamId The id of the stream to be played.
+ *
+ * @param modifier The modifier to be applied to the player.
+ * @param jwToken The token to be used for authentication if the stream is protected.
+ * @param autoPlay Whether the player should start playing automatically.
+ * @param muted Whether the player should be muted.
+ * @param poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
+ * @param start The time in seconds at which the player should start playing.
+ * @param subtitles The list of subtitle tracks available for the stream.
+ * @param immersiveFullScreen Whether the player should be in immersive full screen mode. Recommended to be false if the EdgeToEdge is disabled (may break on some devices).
+ * @param bitmovinStreamEventListener The listener for the player events.
+ * @param screenOrientationOnFullscreenEscape The screen orientation to be set when the player exits full screen. If null, the screen orientation will automatically reset to the state before entering full screen.
+ * @param enableAds Whether ads should be enabled.
+ * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
+ */
 @Composable
 fun BitmovinStream(
     streamId : String,

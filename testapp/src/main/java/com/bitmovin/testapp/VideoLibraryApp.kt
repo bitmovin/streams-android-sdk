@@ -37,9 +37,8 @@ import androidx.compose.ui.unit.sp
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.streams.BitmovinStreamEventListener
-import com.bitmovin.streams.PlayerStyleConfigStream
-import com.bitmovin.streams.StyleConfigStream
+import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.TestStreamsIds
 import com.bitmovin.testapp.ui.theme.LightColorScheme
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
@@ -143,11 +142,7 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
                     }
                 },
                 styleConfig = StyleConfigStream(
-                    playerTheme =
-                        PlayerStyleConfigStream(
-                            backgroundColor = Color(0, 106, 237)
-                        )
-
+                    backgroundColor = Color(0, 106, 237)
                 )
             )
         }
@@ -168,7 +163,6 @@ fun GreetingPreview() {
 }
 
 fun switchToPlayerActivity(streamId: String, packageContext: Context, token: String?) {
-
     // Go to Activity PlayerActivity
     val intent = Intent(packageContext, PlayerActivity::class.java)
     intent.putExtra("streamId", streamId)

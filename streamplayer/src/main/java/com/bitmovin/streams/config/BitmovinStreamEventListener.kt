@@ -1,4 +1,4 @@
-package com.bitmovin.streams
+package com.bitmovin.streams.config
 
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player

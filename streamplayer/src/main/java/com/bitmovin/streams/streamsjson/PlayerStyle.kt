@@ -1,7 +1,7 @@
 package com.bitmovin.streams.streamsjson
 
 import android.util.Log
-import com.bitmovin.streams.PlayerStyleConfigStream
+import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.toCSS
 
 // This class might not be useful if we create a custom endpoint for the css.
@@ -14,7 +14,7 @@ class PlayerStyle {
     var textColor: String? = null
     var backgroundColor: String? = null
 
-    internal fun affectConfig(style : PlayerStyleConfigStream) {
+    internal fun affectConfig(style : StyleConfigStream) {
         style.playbackMarkerBgColor?.let {
             playbackMarkerBgColor = it.toCSS()
         }
