@@ -168,5 +168,4 @@ fun switchToPlayerActivity(streamId: String, packageContext: Context, token: Str
     intent.putExtra("streamId", streamId)
     intent.putExtra("token", token)
     packageContext.startActivity(intent)
-
 }

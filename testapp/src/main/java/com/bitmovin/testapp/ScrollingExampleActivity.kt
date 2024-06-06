@@ -177,7 +177,7 @@ fun BitmovinShowcase() {
 
         FlipCard(
             "Example 1 - Theme customization",
-            R.drawable.code_snippet_1
+            R.drawable.code_example_1
         ) {
 
             BitmovinStream(
@@ -192,8 +192,8 @@ fun BitmovinShowcase() {
 
         FlipCard(
             "Example 2 - Vertical Video",
-            R.drawable.code_snippet_1,
-            aspectRatio = 1f
+            R.drawable.code_example_2,
+            aspectRatio = 1.5f
         ) {
 
             BitmovinStream(
@@ -207,7 +207,7 @@ fun BitmovinShowcase() {
         Spacer(modifier = Modifier.height(16.dp))
         FlipCard(
             "Example 3 - No UI when started",
-            R.drawable.code_snippet_1,
+            R.drawable.code_example_3,
         ) {
 
             BitmovinStream(
