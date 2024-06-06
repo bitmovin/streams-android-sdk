@@ -1,4 +1,4 @@
-package com.bitmovin.streams
+package com.bitmovin.streams.config
 
 import androidx.compose.ui.Modifier
 import com.bitmovin.player.PlayerView

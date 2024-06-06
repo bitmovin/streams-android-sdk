@@ -16,6 +16,8 @@ import com.bitmovin.player.api.event.*
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.player.api.ui.FullscreenHandler
 import com.bitmovin.player.api.ui.PictureInPictureHandler
+import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.fullscreenmode.AutoOrientationStreamFullscreenHandler
 import com.bitmovin.streams.pipmode.PiPHandler
 import com.bitmovin.streams.streamsjson.StreamConfigData

@@ -1,6 +1,6 @@
 package com.bitmovin.streams.streamsjson
 
-import com.bitmovin.streams.StyleConfigStream
+import com.bitmovin.streams.config.StyleConfigStream
 
 
 class StyleConfig {
@@ -9,9 +9,6 @@ class StyleConfig {
     var watermarkTargetLink: String? = null
 
     internal fun affectConfig(style : StyleConfigStream) {
-        playerStyle.affectConfig(style.playerTheme)
-        style.watermarkUrl?.let {
-            watermarkUrl = it
-        }
+        playerStyle.affectConfig(style)
     }
 }

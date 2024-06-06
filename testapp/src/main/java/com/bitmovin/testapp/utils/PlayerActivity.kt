@@ -31,10 +31,10 @@ import androidx.compose.ui.unit.sp
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.streams.BitmovinStreamEventListener
+import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.MAX_FOR_PORTRAIT_FORCING
-import com.bitmovin.streams.PlayerThemes
-import com.bitmovin.streams.StyleConfigStream
+import com.bitmovin.streams.config.PlayerThemes
+import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import kotlin.math.abs
 
@@ -142,9 +142,7 @@ class PlayerActivity : ComponentActivity() {
                         }
                     }
                 },
-                styleConfig = StyleConfigStream(
-                    playerTheme = PlayerThemes.RED_EXAMPLE_THEME
-                )
+                styleConfig = PlayerThemes.RED_EXAMPLE_THEME
             )
             Text(
                 text = name, Modifier.padding(8.dp),

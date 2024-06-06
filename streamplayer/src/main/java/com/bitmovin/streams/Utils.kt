@@ -30,6 +30,7 @@ import com.bitmovin.player.api.source.SourceConfig
 import com.bitmovin.player.api.source.SourceType
 import com.bitmovin.player.api.ui.PlayerViewConfig
 import com.bitmovin.player.api.ui.UiConfig
+import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.streamsjson.PlayerStyle
 import com.bitmovin.streams.streamsjson.StreamConfigData
 import com.bitmovin.streams.streamsjson.StreamConfigDataResponse
@@ -179,7 +180,7 @@ internal fun createPlayerView(context: Context, player: Player, streamId: String
     // Should be done at the beginning or the attributes values will be ignored.
     streamConfig.styleConfig.affectConfig(styleConfigStream)
 
-    val suppCssLocation = getCustomCss(context, streamId, streamConfig, userSupplCss = styleConfigStream.playerTheme.customCss)
+    val suppCssLocation = getCustomCss(context, streamId, streamConfig, userSupplCss = styleConfigStream.customCss)
     val playerViewConfig = PlayerViewConfig(
             UiConfig.WebUi(
                 supplementalCssLocation = suppCssLocation,
