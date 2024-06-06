@@ -17,6 +17,9 @@
             android:name=".ScrollingExampleActivity"
             android:exported="true"
             android:label="@string/title_activity_scrolling_example"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
             android:theme="@style/Theme.Streamsandroidsdk">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
