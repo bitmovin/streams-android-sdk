@@ -371,6 +371,9 @@ internal fun backgroundColor(color: String): String {
                     background: -webkit-gradient(linear, left bottom, left top, from(transparent), to($color));
                 }
         */
+        .bitmovin-player {
+            background-color: $color !important;
+        }
     """.trimIndent()
 }
 

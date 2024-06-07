@@ -89,12 +89,13 @@ internal class ViewModelStream : ViewModel() {
         val player = createPlayer(streamConfig, context, enableAds)
         this.player = player
         player.on(PlayerEvent.Ready::class.java) {
-            if (state == BitmovinStreamState.INITIALIZING)
-                state = BitmovinStreamState.WAITING_FOR_VIEW
-            else if (state == BitmovinStreamState.WAITING_FOR_PLAYER) {
-                state = BitmovinStreamState.DISPLAYING
-            }
             streamEventListener?.onPlayerReady(player)
+            if (state == BitmovinStreamState.INITIALIZING) {
+                state = BitmovinStreamState.WAITING_FOR_VIEW
+            } else if (state == BitmovinStreamState.WAITING_FOR_PLAYER) {
+                state = BitmovinStreamState.DISPLAYING
+                streamEventListener?.onStreamReady(player, playerView!!)
+            }
         }
 
 
@@ -131,12 +132,14 @@ internal class ViewModelStream : ViewModel() {
         // Setting up the PiP feature
         pipHandler = PiPHandler(context.getActivity()!!, playerView, this.immersiveFullScreen)
         playerView.setPictureInPictureHandler(pipHandler)
-
+        streamEventListener?.onPlayerViewReady(playerView)
         if (state == BitmovinStreamState.INITIALIZING)
             state = BitmovinStreamState.WAITING_FOR_PLAYER
-        else if (state == BitmovinStreamState.WAITING_FOR_VIEW)
+        else if (state == BitmovinStreamState.WAITING_FOR_VIEW) {
             state = BitmovinStreamState.DISPLAYING
-        streamEventListener?.onPlayerViewReady(playerView)
+            streamEventListener?.onStreamReady(player, playerView)
+        }
+
     }
 }
 
