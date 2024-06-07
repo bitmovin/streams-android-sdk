@@ -19,7 +19,7 @@ import com.bitmovin.player.api.ui.PictureInPictureHandler
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
-import com.bitmovin.streams.fullscreenmode.AutoOrientationStreamFullscreenHandler
+import com.bitmovin.streams.fullscreenmode.StreamFullscreenHandler
 import com.bitmovin.streams.pipmode.PiPHandler
 import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.launch
@@ -117,7 +117,7 @@ internal class ViewModelStream : ViewModel() {
         // 5. Initializing handlers
 
         // Setting up the fullscreen feature
-        fullscreenHandler = AutoOrientationStreamFullscreenHandler(
+        fullscreenHandler = StreamFullscreenHandler(
             playerView,
             activity,
             fullscreenConfig

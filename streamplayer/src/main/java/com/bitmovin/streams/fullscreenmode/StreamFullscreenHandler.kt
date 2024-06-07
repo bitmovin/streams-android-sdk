@@ -11,7 +11,7 @@ import com.bitmovin.player.api.ui.FullscreenHandler
 import com.bitmovin.streams.config.FullscreenConfig
 import java.lang.IndexOutOfBoundsException
 
-class AutoOrientationStreamFullscreenHandler(val playerView: PlayerView, val activity: Activity?, val config: FullscreenConfig) : FullscreenHandler {
+class StreamFullscreenHandler(val playerView: PlayerView, val activity: Activity?, val config: FullscreenConfig) : FullscreenHandler {
 
 
     private var fullscreen: MutableState<Boolean> = mutableStateOf(false)

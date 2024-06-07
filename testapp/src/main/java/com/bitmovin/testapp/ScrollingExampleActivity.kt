@@ -202,10 +202,9 @@ fun BitmovinShowcase() {
                 defaultValue = "Empty list"
             ),
             Property(
-                name = "immersiveFullScreen",
+                name = "fullscreenConfig",
                 description = """
-                    Whether the player should be in immersive full screen mode.
-                    Recommended to be false if the EdgeToEdge is disabled on the Activity (may break on some very specific devices).
+                    The configuration for the fullscreen mode.
                 """.trimIndent(),
                 defaultValue = "true"
             ),
@@ -223,14 +222,6 @@ fun BitmovinShowcase() {
                     Problematic modifications include (but are not limited to) :
                     - Changing the Fullscreen handler
                     - Changing the Picture in Picture handler
-                """.trimIndent(),
-                defaultValue = "null"
-            ),
-            Property(
-                name = "appDefaultOrientation",
-                description = """
-                    The screen orientation to be set when the player exits full screen.
-                    Default behavior is to go back in the orientation preceding the full screen mode.
                 """.trimIndent(),
                 defaultValue = "null"
             ),
@@ -295,6 +286,7 @@ fun BitmovinShowcase() {
                 textColor = Color(0xFF88D9E6),
                 playbackTrackBgColor = Color(0xAF8B8BAE),
                 playbackTrackPlayedColor = Color(0xFF526760),
+                backgroundColor = cool_blue
             )
 
             // Component
