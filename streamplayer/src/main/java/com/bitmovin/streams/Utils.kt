@@ -232,8 +232,6 @@ internal fun getCustomCss(context : Context, id : String, streamConfig: StreamCo
     val style = streamConfig.styleConfig
     val css = StringBuilder()
 
-
-
     style.playerStyle.let {
         css.append(playerStyle(it))
     }
@@ -367,7 +365,12 @@ internal fun backgroundColor(color: String): String {
          .bitmovinplayer-poster {
            background-color: $color !important;
         }
-        
+        /*  
+        Make the gradiant when pause  accord to the background color but I'm not sure if it's really a bahavior we want.
+                .bmpui-ui-titlebar {
+                    background: -webkit-gradient(linear, left bottom, left top, from(transparent), to($color));
+                }
+        */
     """.trimIndent()
 }
 
@@ -381,9 +384,10 @@ fun Color.toCSS() : String {
 // Credits to https://stackoverflow.com/questions/12643009/regular-expression-for-floating-point-numbers
 const val floatNumber = "([+-]?([0-9]+([.][0-9]*)?|[.][0-9]+))"
 
-// TODO: Add support for hex colors
+// TODO: Add support for other color formats
 // TODO: Change the parsing without using Regex because it seems overkill
 fun String.parseColor() : Color? {
+
     Log.d("Color", "Parsing color from string: $this")
     val pattern = "rgba\\((\\d+), (\\d+), (\\d+), $floatNumber\\)".toRegex()
     val match = pattern.find(this)
