@@ -54,7 +54,7 @@ BitmovinStream(
  * @param poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
  * @param start The time in seconds at which the player should start playing.
  * @param subtitles The list of subtitle tracks available for the stream.
- * @param fullscreenConfig Whether the player should be in immersive full screen mode. Recommended to be false if the EdgeToEdge is disabled (may break on some devices).
+ * @param fullscreenConfig The configuration for the fullscreen mode.
  * @param bitmovinStreamEventListener The listener for the player events.
  * @param enableAds Whether ads should be enabled.
  * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
