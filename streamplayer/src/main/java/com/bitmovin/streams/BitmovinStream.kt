@@ -65,7 +65,7 @@ BitmovinStream(
  * @param subtitles The list of subtitle tracks available for the stream.
  * @param immersiveFullScreen Whether the player should be in immersive full screen mode. Recommended to be false if the EdgeToEdge is disabled (may break on some devices).
  * @param bitmovinStreamEventListener The listener for the player events.
- * @param screenOrientationOnFullscreenEscape The screen orientation to be set when the player exits full screen. If null, the screen orientation will automatically reset to the state before entering full screen.
+ * @param appDefaultOrientation The screen orientation to be set when the player exits full screen. If null, the screen orientation will automatically reset to the state before entering full screen.
  * @param enableAds Whether ads should be enabled.
  * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
  */
