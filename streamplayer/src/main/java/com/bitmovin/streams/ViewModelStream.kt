@@ -17,8 +17,9 @@ import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.player.api.ui.FullscreenHandler
 import com.bitmovin.player.api.ui.PictureInPictureHandler
 import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
-import com.bitmovin.streams.fullscreenmode.AutoOrientationStreamFullscreenHandler
+import com.bitmovin.streams.fullscreenmode.StreamFullscreenHandler
 import com.bitmovin.streams.pipmode.PiPHandler
 import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.launch
@@ -77,8 +78,7 @@ internal class ViewModelStream : ViewModel() {
         start: Double,
         poster: String?,
         subtitles: List<SubtitleTrack>,
-        immersiveFullScreen: Boolean,
-        screenOrientationOnFullscreenEscape: Int?,
+        fullscreenConfig: FullscreenConfig,
         enableAds: Boolean,
         styleConfigStream: StyleConfigStream
     ) {
@@ -105,7 +105,7 @@ internal class ViewModelStream : ViewModel() {
 
         // 3. Handling properties
         player.handleAttributes(autoPlay, muted, start)
-        this.immersiveFullScreen.value = immersiveFullScreen
+        this.immersiveFullScreen.value = fullscreenConfig.immersive
 
         // 4. Setting up Views
 
@@ -121,10 +121,10 @@ internal class ViewModelStream : ViewModel() {
         // 5. Initializing handlers
 
         // Setting up the fullscreen feature
-        fullscreenHandler = AutoOrientationStreamFullscreenHandler(
+        fullscreenHandler = StreamFullscreenHandler(
             playerView,
             activity,
-            screenOrientationOnFullscreenEscape
+            fullscreenConfig
         )
         playerView.setFullscreenHandler(fullscreenHandler)
 

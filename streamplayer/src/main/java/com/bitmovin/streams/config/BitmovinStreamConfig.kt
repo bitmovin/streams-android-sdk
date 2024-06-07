@@ -13,11 +13,48 @@ data class BitmovinStreamConfig(
     var muted : Boolean = false,
     var poster : String? = null,
     var start : Double = 0.0,
+    var fullscreenConfig: FullscreenConfig,
     var subtitles : List<SubtitleTrack> = emptyList(),
-    var immersiveFullScreen : Boolean = true,
-    var onPlayerReady : (player: Player) -> Unit = {},
-    var onPlayerViewReady : (playerView: PlayerView) -> Unit = {},
-    var appDefaultOrientation: Int? = null,
-    var enableAds : Boolean = true
+    var streamEventListener: BitmovinStreamEventListener? = null,
+    var enableAds : Boolean = true,
+    var styleConfig : StyleConfigStream = StyleConfigStream()
 ) {
+
+    constructor(
+        streamId : String,
+        modifier : Modifier = Modifier,
+        jwToken : String? = null,
+        autoPlay : Boolean = false,
+        muted : Boolean = false,
+        poster : String? = null,
+        start : Double = 0.0,
+        fullscreenConfig: FullscreenConfig = FullscreenConfig(),
+        subtitles : List<SubtitleTrack> = emptyList(),
+        onPlayerReady : (Player) -> Unit,
+        onPlayerViewReady : (PlayerView) -> Unit,
+        enableAds : Boolean = true,
+        styleConfig : StyleConfigStream = StyleConfigStream()
+    ) : this(
+        streamId,
+        modifier,
+        jwToken,
+        autoPlay,
+        muted,
+        poster,
+        start,
+        fullscreenConfig,
+        subtitles,
+        object :
+            BitmovinStreamEventListener {
+                override fun onPlayerReady(player: Player) {
+                    onPlayerReady(player)
+                }
+
+                override fun onPlayerViewReady(playerView: PlayerView) {
+                    onPlayerViewReady(playerView)
+                }
+            },
+        enableAds,
+        styleConfig
+    )
 }
