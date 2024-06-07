@@ -14,13 +14,12 @@ import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.config.BitmovinStreamConfig
 import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
 import java.util.UUID
 
 
 private const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
-const val MIN_FOR_LANDSCAPE_FORCING = 1.1
-const val MAX_FOR_PORTRAIT_FORCING = 0.8
 
 
 @Composable
@@ -36,9 +35,8 @@ BitmovinStream(
         poster = config.poster,
         start = config.start,
         subtitles = config.subtitles,
-        immersiveFullScreen = config.immersiveFullScreen,
+        fullscreenConfig = config.fullscreenConfig,
         bitmovinStreamEventListener = config.streamEventListener,
-        appDefaultOrientation = config.appDefaultOrientation,
         enableAds = config.enableAds,
         styleConfig = config.styleConfig
     )
@@ -56,9 +54,8 @@ BitmovinStream(
  * @param poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
  * @param start The time in seconds at which the player should start playing.
  * @param subtitles The list of subtitle tracks available for the stream.
- * @param immersiveFullScreen Whether the player should be in immersive full screen mode. Recommended to be false if the EdgeToEdge is disabled (may break on some devices).
+ * @param fullscreenConfig Whether the player should be in immersive full screen mode. Recommended to be false if the EdgeToEdge is disabled (may break on some devices).
  * @param bitmovinStreamEventListener The listener for the player events.
- * @param appDefaultOrientation The screen orientation to be set when the player exits full screen. If null, the screen orientation will automatically reset to the state before entering full screen.
  * @param enableAds Whether ads should be enabled.
  * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
  */
@@ -72,9 +69,8 @@ fun BitmovinStream(
     poster : String? = null,
     start : Double = 0.0,
     subtitles : List<SubtitleTrack> = emptyList(),
-    immersiveFullScreen : Boolean = true,
+    fullscreenConfig: FullscreenConfig = FullscreenConfig(),
     bitmovinStreamEventListener: BitmovinStreamEventListener? = null,
-    appDefaultOrientation: Int? = null,
     enableAds : Boolean = true,
     styleConfig : StyleConfigStream = StyleConfigStream()
 ) {
@@ -122,7 +118,7 @@ fun BitmovinStream(
                 loadingMess = "Fetching stream config data"
             } else if (BitmovinStreamState.INITIALIZING == viewModel.state) {
                 LaunchedEffect(Unit) {
-                    viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen, appDefaultOrientation, enableAds, styleConfig)
+                    viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
                 }
                 loadingMess = "Initializing player"
             }

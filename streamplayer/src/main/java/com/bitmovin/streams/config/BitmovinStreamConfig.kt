@@ -13,10 +13,9 @@ data class BitmovinStreamConfig(
     var muted : Boolean = false,
     var poster : String? = null,
     var start : Double = 0.0,
+    var fullscreenConfig: FullscreenConfig,
     var subtitles : List<SubtitleTrack> = emptyList(),
-    var immersiveFullScreen : Boolean = true,
     var streamEventListener: BitmovinStreamEventListener? = null,
-    var appDefaultOrientation: Int? = null,
     var enableAds : Boolean = true,
     var styleConfig : StyleConfigStream = StyleConfigStream()
 ) {
@@ -29,11 +28,10 @@ data class BitmovinStreamConfig(
         muted : Boolean = false,
         poster : String? = null,
         start : Double = 0.0,
+        fullscreenConfig: FullscreenConfig = FullscreenConfig(),
         subtitles : List<SubtitleTrack> = emptyList(),
-        immersiveFullScreen : Boolean = true,
         onPlayerReady : (Player) -> Unit,
         onPlayerViewReady : (PlayerView) -> Unit,
-        appDefaultOrientation: Int? = null,
         enableAds : Boolean = true,
         styleConfig : StyleConfigStream = StyleConfigStream()
     ) : this(
@@ -44,8 +42,9 @@ data class BitmovinStreamConfig(
         muted,
         poster,
         start,
+        fullscreenConfig,
         subtitles,
-        immersiveFullScreen, object :
+        object :
             BitmovinStreamEventListener {
                 override fun onPlayerReady(player: Player) {
                     onPlayerReady(player)
@@ -55,7 +54,6 @@ data class BitmovinStreamConfig(
                     onPlayerViewReady(playerView)
                 }
             },
-        appDefaultOrientation,
         enableAds,
         styleConfig
     )
