@@ -18,6 +18,7 @@ data class BitmovinStreamConfig(
     var onPlayerReady : (player: Player) -> Unit = {},
     var onPlayerViewReady : (playerView: PlayerView) -> Unit = {},
     var appDefaultOrientation: Int? = null,
-    var enableAds : Boolean = true
+    var enableAds : Boolean = true,
+    var styleConfig : StyleConfigStream = StyleConfigStream()
 ) {
 }

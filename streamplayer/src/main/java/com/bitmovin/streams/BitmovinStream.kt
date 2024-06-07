@@ -47,7 +47,8 @@ BitmovinStream(
             }
         },
         appDefaultOrientation = config.appDefaultOrientation,
-        enableAds = config.enableAds
+        enableAds = config.enableAds,
+        styleConfig = config.styleConfig
     )
 }
 
