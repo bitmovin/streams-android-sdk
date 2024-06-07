@@ -120,8 +120,10 @@ fun BitmovinStream(
 
         // One-time actions for fetching and initializing the player
         BitmovinStreamState.FETCHING,
-        BitmovinStreamState.INITIALIZING -> {
-            var loadingMess = "__IMPOSSIBLE_VALUE__"
+        BitmovinStreamState.INITIALIZING,
+        BitmovinStreamState.WAITING_FOR_VIEW,
+        BitmovinStreamState.WAITING_FOR_PLAYER -> {
+            var loadingMess: String
             if (BitmovinStreamState.FETCHING == viewModel.state) {
                 LaunchedEffect(Unit) {
                     viewModel.fetchStreamConfigData(streamId, jwToken)
@@ -132,6 +134,12 @@ fun BitmovinStream(
                     viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, immersiveFullScreen, appDefaultOrientation, enableAds, styleConfig)
                 }
                 loadingMess = "Initializing player"
+            } else {
+                loadingMess = if (BitmovinStreamState.WAITING_FOR_VIEW == viewModel.state) {
+                    "Waiting for player view"
+                } else {
+                    "Waiting for player"
+                }
             }
             TextVideoPlayerFiller(loadingMess, modifier, loadingEffect = true)
         }

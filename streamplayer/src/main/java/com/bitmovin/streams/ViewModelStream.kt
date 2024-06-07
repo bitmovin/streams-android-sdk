@@ -34,7 +34,6 @@ internal class ViewModelStream : ViewModel() {
     var immersiveFullScreen = mutableStateOf(true)
     var playerView by mutableStateOf<PlayerView?>(null)
     var player: Player? = null
-    var subtitlesView by mutableStateOf<SubtitleView?>(null)
 
     fun fetchStreamConfigData(streamId: String, jwToken: String?) {
         viewModelScope.launch {
@@ -90,6 +89,11 @@ internal class ViewModelStream : ViewModel() {
         val player = createPlayer(streamConfig, context, enableAds)
         this.player = player
         player.on(PlayerEvent.Ready::class.java) {
+            if (state == BitmovinStreamState.INITIALIZING)
+                state = BitmovinStreamState.WAITING_FOR_VIEW
+            else if (state == BitmovinStreamState.WAITING_FOR_PLAYER) {
+                state = BitmovinStreamState.DISPLAYING
+            }
             streamEventListener?.onPlayerReady(player)
         }
 
@@ -111,8 +115,8 @@ internal class ViewModelStream : ViewModel() {
         // Adding the playerView to the lifecycle
         lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
         // Setting up the subtitles view
-        subtitlesView = SubtitleView(context)
-        subtitlesView!!.setPlayer(player)
+        val subtitlesView = SubtitleView(context)
+        subtitlesView.setPlayer(player)
 
         // 5. Initializing handlers
 
@@ -128,11 +132,11 @@ internal class ViewModelStream : ViewModel() {
         pipHandler = PiPHandler(context.getActivity()!!, playerView, this.immersiveFullScreen)
         playerView.setPictureInPictureHandler(pipHandler)
 
+        if (state == BitmovinStreamState.INITIALIZING)
+            state = BitmovinStreamState.WAITING_FOR_PLAYER
+        else if (state == BitmovinStreamState.WAITING_FOR_VIEW)
+            state = BitmovinStreamState.DISPLAYING
         streamEventListener?.onPlayerViewReady(playerView)
-
-        // Setup done, we can display the player
-        state = BitmovinStreamState.DISPLAYING
-
     }
 }
 
@@ -168,6 +172,8 @@ private fun Player.handleAttributes(
 enum class BitmovinStreamState {
     FETCHING,
     INITIALIZING,
+    WAITING_FOR_VIEW,
+    WAITING_FOR_PLAYER,
     DISPLAYING,
     DISPLAYING_ERROR,
 }

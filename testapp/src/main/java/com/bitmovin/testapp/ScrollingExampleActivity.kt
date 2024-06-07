@@ -50,10 +50,10 @@ class ScrollingExampleActivity : ComponentActivity() {
         setContent {
             StreamsandroidsdkTheme {
                 Column {
-                    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
+                    //Spacer(Modifier.windowInsetsTopHeight(WindowInsets.systemBars))
                     BitmovinShowcase()
+                    //Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
                 }
-
             }
         }
     }
@@ -68,6 +68,7 @@ fun BitmovinShowcase() {
             .verticalScroll(scrollState)
             .fillMaxWidth()
             .padding(if (isLandscape) 144.dp else 10.dp, 0.dp)
+            .safeContentPadding()
     ) {
         Text(
             text = "Discovering the Bitmovin Stream Player Component",
