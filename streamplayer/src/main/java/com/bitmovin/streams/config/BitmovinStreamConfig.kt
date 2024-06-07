@@ -30,8 +30,9 @@ data class BitmovinStreamConfig(
         start : Double = 0.0,
         fullscreenConfig: FullscreenConfig = FullscreenConfig(),
         subtitles : List<SubtitleTrack> = emptyList(),
-        onPlayerReady : (Player) -> Unit,
-        onPlayerViewReady : (PlayerView) -> Unit,
+        onStreamReady : (Player, PlayerView) -> Unit = { _, _ -> },
+        onPlayerReady : (Player) -> Unit = {},
+        onPlayerViewReady : (PlayerView) -> Unit = {},
         enableAds : Boolean = true,
         styleConfig : StyleConfigStream = StyleConfigStream()
     ) : this(
@@ -46,10 +47,12 @@ data class BitmovinStreamConfig(
         subtitles,
         object :
             BitmovinStreamEventListener {
+                override fun onStreamReady(player: Player, playerView: PlayerView) {
+                    onStreamReady(player, playerView)
+                }
                 override fun onPlayerReady(player: Player) {
                     onPlayerReady(player)
                 }
-
                 override fun onPlayerViewReady(playerView: PlayerView) {
                     onPlayerViewReady(playerView)
                 }
