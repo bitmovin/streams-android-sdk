@@ -37,15 +37,7 @@ BitmovinStream(
         start = config.start,
         subtitles = config.subtitles,
         immersiveFullScreen = config.immersiveFullScreen,
-        bitmovinStreamEventListener = object : BitmovinStreamEventListener {
-            override fun onPlayerReady(player: Player) {
-                config.onPlayerReady(player)
-            }
-
-            override fun onPlayerViewReady(playerView: PlayerView) {
-                config.onPlayerViewReady(playerView)
-            }
-        },
+        bitmovinStreamEventListener = config.streamEventListener,
         appDefaultOrientation = config.appDefaultOrientation,
         enableAds = config.enableAds,
         styleConfig = config.styleConfig
