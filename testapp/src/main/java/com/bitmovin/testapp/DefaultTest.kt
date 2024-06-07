@@ -34,7 +34,6 @@ class DefaultTest : ComponentActivity() {
                                 streamId = TestStreamsIds.VERTICAL_VIDEO,
                                 subtitles = emptyList(),
                                 modifier = Modifier,
-                                immersiveFullScreen = true,
                                 styleConfig = StyleConfigStream(
                                         customCss = """
                                             div {
@@ -56,7 +55,6 @@ class DefaultTest : ComponentActivity() {
                             BitmovinStream(
                                 streamId = TestStreamsIds.SQUARE_VIDEO,
                                 modifier = Modifier,
-                                immersiveFullScreen = true,
                                 enableAds = false,
                                 subtitles = listOf(
                                     SubtitleTrack(language = "French", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"),
