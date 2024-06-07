@@ -315,6 +315,9 @@ fun BitmovinShowcase() {
                     override fun onPlayerViewReady(playerView: PlayerView) {
                         this.playerView = playerView
                     }
+
+                    override fun onStreamReady(player: Player, playerView: PlayerView) {
+                    }
                 },
                 enableAds = false
             )
