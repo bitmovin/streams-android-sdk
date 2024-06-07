@@ -215,6 +215,42 @@ internal fun PictureInPictureHandlerForStreams(viewModel: ViewModelStream) {
     }
 
 }
+@Composable
+internal fun CircularLoadingAnimation(
+    modifier: Modifier = Modifier,
+    // blueish default
+    circleColor: Color = Color(32, 172, 227),
+    circleStrokeWidth: Float = 12f
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "Infinite transition")
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(500, easing = LinearEasing)
+        ),
+        label = "Arc's Starting point"
+    )
+    val angleSize by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 235f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(650, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "Arc's Size (as angle)"
+    )
+
+    Canvas(modifier = modifier.size(30.dp)) {
+        drawArc(
+            color = circleColor,
+            startAngle = angle,
+            sweepAngle = angleSize,
+            useCenter = false,
+            style = Stroke(width = circleStrokeWidth)
+        )
+    }
+}
 
 
 
@@ -282,44 +318,4 @@ internal fun DrawScope.drawNoise(
 }
 
 
-@Composable
-fun CircularLoadingAnimation(
-    modifier: Modifier = Modifier,
-    circleColor: Color = Color(32, 172, 227),
-    circleStrokeWidth: Float = 12f
-) {
-    val infiniteTransition = rememberInfiniteTransition(label = "Infinite transition")
-    val angle by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(500, easing = LinearEasing)
-        ),
-        label = "Arc's Starting point"
-    )
-    val angleSize by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 235f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(650, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "Arc's Size (as angle)"
-    )
 
-    Canvas(modifier = modifier.size(30.dp)) {
-        drawArc(
-            color = circleColor,
-            startAngle = angle,
-            sweepAngle = angleSize,
-            useCenter = false,
-            style = Stroke(width = circleStrokeWidth)
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-        CircularLoadingAnimation()
-}

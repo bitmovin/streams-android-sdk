@@ -32,7 +32,7 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.config.BitmovinStreamEventListener
-import com.bitmovin.streams.MAX_FOR_PORTRAIT_FORCING
+import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.PlayerThemes
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
@@ -69,11 +69,11 @@ class PlayerActivity : ComponentActivity() {
         object : OrientationEventListener(activity) {
             var AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
             override fun onOrientationChanged(orientation: Int) {
-                val TREESHOLD = 8
-                if (aspectRatio <= MAX_FOR_PORTRAIT_FORCING) return
+
+                if (aspectRatio <= 0.8f) return
                 when (AUTO_ROTATE_STATE) {
                     AutoRotateState.WaitingForEnter -> {
-                        if (playerViewHolder?.isFullscreen == false && (abs(orientation - 90) < TREESHOLD || abs(orientation - 270) < TREESHOLD)) {
+                        if (playerViewHolder?.isFullscreen == false && (abs(orientation - 90) < FS_TREESHOLD || abs(orientation - 270) < FS_TREESHOLD)) {
                             AUTO_ROTATE_STATE = AutoRotateState.WaitingForExit
                             playerViewHolder?.enterFullscreen()
                         }
@@ -82,7 +82,7 @@ class PlayerActivity : ComponentActivity() {
                         if (playerViewHolder?.isFullscreen == false) {
                             AUTO_ROTATE_STATE = AutoRotateState.WaitingForReset
                         } else {
-                            if (abs(orientation - 0) < TREESHOLD || abs(orientation - 360) < TREESHOLD || abs(orientation - 180) < TREESHOLD) {
+                            if (abs(orientation - 0) < FS_TREESHOLD || abs(orientation - 360) < FS_TREESHOLD || abs(orientation - 180) < FS_TREESHOLD) {
                                 playerViewHolder?.exitFullscreen()
                                 AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
                             }
@@ -90,7 +90,7 @@ class PlayerActivity : ComponentActivity() {
 
                     }
                     AutoRotateState.WaitingForReset -> {
-                        if (abs(orientation - 0) < TREESHOLD || abs(orientation - 360) < TREESHOLD || abs(orientation - 180) < TREESHOLD){
+                        if (abs(orientation - 0) < FS_TREESHOLD || abs(orientation - 360) < FS_TREESHOLD || abs(orientation - 180) < FS_TREESHOLD){
                             AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
                         }
                     }
@@ -107,9 +107,10 @@ class PlayerActivity : ComponentActivity() {
                 modifier = Modifier
                     .aspectRatio(aspectRatioAnim)
                     .fillMaxHeight(0.7f),
-                immersiveFullScreen = true,
                 jwToken = token,
-                appDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT,
+                fullscreenConfig = FullscreenConfig(
+                    screenDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                ),
                 bitmovinStreamEventListener = object : BitmovinStreamEventListener {
                     override fun onPlayerReady(player: Player) {
                         name = player.source?.config?.title ?: "Unknown"
@@ -151,6 +152,10 @@ class PlayerActivity : ComponentActivity() {
             )
             Text(text = description, Modifier.padding(8.dp))
         }
+    }
+
+    companion object {
+        const val FS_TREESHOLD = 8
     }
 }
 
