@@ -32,7 +32,7 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.config.BitmovinStreamEventListener
-import com.bitmovin.streams.MAX_FOR_PORTRAIT_FORCING
+import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.PlayerThemes
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
@@ -70,7 +70,7 @@ class PlayerActivity : ComponentActivity() {
             var AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
             override fun onOrientationChanged(orientation: Int) {
                 val TREESHOLD = 8
-                if (aspectRatio <= MAX_FOR_PORTRAIT_FORCING) return
+                if (aspectRatio <= 0.8f) return
                 when (AUTO_ROTATE_STATE) {
                     AutoRotateState.WaitingForEnter -> {
                         if (playerViewHolder?.isFullscreen == false && (abs(orientation - 90) < TREESHOLD || abs(orientation - 270) < TREESHOLD)) {
@@ -107,9 +107,10 @@ class PlayerActivity : ComponentActivity() {
                 modifier = Modifier
                     .aspectRatio(aspectRatioAnim)
                     .fillMaxHeight(0.7f),
-                immersiveFullScreen = true,
                 jwToken = token,
-                appDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT,
+                fullscreenConfig = FullscreenConfig(
+                    screenDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                ),
                 bitmovinStreamEventListener = object : BitmovinStreamEventListener {
                     override fun onPlayerReady(player: Player) {
                         name = player.source?.config?.title ?: "Unknown"
