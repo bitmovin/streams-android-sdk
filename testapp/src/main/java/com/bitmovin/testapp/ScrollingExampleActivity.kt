@@ -193,15 +193,23 @@ fun BitmovinShowcase() {
         FlipCard(
             "Example 2 - Vertical Video",
             R.drawable.code_example_2,
-            aspectRatio = 1.5f
+            aspectRatio = 1.3f
         ) {
+            // Custom style configuration
+            val myStyleConfig = StyleConfigStream(
+                playbackMarkerBorderColor = Color(0xFF01295F),
+                playbackMarkerBgColor = Color(0xAF01295F),
+                playbackTrackBufferedColor = Color(0x8FC5FFFD),
+                textColor = Color(0xFF88D9E6),
+                playbackTrackBgColor = Color(0xAF8B8BAE),
+                playbackTrackPlayedColor = Color(0xFF526760),
+            )
 
+            // Component
             BitmovinStream(
                 streamId = TestStreamsIds.VERTICAL_VIDEO,
                 poster = "https://i.pinimg.com/736x/40/29/19/402919bbe07931968ccc2d4627042e23.jpg",
-                styleConfig = StyleConfigStream(
-                    backgroundColor = cool_blue
-                )
+                styleConfig = myStyleConfig
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
