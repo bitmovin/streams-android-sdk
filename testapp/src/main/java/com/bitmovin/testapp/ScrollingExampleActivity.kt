@@ -1,20 +1,13 @@
 package com.bitmovin.testapp
 
 import android.content.res.Configuration
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -35,12 +28,10 @@ import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.TestStreamsIds
-import com.bitmovin.streams.config.BitmovinStreamConfig
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.PlayerThemes
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
-import kotlinx.coroutines.delay
 
 
 class ScrollingExampleActivity : ComponentActivity() {
@@ -304,7 +295,7 @@ fun BitmovinShowcase() {
         ) {
             BitmovinStream(
                 streamId = TestStreamsIds.SINTEL,
-                bitmovinStreamEventListener = object : BitmovinStreamEventListener {
+                streamEventListener = object : BitmovinStreamEventListener {
                     var playerView by remember { mutableStateOf<PlayerView?>(null) }
                     override fun onPlayerReady(player: Player) {
                         player.on(PlayerEvent.Play::class.java) {
@@ -317,6 +308,9 @@ fun BitmovinShowcase() {
                     }
 
                     override fun onStreamReady(player: Player, playerView: PlayerView) {
+                    }
+
+                    override fun onStreamError(errorCode: Int, errorMessage: String) {
                     }
                 },
                 enableAds = false

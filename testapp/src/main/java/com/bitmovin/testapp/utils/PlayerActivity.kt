@@ -34,7 +34,6 @@ import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.PlayerThemes
-import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import kotlin.math.abs
 
@@ -111,7 +110,7 @@ class PlayerActivity : ComponentActivity() {
                 fullscreenConfig = FullscreenConfig(
                     screenDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                 ),
-                bitmovinStreamEventListener = object : BitmovinStreamEventListener {
+                streamEventListener = object : BitmovinStreamEventListener {
                     override fun onPlayerReady(player: Player) {
                         name = player.source?.config?.title ?: "Unknown"
                         description = player.source?.config?.description ?: "None"
@@ -141,6 +140,12 @@ class PlayerActivity : ComponentActivity() {
                             if (!playerView.isFullscreen)
                                 playerView.enterFullscreen()
                         }
+                    }
+
+                    override fun onStreamReady(player: Player, playerView: PlayerView) {
+                    }
+
+                    override fun onStreamError(errorCode: Int, errorMessage: String) {
                     }
                 },
                 styleConfig = PlayerThemes.RED_EXAMPLE_THEME

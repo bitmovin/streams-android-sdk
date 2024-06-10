@@ -72,7 +72,8 @@ fun StreamsList() {
             name = "Big Buck Bunny - token required",
             streamId = TestStreamsIds.BIG_BUCK_BUNNY,
             unfoldedStreamId,
-            token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTg2OTY0NDB9.J7ysnY4jc6cHHSTbfoqz3PApo2WlO36pi94mU92MAAp77iDYQuMDtqcuGwdE7OBMSwkFvvpmLEJNgFh02Q3bcpiQWtQZaH43uObsQpJnpnoDSwghq3BWXo0_F478lPk51L1-F7UBpYjctNJ9usmJD-c9hCOmd-gTLmvjBx0Ytveh4PY6kWbNjahZT1sHu-SGDwxJJEgqrf18PXDb1tO9GHU6xIgLrXa956m9yaz9XMFPvN55C7SMmvGZxkSFDa_0WQssikZo4Xa4z14ZuNGv5JpiE4pP7zBj6Ll0ri9Ofypof_aw1DJiR5O6MP7sK7nYRgZR0MrlJ2OrOcBxYCqbnA"
+
+            // token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTg2OTY0NDB9.J7ysnY4jc6cHHSTbfoqz3PApo2WlO36pi94mU92MAAp77iDYQuMDtqcuGwdE7OBMSwkFvvpmLEJNgFh02Q3bcpiQWtQZaH43uObsQpJnpnoDSwghq3BWXo0_F478lPk51L1-F7UBpYjctNJ9usmJD-c9hCOmd-gTLmvjBx0Ytveh4PY6kWbNjahZT1sHu-SGDwxJJEgqrf18PXDb1tO9GHU6xIgLrXa956m9yaz9XMFPvN55C7SMmvGZxkSFDa_0WQssikZo4Xa4z14ZuNGv5JpiE4pP7zBj6Ll0ri9Ofypof_aw1DJiR5O6MP7sK7nYRgZR0MrlJ2OrOcBxYCqbnA"
         )
     }
 }
@@ -111,12 +112,11 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
             .alpha(if (isVisible) 1f else 0.5f)
             .padding(8.dp))
     {
-        Row {
-            Text(text = name, modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp), color = Color.Black, fontSize = 24.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
-            if (!isVisible)
-                Text(text = "Loading...", modifier = Modifier.padding(16.dp, 0.dp, 0.dp, 0.dp), color = Color.DarkGray, fontSize = 24.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
-        }
 
+        var text by remember { mutableStateOf("Loading...") }
+        Text(text = name, modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp), color = Color.Black, fontSize = 24.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+        if (!isVisible)
+            Text(text = text, modifier = Modifier.padding(16.dp, 0.dp, 0.dp, 0.dp), color = Color.DarkGray, fontSize = 24.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
 
         Box(
             modifier = Modifier
@@ -126,13 +126,15 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
         ) {
             BitmovinStream(
                 streamId = streamId,
-                modifier = Modifier.fillMaxSize().background(Color(0, 106, 237)),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0, 106, 237)),
                 subtitles = emptyList(),
                 enableAds = false,
                 start = 5.0,
                 muted = true,
                 jwToken = token,
-                bitmovinStreamEventListener = object : BitmovinStreamEventListener {
+                streamEventListener = object : BitmovinStreamEventListener {
                     override fun onPlayerReady(player: Player) {
                         playerHolder = player
                     }
@@ -140,6 +142,14 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
                     override fun onPlayerViewReady(playerView: PlayerView) {
                         playerView.isUiVisible = false
                     }
+
+                    override fun onStreamReady(player: Player, playerView: PlayerView) {
+                    }
+
+                    override fun onStreamError(errorCode: Int, errorMessage: String) {
+                        text = errorMessage
+                    }
+
                 },
                 styleConfig = StyleConfigStream(
                     backgroundColor = Color(0, 106, 237)
