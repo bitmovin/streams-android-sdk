@@ -208,6 +208,20 @@ internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>)
     return this
 }
 
+fun getErrorMessage(errorCode: Int) : String {
+    var message =
+        when (errorCode) {
+            0 -> "No Internet Connection"
+            401 -> "Unauthorized access to stream.\nThis stream may require a token."
+            403 -> "Forbidden access to stream.\nThe domain may not be allowed to access the stream or the token you provided may be invalid."
+            404 -> "Stream not found.\nThe stream you are trying to access does not exist."
+            500 -> "Internal server error.\nThe server encountered an error while processing your request."
+            503 -> "Service unavailable.\nPlease try again in few minutes."
+            else -> "An error occurred while fetching the stream data."
+        }
+    return message
+}
+
 
 internal fun writeCssToFile(context: Context, css: String, streamId: String): File? {
     return try {

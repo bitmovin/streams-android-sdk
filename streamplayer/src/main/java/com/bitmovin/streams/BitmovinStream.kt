@@ -9,8 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.bitmovin.player.PlayerView
-import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.config.BitmovinStreamConfig
 import com.bitmovin.streams.config.BitmovinStreamEventListener
@@ -36,7 +34,7 @@ BitmovinStream(
         start = config.start,
         subtitles = config.subtitles,
         fullscreenConfig = config.fullscreenConfig,
-        bitmovinStreamEventListener = config.streamEventListener,
+        streamEventListener = config.streamEventListener,
         enableAds = config.enableAds,
         styleConfig = config.styleConfig
     )
@@ -55,7 +53,7 @@ BitmovinStream(
  * @param start The time in seconds at which the player should start playing.
  * @param subtitles The list of subtitle tracks available for the stream.
  * @param fullscreenConfig The configuration for the fullscreen mode.
- * @param bitmovinStreamEventListener The listener for the player events.
+ * @param streamEventListener The listener for the player events.
  * @param enableAds Whether ads should be enabled.
  * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
  */
@@ -70,7 +68,7 @@ fun BitmovinStream(
     start : Double = 0.0,
     subtitles : List<SubtitleTrack> = emptyList(),
     fullscreenConfig: FullscreenConfig = FullscreenConfig(),
-    bitmovinStreamEventListener: BitmovinStreamEventListener? = null,
+    streamEventListener: BitmovinStreamEventListener? = null,
     enableAds : Boolean = true,
     styleConfig : StyleConfigStream = StyleConfigStream()
 ) {
@@ -112,15 +110,15 @@ fun BitmovinStream(
         BitmovinStreamState.INITIALIZING,
         BitmovinStreamState.WAITING_FOR_VIEW,
         BitmovinStreamState.WAITING_FOR_PLAYER -> {
-            var loadingMess: String
+            val loadingMess: String
             if (BitmovinStreamState.FETCHING == viewModel.state) {
                 LaunchedEffect(Unit) {
-                    viewModel.fetchStreamConfigData(streamId, jwToken)
+                    viewModel.fetchStreamConfigData(streamId, jwToken, streamEventListener)
                 }
                 loadingMess = "Fetching stream config data"
             } else if (BitmovinStreamState.INITIALIZING == viewModel.state) {
                 LaunchedEffect(Unit) {
-                    viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, streamEventListener = bitmovinStreamEventListener, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
+                    viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
                 }
                 loadingMess = "Initializing player"
             } else {
