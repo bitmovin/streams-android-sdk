@@ -35,8 +35,10 @@ internal class ViewModelStream : ViewModel() {
     var immersiveFullScreen = mutableStateOf(true)
     var playerView by mutableStateOf<PlayerView?>(null)
     var player: Player? = null
+    var streamEventListener: BitmovinStreamEventListener? = null
 
-    fun fetchStreamConfigData(streamId: String, jwToken: String?) {
+    fun fetchStreamConfigData(streamId: String, jwToken: String?, bitmovinStreamEventListener: BitmovinStreamEventListener?) {
+        this.streamEventListener = bitmovinStreamEventListener
         viewModelScope.launch {
             // Fetch the stream config data
             try {
@@ -53,12 +55,14 @@ internal class ViewModelStream : ViewModel() {
                             "StreamsPlayer",
                             streamResponseError.toString() + "Error fetching stream config data."
                         )
+                        streamEventListener?.onStreamError(streamResponseError, getErrorMessage(streamResponseError))
                         state = BitmovinStreamState.DISPLAYING_ERROR
                     }
                 }
             } catch (e: Exception) {
                 Log.e("StreamsPlayer", "No Internet Connection", e)
                 state = BitmovinStreamState.DISPLAYING_ERROR
+                streamEventListener?.onStreamError(streamResponseError, getErrorMessage(streamResponseError))
             }
         }
     }
@@ -71,7 +75,6 @@ internal class ViewModelStream : ViewModel() {
         context: Context,
         streamId: String,
         lifecycleOwner: LifecycleOwner,
-        streamEventListener: BitmovinStreamEventListener?,
         streamConfig: StreamConfigData,
         autoPlay: Boolean,
         muted: Boolean,

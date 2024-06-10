@@ -33,6 +33,7 @@ data class BitmovinStreamConfig(
         onStreamReady : (Player, PlayerView) -> Unit = { _, _ -> },
         onPlayerReady : (Player) -> Unit = {},
         onPlayerViewReady : (PlayerView) -> Unit = {},
+        onStreamError : (Int, String) -> Unit = { _, _ -> },
         enableAds : Boolean = true,
         styleConfig : StyleConfigStream = StyleConfigStream()
     ) : this(
@@ -50,8 +51,13 @@ data class BitmovinStreamConfig(
                 override fun onStreamReady(player: Player, playerView: PlayerView) {
                     onStreamReady(player, playerView)
                 }
+
+                override fun onStreamError(errorCode: Int, errorMessage: String) {
+                    onStreamError(errorCode, errorMessage)
+                }
+
                 override fun onPlayerReady(player: Player) {
-                    onPlayerReady(player)
+                        onPlayerReady(player)
                 }
                 override fun onPlayerViewReady(playerView: PlayerView) {
                     onPlayerViewReady(playerView)
