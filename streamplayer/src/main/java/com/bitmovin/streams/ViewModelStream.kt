@@ -166,18 +166,23 @@ private fun Player.handleAttributes(
         // Impl detail : we do not use the PlayerEvent.PlaybackFinished event because it triggers the ui visibility which seems undesirable
         this.on(PlayerEvent.TimeChanged::class.java) {
             // Delay action
-            object:Thread(){
-                val player = this@handleAttributes
-                override fun run() {
-                    if (player.duration > player.currentTime - 0.3) {
+            val player = this@handleAttributes
+            var scheduledSeek = false
+            if (player.currentTime > player.duration - 0.25 && !scheduledSeek) {
+                object : Thread() {
+                    override fun run() {
+                        scheduledSeek = true
                         // Limit : If the video is paused at the end, it will be restarted anyway, but that is not a big deal since it's a really short window anyway
                         // 0.05 seems to be sufficient to never ever trigger the ui but it might not be enough for all devices, need some testing
-                        Thread.sleep(((player.duration - player.currentTime - 0.05)*1000).toLong())
-                        player.seek(0.0)
+                        val waitingTime =
+                            ((player.duration - player.currentTime - 0.05) * 1000).toLong()
+                        if (waitingTime > 0)
+                            Thread.sleep(waitingTime)
+                        scheduledSeek = false
+                        player.seek(0.00)
                     }
-
-                }
-            }.start()
+                }.start()
+            }
         }
     }
 }
