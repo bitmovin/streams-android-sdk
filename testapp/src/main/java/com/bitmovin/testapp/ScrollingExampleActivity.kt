@@ -205,7 +205,7 @@ fun BitmovinShowcase() {
                 description = """
                     The configuration for the fullscreen mode.
                 """.trimIndent(),
-                defaultValue = "true"
+                defaultValue = "None"
             ),
             Property(
                 name = "streamEventListener",
