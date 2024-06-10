@@ -402,17 +402,18 @@ fun FlipCard(
             Box(modifier = Modifier
                 .aspectRatio(aspectRatio)
                 .padding(8.dp, 0.dp)) {
+                val corners = 8.dp
                 if (isFront) {
                     Image(
                         painter = painterResource(id = code),
                         contentDescription = "Source Code",
-                        modifier = Modifier
+                        modifier = Modifier.clip(shape = RoundedCornerShape(corners))
                             .verticalScroll(rememberScrollState())
                             .fillMaxWidth(),
                         contentScale = ContentScale.FillWidth
                     )
                 } else {
-                    Box {
+                    Box(Modifier.clip(shape = RoundedCornerShape(corners))) {
                         player()
                     }
                 }
