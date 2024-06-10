@@ -260,6 +260,7 @@ fun BitmovinShowcase() {
                 styleConfig = PlayerThemes.RED_EXAMPLE_THEME,
                 autoPlay = true,
                 muted = true,
+                loop = true
             )
         }
 
