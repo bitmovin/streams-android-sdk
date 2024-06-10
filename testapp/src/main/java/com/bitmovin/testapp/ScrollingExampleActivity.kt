@@ -164,6 +164,13 @@ fun BitmovinShowcase() {
                 defaultValue = "false"
             ),
             Property(
+                name = "loop",
+                description = """
+                    Whether the player should loop the stream.
+                """.trimIndent(),
+                defaultValue = "false"
+            ),
+            Property(
                 name = "muted",
                 description = """
                     Whether the player should be muted.
@@ -208,6 +215,9 @@ fun BitmovinShowcase() {
                     This is the gateway to modify the player behavior.
                     - onPlayerReady : Called when the player is ready to play and pass the Player instance.
                     - onPlayerViewReady : Called when the player view is ready to be displayed and pass the PlayerView instance.
+                    - onStreamReady : Called when the stream is ready to be played and pass the Player and PlayerView instances.
+                    - onStreamError : Called when an error occurs and pass the error code and message.
+                        This callback only works for the stream setup errors. For the player errors, you should use the PlayerEvent.Error callback.
                     
                     Warning : The Stream Component may not work properly for some of the modification of the Player / PlayerView. Please consider using the Bitmovin Player SDK directly if you need a deep control over the player behavior.
                     
