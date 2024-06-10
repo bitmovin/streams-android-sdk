@@ -77,6 +77,7 @@ internal class ViewModelStream : ViewModel() {
         lifecycleOwner: LifecycleOwner,
         streamConfig: StreamConfigData,
         autoPlay: Boolean,
+        loop: Boolean,
         muted: Boolean,
         start: Double,
         poster: String?,
@@ -108,7 +109,7 @@ internal class ViewModelStream : ViewModel() {
         player.load(streamSource)
 
         // 3. Handling properties
-        player.handleAttributes(autoPlay, muted, start)
+        player.handleAttributes(autoPlay, muted, loop, start)
         this.immersiveFullScreen.value = fullscreenConfig.immersive
 
         // 4. Setting up Views
@@ -149,6 +150,7 @@ internal class ViewModelStream : ViewModel() {
 private fun Player.handleAttributes(
     autoPlay: Boolean,
     muted: Boolean,
+    loop: Boolean,
     start: Double,
 ) {
     if (autoPlay)
@@ -158,16 +160,22 @@ private fun Player.handleAttributes(
 
     if (start > 0)
         this.seek(start)
+
     // Prototype for an autoplay feature, but it's not looking great for now
-    if (false) {
-        this.on(PlayerEvent.PlaybackFinished::class.java) {
+    if (loop) {
+        // Impl detail : we do not use the PlayerEvent.PlaybackFinished event because it triggers the ui visibility which seems undesirable
+        this.on(PlayerEvent.TimeChanged::class.java) {
             // Delay action
-            val player = this
             object:Thread(){
+                val player = this@handleAttributes
                 override fun run() {
-                    Thread.sleep(50)
-                    player.seek(0.0)
-                    player.play()
+                    if (player.duration > player.currentTime - 0.3) {
+                        // Limit : If the video is paused at the end, it will be restarted anyway, but that is not a big deal since it's a really short window anyway
+                        // 0.05 seems to be sufficient to never ever trigger the ui but it might not be enough for all devices, need some testing
+                        Thread.sleep(((player.duration - player.currentTime - 0.05)*1000).toLong())
+                        player.seek(0.0)
+                    }
+
                 }
             }.start()
         }

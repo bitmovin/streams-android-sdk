@@ -48,6 +48,7 @@ BitmovinStream(
  * @param modifier The modifier to be applied to the player.
  * @param jwToken The token to be used for authentication if the stream is protected.
  * @param autoPlay Whether the player should start playing automatically.
+ * @param loop Whether the player should loop the stream.
  * @param muted Whether the player should be muted.
  * @param poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
  * @param start The time in seconds at which the player should start playing.
@@ -63,7 +64,8 @@ fun BitmovinStream(
     modifier : Modifier = Modifier,
     jwToken : String? = null,
     autoPlay : Boolean = false,
-    muted : Boolean = true, // temporary to avoid loud noises in the office when I forget to turn off the sound
+    loop : Boolean = false,
+    muted : Boolean = true, // temporary true to avoid loud noises in the office when I forget to turn off the sound
     poster : String? = null,
     start : Double = 0.0,
     subtitles : List<SubtitleTrack> = emptyList(),
@@ -118,7 +120,7 @@ fun BitmovinStream(
                 loadingMess = "Fetching stream config data"
             } else if (BitmovinStreamState.INITIALIZING == viewModel.state) {
                 LaunchedEffect(Unit) {
-                    viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, viewModel.streamConfigData!!, autoPlay, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
+                    viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, viewModel.streamConfigData!!, autoPlay, loop, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
                 }
                 loadingMess = "Initializing player"
             } else {

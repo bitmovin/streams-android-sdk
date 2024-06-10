@@ -143,7 +143,7 @@ internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingCo
             else -> AdSource(AdSourceType.Unknown, ad.url)
         }
         AdItem(ad.position, adSource)
-    } ?: emptyList()
+    }
     return AdvertisingConfig(ads)
 }
 
