@@ -193,14 +193,14 @@ private fun Player.handleAttributes(
             // Delay action
             val player = this@handleAttributes
             var scheduledSeek = false
-            if (player.currentTime > player.duration - 0.25 && !scheduledSeek) {
+            if (player.currentTime > player.duration - 0.3 && !scheduledSeek) {
                 object : Thread() {
                     override fun run() {
                         scheduledSeek = true
                         // Limit : If the video is paused at the end, it will be restarted anyway, but that is not a big deal since it's a really short window anyway
                         // 0.05 seems to be sufficient to never ever trigger the ui but it might not be enough for all devices, need some testing
                         val waitingTime =
-                            ((player.duration - player.currentTime - 0.05) * 1000).toLong()
+                            ((player.duration - player.currentTime - 0.8) * 1000).toLong()
                         if (waitingTime > 0)
                             Thread.sleep(waitingTime)
                         scheduledSeek = false
