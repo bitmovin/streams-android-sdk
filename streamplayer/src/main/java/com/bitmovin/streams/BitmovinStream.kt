@@ -97,6 +97,7 @@ fun BitmovinStream(
                     ) {
                         StreamVideoPlayer(playerView = playerView)
                     }
+                    TextVideoPlayerFiller(text = "In Fullscreen", modifier)
                 } else {
                     StreamVideoPlayer(
                         playerView = playerView,

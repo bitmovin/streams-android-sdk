@@ -59,7 +59,7 @@ fun BitmovinShowcase() {
         modifier = Modifier
             .verticalScroll(scrollState)
             .fillMaxWidth()
-            .padding(if (isLandscape) 144.dp else 10.dp, 0.dp)
+            .padding(if (isLandscape) 144.dp else 0.dp, 0.dp)
             .safeContentPadding()
     ) {
         Text(
@@ -412,7 +412,6 @@ fun FlipCard(
                         painter = painterResource(id = code),
                         contentDescription = "Source Code",
                         modifier = Modifier.clip(shape = RoundedCornerShape(corners))
-                            .verticalScroll(rememberScrollState())
                             .fillMaxWidth(),
                         contentScale = ContentScale.FillWidth
                     )
