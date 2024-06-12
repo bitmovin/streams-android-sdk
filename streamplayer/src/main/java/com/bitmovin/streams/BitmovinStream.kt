@@ -83,7 +83,7 @@ fun BitmovinStream(
     // Make the StreamViewModel unique for each instance of the Streams Player (1:1 relationship)
     val viewModel: ViewModelStream = viewModel(key = upid)
     // PiP related stuffs
-    PictureInPictureHandlerForStreams(viewModel)
+    // PictureInPictureHandlerForStreams(viewModel)
     when (viewModel.state) {
         BitmovinStreamState.DISPLAYING -> {
             // Should be safe to unwrap as we are in the DISPLAYING state and the playerView should NEVER be null at this point
