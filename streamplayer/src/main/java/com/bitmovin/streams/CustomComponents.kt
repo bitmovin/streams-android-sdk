@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bitmovin.streams.pipmode.PiPChangesObserver
 import com.bitmovin.streams.pipmode.PiPExitListener
@@ -185,25 +189,29 @@ internal fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
 @Composable
 internal fun PictureInPictureHandlerForStreams(viewModel: ViewModelStream) {
     // There is only one PiPManager for the whole application
-    val pipManager: PiPChangesObserver = viewModel()
-    LocalLifecycleOwner.current.lifecycle.addObserver(pipManager) // /!\ It only matters the first time a BitmovinStream is created, afterwards it is ignored
-    DisposableEffect(Unit) {
-        val obj = object : PiPExitListener {
-            override fun onPiPExit() {
-                Log.d("StreamsPlayer", "onPiPExit called")
-                viewModel.pipHandler?.exitPictureInPicture()
-            }
 
-            override fun isInPiPMode(): Boolean {
-                return viewModel.pipHandler?.isPictureInPicture ?: false
-            }
-        }
-        pipManager.addListener(obj)
-
-        onDispose {
-            pipManager.removeListener(obj)
-        }
-    }
+    // Get local fragment if it exists
+//    val pitiee = LocalContext.current.getActivity()
+//    val pipManager: PiPChangesObserver = viewModel()
+//
+//    LocalLifecycleOwner.current.lifecycle.addObserver(pipManager) // /!\ It only matters the first time a BitmovinStream is created, afterwards it is ignored
+//    DisposableEffect(Unit) {
+//        val obj = object : PiPExitListener {
+//            override fun onPiPExit() {
+//                Log.d("StreamsPlayer", "onPiPExit called")
+//                viewModel.pipHandler?.exitPictureInPicture()
+//            }
+//
+//            override fun isInPiPMode(): Boolean {
+//                return viewModel.pipHandler?.isPictureInPicture ?: false
+//            }
+//        }
+//        pipManager.addListener(obj)
+//
+//        onDispose {
+//            pipManager.removeListener(obj)
+//        }
+//    }
 
 }
 @Composable

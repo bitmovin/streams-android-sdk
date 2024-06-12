@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +21,8 @@ import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.fullscreenmode.StreamFullscreenHandler
+import com.bitmovin.streams.pipmode.PiPChangesObserver
+import com.bitmovin.streams.pipmode.PiPExitListener
 import com.bitmovin.streams.pipmode.PiPHandler
 import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.launch
@@ -36,6 +39,10 @@ internal class ViewModelStream : ViewModel() {
     var playerView by mutableStateOf<PlayerView?>(null)
     var player: Player? = null
     var streamEventListener: BitmovinStreamEventListener? = null
+
+    companion object {
+        val pipChangesObserver = PiPChangesObserver()
+    }
 
     fun fetchStreamConfigData(streamId: String, jwToken: String?, bitmovinStreamEventListener: BitmovinStreamEventListener?) {
         this.streamEventListener = bitmovinStreamEventListener
@@ -86,8 +93,23 @@ internal class ViewModelStream : ViewModel() {
         enableAds: Boolean,
         styleConfigStream: StyleConfigStream
     ) {
+        pipChangesObserver.let { it ->
+            it.context = context
+            lifecycleOwner.lifecycle.addObserver(it)
+        }
         this.context = context
         val activity = context.getActivity()
+        val pipExitHandler = object : PiPExitListener {
+            override fun onPiPExit() {
+                Log.d("StreamsPlayer", "onPiPExit called")
+                this@ViewModelStream.pipHandler?.exitPictureInPicture()
+            }
+
+            override fun isInPiPMode(): Boolean {
+                return this@ViewModelStream.pipHandler?.isPictureInPicture ?: false
+            }
+        }
+        pipChangesObserver.addListener(pipExitHandler)
 
         // 1. Initializing the player
         val player = createPlayer(streamConfig, context, enableAds)
