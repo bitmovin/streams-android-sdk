@@ -2,7 +2,9 @@ package com.bitmovin.streams.config
 
 /**
  * Configuration for the fullscreen behavior of the player.
-
+ *
+ * @property enable Whether the fullscreen behavior should be enabled.
+ *  When disabled, the player will also not be able to enter picture-in-picture mode.
  * @property immersive Whether the player should be in immersive mode. Recommended to be false if the EdgeToEdge is disabled on the Activity (may break on some very specific devices).
  * @property autoOrientation Whether the player should automatically change orientation.
  * @property minAspectRatioForLandScapeForce The minimum aspect ratio for forcing landscape orientation. Does not apply if autoOrientation is false.
@@ -11,6 +13,7 @@ package com.bitmovin.streams.config
  * @constructor Creates a new instance of FullscreenConfig.
  */
 data class FullscreenConfig(
+    val enable: Boolean = true,
     val immersive: Boolean = true,
     val autoOrientation: Boolean = true,
     val minAspectRatioForLandScapeForce: Float = 1.2f,

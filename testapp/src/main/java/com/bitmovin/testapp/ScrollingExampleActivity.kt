@@ -29,6 +29,7 @@ import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.TestStreamsIds
 import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.PlayerThemes
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
@@ -270,7 +271,10 @@ fun BitmovinShowcase() {
                 styleConfig = PlayerThemes.RED_EXAMPLE_THEME,
                 autoPlay = true,
                 muted = true,
-                loop = true
+                loop = true,
+                fullscreenConfig = FullscreenConfig(
+                    enable = false
+                )
             )
         }
 

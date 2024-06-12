@@ -131,11 +131,14 @@ internal class ViewModelStream : ViewModel() {
             activity,
             fullscreenConfig
         )
-        playerView.setFullscreenHandler(fullscreenHandler)
+        if (fullscreenConfig.enable)
+            playerView.setFullscreenHandler(fullscreenHandler)
 
         // Setting up the PiP feature
         pipHandler = PiPHandler(context.getActivity()!!, playerView, this.immersiveFullScreen)
-        playerView.setPictureInPictureHandler(pipHandler)
+        if (fullscreenConfig.enable)
+            playerView.setPictureInPictureHandler(pipHandler)
+        
         streamEventListener?.onPlayerViewReady(playerView)
         if (state == BitmovinStreamState.INITIALIZING)
             state = BitmovinStreamState.WAITING_FOR_PLAYER
