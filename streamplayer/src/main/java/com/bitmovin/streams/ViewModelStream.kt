@@ -99,17 +99,6 @@ internal class ViewModelStream : ViewModel() {
         }
         this.context = context
         val activity = context.getActivity()
-        val pipExitHandler = object : PiPExitListener {
-            override fun onPiPExit() {
-                Log.d("StreamsPlayer", "onPiPExit called")
-                this@ViewModelStream.pipHandler?.exitPictureInPicture()
-            }
-
-            override fun isInPiPMode(): Boolean {
-                return this@ViewModelStream.pipHandler?.isPictureInPicture ?: false
-            }
-        }
-        pipChangesObserver.addListener(pipExitHandler)
 
         // 1. Initializing the player
         val player = createPlayer(streamConfig, context, enableAds)
@@ -147,19 +136,32 @@ internal class ViewModelStream : ViewModel() {
 
         // 5. Initializing handlers
 
-        // Setting up the fullscreen feature
-        fullscreenHandler = StreamFullscreenHandler(
-            playerView,
-            activity,
-            fullscreenConfig
-        )
-        if (fullscreenConfig.enable)
+        if (fullscreenConfig.enable) {
+            // Setting up the fullscreen feature
+            fullscreenHandler = StreamFullscreenHandler(
+                playerView,
+                activity,
+                fullscreenConfig
+            )
             playerView.setFullscreenHandler(fullscreenHandler)
-
+        }
         // Setting up the PiP feature
-        pipHandler = PiPHandler(context.getActivity()!!, playerView, this.immersiveFullScreen)
-        if (fullscreenConfig.enable)
+        if (fullscreenConfig.enable) {
+            pipHandler = PiPHandler(context.getActivity()!!, playerView, this.immersiveFullScreen)
             playerView.setPictureInPictureHandler(pipHandler)
+
+            val pipExitHandler = object : PiPExitListener {
+                override fun onPiPExit() {
+                    Log.d("StreamsPlayer", "onPiPExit called")
+                    this@ViewModelStream.pipHandler?.exitPictureInPicture()
+                }
+
+                override fun isInPiPMode(): Boolean {
+                    return this@ViewModelStream.pipHandler?.isPictureInPicture ?: false
+                }
+            }
+            pipChangesObserver.addListener(pipExitHandler)
+        }
         
         streamEventListener?.onPlayerViewReady(playerView)
         if (state == BitmovinStreamState.INITIALIZING)
