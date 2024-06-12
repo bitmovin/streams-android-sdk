@@ -2,12 +2,10 @@ package com.bitmovin.streams.pipmode
 
 import android.app.Activity
 import android.os.Build
+import android.util.Log
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import com.bitmovin.player.PlayerView
-import com.bitmovin.player.api.Player
 import com.bitmovin.player.ui.DefaultPictureInPictureHandler
-import com.bitmovin.streams.ViewModelStream
 
 internal class PiPHandler(activity: Activity?, private val playerView: PlayerView, var immersiveFullScreen : MutableState<Boolean>) : DefaultPictureInPictureHandler(activity,
     playerView.player
@@ -18,6 +16,7 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
     private var previousUiVisibility = true
 
     override fun enterPictureInPicture() {
+        Log.d("StreamPlayer", "enterPictureInPicture")
         super.enterPictureInPicture()
         isInPictureInPicture = true
         oldImmersiveFullScreen = immersiveFullScreen.value
@@ -37,10 +36,10 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
     }
 
     override fun exitPictureInPicture() {
+        Log.d("StreamPlayer", "exitPictureInPicture")
         immersiveFullScreen.value = oldImmersiveFullScreen
         // Restore the previous values
         isInPictureInPicture = false
-        //playerView.exitFullscreen()
         playerView.isUiVisible = previousUiVisibility
         super.exitPictureInPicture()
     }

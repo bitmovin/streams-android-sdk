@@ -112,24 +112,16 @@ fun BitmovinStream(
         BitmovinStreamState.INITIALIZING,
         BitmovinStreamState.WAITING_FOR_VIEW,
         BitmovinStreamState.WAITING_FOR_PLAYER -> {
-            val loadingMess: String
             if (BitmovinStreamState.FETCHING == viewModel.state) {
                 LaunchedEffect(Unit) {
                     viewModel.fetchStreamConfigData(streamId, jwToken, streamEventListener)
                 }
-                loadingMess = "Fetching stream config data"
             } else if (BitmovinStreamState.INITIALIZING == viewModel.state) {
                 LaunchedEffect(Unit) {
                     viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, viewModel.streamConfigData!!, autoPlay, loop, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
                 }
-                loadingMess = "Initializing player"
-            } else {
-                loadingMess = if (BitmovinStreamState.WAITING_FOR_VIEW == viewModel.state) {
-                    "Waiting for player view"
-                } else {
-                    "Waiting for player"
-                }
             }
+            val loadingMess: String = getLoadingScreenMessage(viewModel.state)
             TextVideoPlayerFiller(loadingMess, modifier, loadingEffect = true)
         }
         BitmovinStreamState.DISPLAYING_ERROR -> {
