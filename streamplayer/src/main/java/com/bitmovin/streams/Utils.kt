@@ -416,3 +416,13 @@ fun String.parseColor() : Color? {
     }
     return null
 }
+
+fun getLoadingScreenMessage(state: BitmovinStreamState) : String {
+    return when (state) {
+        BitmovinStreamState.FETCHING -> "Fetching stream config data"
+        BitmovinStreamState.INITIALIZING -> "Initializing player"
+        BitmovinStreamState.WAITING_FOR_VIEW -> "Waiting for player view"
+        BitmovinStreamState.WAITING_FOR_PLAYER -> "Waiting for player"
+        else -> "An error occurred while fetching the stream data."
+    }
+}
