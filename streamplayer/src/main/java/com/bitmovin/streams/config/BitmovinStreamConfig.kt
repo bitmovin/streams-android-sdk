@@ -5,6 +5,23 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 
+/**
+ * Configuration for the BitmovinStream
+ *
+ * @property streamId The streamId of the stream to be played
+ * @property modifier The modifier to be applied to the player
+ * @property jwToken The token to be used for authentication if the stream is protected
+ * @property autoPlay Whether the player should start playing automatically
+ * @property muted Whether the player should be muted
+ * @property poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard
+ * @property start The time in seconds at which the player should start playing
+ * @property fullscreenConfig The configuration for the fullscreen mode
+ * @property subtitles The list of subtitle tracks available for the stream
+ * @property streamEventListener The listener for the player events
+ * @property enableAds Whether ads should be enabled
+ * @property styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard
+ */
+
 data class BitmovinStreamConfig(
     var streamId : String,
     var modifier : Modifier = Modifier,
@@ -20,6 +37,25 @@ data class BitmovinStreamConfig(
     var styleConfig : StyleConfigStream = StyleConfigStream()
 ) {
 
+    /**
+     * Constructor for BitmovinStreamConfig
+     * @param streamId The streamId of the stream to be played
+     * @param modifier The modifier to be applied to the player
+     * @param jwToken The token to be used for authentication if the stream is protected
+     * @param autoPlay Whether the player should start playing automatically
+     * @param muted Whether the player should be muted
+     * @param poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard
+     * @param start The time in seconds at which the player should start playing
+     * @param fullscreenConfig The configuration for the fullscreen mode
+     * @param subtitles The list of subtitle tracks available for the stream
+     * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard
+     * @param onStreamReady The listener for the player events
+     * @param onPlayerReady The listener for the player events
+     * @param onPlayerViewReady The listener for the player events
+     * @param onStreamError The listener for the player events
+     * @param enableAds Whether ads should be enabled
+     * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard
+     */
     constructor(
         streamId : String,
         modifier : Modifier = Modifier,
