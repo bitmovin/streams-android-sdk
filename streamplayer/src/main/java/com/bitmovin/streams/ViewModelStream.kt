@@ -167,22 +167,21 @@ internal class ViewModelStream : ViewModel() {
                 state = BitmovinStreamState.INITIALIZING
             }
             Action.PLAYER_VIEW_READY -> {
+                streamEventListener?.onPlayerViewReady(playerView!!)
                 if (state == BitmovinStreamState.INITIALIZING) {
                     state = BitmovinStreamState.WAITING_FOR_PLAYER
-                    streamEventListener?.onPlayerViewReady(playerView!!)
                     Log.d("BitmovinStream", "PlayerView ready")
                 }
-                else if (state == BitmovinStreamState.WAITING_FOR_VIEW)
-                {
+                else if (state == BitmovinStreamState.WAITING_FOR_VIEW) {
                     state = BitmovinStreamState.DISPLAYING
                     streamEventListener?.onStreamReady(player!!, playerView!!)
                     Log.d("BitmovinStream", "Stream ready")
                 }
             }
             Action.PLAYER_READY -> {
+                streamEventListener?.onPlayerReady(player!!)
                 if (state == BitmovinStreamState.INITIALIZING) {
                     state = BitmovinStreamState.WAITING_FOR_VIEW
-                    streamEventListener?.onPlayerReady(player!!)
                     Log.d("BitmovinStream", "Player ready")
                 }
                 else if (state == BitmovinStreamState.WAITING_FOR_PLAYER)
@@ -222,14 +221,15 @@ private fun Player.handleAttributes(
             // Delay action
             val player = this@handleAttributes
             var scheduledSeek = false
-            if (player.currentTime > player.duration - 0.3 && !scheduledSeek) {
+            // ~0.25 between each call (we add a bit to be 99.99% on not missing anything)
+            if (player.currentTime > player.duration - 0.45 && !scheduledSeek) {
                 object : Thread() {
                     override fun run() {
                         scheduledSeek = true
                         // Limit : If the video is paused at the end, it will be restarted anyway, but that is not a big deal since it's a really short window anyway
                         // 0.05 seems to be sufficient to never ever trigger the ui but it might not be enough for all devices, need some testing
                         val waitingTime =
-                            ((player.duration - player.currentTime - 0.8) * 1000).toLong()
+                            ((player.duration - player.currentTime - 0.05) * 1000).toLong()
                         if (waitingTime > 0)
                             Thread.sleep(waitingTime)
                         scheduledSeek = false
