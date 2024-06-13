@@ -254,7 +254,7 @@ internal fun getCustomCss(context : Context, id : String, streamConfig: StreamCo
     }
     css.append("\n$userSupplCss")
 
-    Log.d("BitmovinStreamStyle", "$css")
+    //Log.v("BitmovinStreamStyle", "$css")
 
     // Player does not support URI, that's why we still use URL.
     return writeCssToFile(context, css.toString(), id)?.toURL().toString()

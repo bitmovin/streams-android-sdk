@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -106,6 +107,7 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
                         unfoldedStreamId.value = streamId
                     } else {
                         // Trigger the action
+                        playerHolder?.pause()
                         switchToPlayerActivity(streamId, context, token)
                     }
             }
@@ -132,11 +134,13 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
                 subtitles = emptyList(),
                 enableAds = false,
                 start = 5.0,
+                loop = true,
                 muted = true,
                 jwToken = token,
                 streamEventListener = object : BitmovinStreamEventListener {
                     override fun onPlayerReady(player: Player) {
                         playerHolder = player
+                        Log.d("BitmovinStream", "$playerHolder")
                     }
 
                     override fun onPlayerViewReady(playerView: PlayerView) {
