@@ -9,6 +9,7 @@ import android.view.OrientationEventListener
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -37,7 +38,7 @@ import com.bitmovin.streams.config.PlayerThemes
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import kotlin.math.abs
 
-class PlayerActivity : ComponentActivity() {
+class PlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT

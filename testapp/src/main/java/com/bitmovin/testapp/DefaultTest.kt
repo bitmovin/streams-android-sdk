@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -16,7 +17,7 @@ import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.TestStreamsIds
 
-class DefaultTest : ComponentActivity() {
+class DefaultTest : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -31,7 +32,7 @@ class DefaultTest : ComponentActivity() {
                         Column {
                             Text(text = "Video 1")
                             BitmovinStream(
-                                streamId = TestStreamsIds.VERTICAL_VIDEO,
+                                streamId = TestStreamsIds.TEAR_OF_STEEL,
                                 subtitles = emptyList(),
                                 modifier = Modifier,
                                 styleConfig = StyleConfigStream(
@@ -50,18 +51,18 @@ class DefaultTest : ComponentActivity() {
                             .size(400.dp)
                             .padding(40.dp)
                     ) {
-                        Column {
-                            Text(text = "Video 2")
-                            BitmovinStream(
-                                streamId = TestStreamsIds.SQUARE_VIDEO,
-                                modifier = Modifier,
-                                enableAds = false,
-                                subtitles = listOf(
-                                    SubtitleTrack(language = "French", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"),
-                                    SubtitleTrack(language = "German", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt"),
-                                )
-                            )
-                        }
+//                        Column {
+//                            Text(text = "Video 2")
+//                            BitmovinStream(
+//                                streamId = TestStreamsIds.SQUARE_VIDEO,
+//                                modifier = Modifier,
+//                                enableAds = false,
+//                                subtitles = listOf(
+//                                    SubtitleTrack(language = "French", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"),
+//                                    SubtitleTrack(language = "German", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt"),
+//                                )
+//                            )
+//                        }
                     }
                 }
         }

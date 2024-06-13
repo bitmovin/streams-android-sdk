@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,7 +46,7 @@ import com.bitmovin.testapp.ui.theme.LightColorScheme
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import com.bitmovin.testapp.utils.PlayerActivity
 
-class TestApp2 : ComponentActivity() {
+class TestApp2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -74,7 +75,7 @@ fun StreamsList() {
             streamId = TestStreamsIds.BIG_BUCK_BUNNY,
             unfoldedStreamId,
 
-            // token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTg2OTY0NDB9.J7ysnY4jc6cHHSTbfoqz3PApo2WlO36pi94mU92MAAp77iDYQuMDtqcuGwdE7OBMSwkFvvpmLEJNgFh02Q3bcpiQWtQZaH43uObsQpJnpnoDSwghq3BWXo0_F478lPk51L1-F7UBpYjctNJ9usmJD-c9hCOmd-gTLmvjBx0Ytveh4PY6kWbNjahZT1sHu-SGDwxJJEgqrf18PXDb1tO9GHU6xIgLrXa956m9yaz9XMFPvN55C7SMmvGZxkSFDa_0WQssikZo4Xa4z14ZuNGv5JpiE4pP7zBj6Ll0ri9Ofypof_aw1DJiR5O6MP7sK7nYRgZR0MrlJ2OrOcBxYCqbnA"
+            token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTg2OTY0NDB9.J7ysnY4jc6cHHSTbfoqz3PApo2WlO36pi94mU92MAAp77iDYQuMDtqcuGwdE7OBMSwkFvvpmLEJNgFh02Q3bcpiQWtQZaH43uObsQpJnpnoDSwghq3BWXo0_F478lPk51L1-F7UBpYjctNJ9usmJD-c9hCOmd-gTLmvjBx0Ytveh4PY6kWbNjahZT1sHu-SGDwxJJEgqrf18PXDb1tO9GHU6xIgLrXa956m9yaz9XMFPvN55C7SMmvGZxkSFDa_0WQssikZo4Xa4z14ZuNGv5JpiE4pP7zBj6Ll0ri9Ofypof_aw1DJiR5O6MP7sK7nYRgZR0MrlJ2OrOcBxYCqbnA"
         )
     }
 }
