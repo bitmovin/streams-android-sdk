@@ -17,6 +17,7 @@ import com.bitmovin.player.api.event.*
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.player.api.ui.FullscreenHandler
 import com.bitmovin.player.api.ui.PictureInPictureHandler
+import com.bitmovin.player.casting.BitmovinCastManager
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
@@ -60,10 +61,12 @@ internal class ViewModelStream : ViewModel() {
                     }
 
                     else -> {
+                        Log.e("BitmovinStream", "Error fetching the stream config data of $streamId")
                         updateState(Action.STREAM_ERROR)
                     }
                 }
             } catch (e: Exception) {
+                Log.e("BitmovinStream", "Error fetching the stream config data of $streamId", e)
                 updateState(Action.STREAM_ERROR)
             }
         }
@@ -88,6 +91,10 @@ internal class ViewModelStream : ViewModel() {
         enableAds: Boolean,
         styleConfigStream: StyleConfigStream
     ) {
+        if (!BitmovinCastManager.isInitialized())
+            BitmovinCastManager.initialize()
+        BitmovinCastManager.getInstance().updateContext(context)
+
         Log.d("BitmovinStream", "Initializing the BitmovinStream of $streamId")
         pipChangesObserver.let {
             it.context = context
@@ -102,6 +109,12 @@ internal class ViewModelStream : ViewModel() {
         this.player = player
         player.on(PlayerEvent.Ready::class.java) {
             updateState(Action.PLAYER_READY)
+        }
+        player.on(PlayerEvent.Error::class.java) {
+            if (state != BitmovinStreamState.DISPLAYING_ERROR && state != BitmovinStreamState.DISPLAYING) {
+                Log.e("BitmovinStream", "Error initializing the player")
+                updateState(Action.STREAM_ERROR)
+            }
         }
 
 
