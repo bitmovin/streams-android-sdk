@@ -91,7 +91,7 @@ fun BitmovinShowcase() {
 
             // Simplest way to use the Bitmovin Stream Player component
             BitmovinStream(
-                streamId = TestStreamsIds.SINTEL,
+                streamId = TestStreamsIds.BIG_BUCK_BUNNY,
                 styleConfig = PlayerThemes.BITMOVIN_DEFAULT_THEME
             )
         }
@@ -374,6 +374,9 @@ fun FlipCard(
 ) {
     var isFront by remember { mutableStateOf(true) }
 
+    //Preload the player() in a compose variable right away so that the player is ready to play when the user clicks on the button
+
+    //val playerSaved = remember { player }
 
     Box(
         modifier = Modifier.padding(0.dp),

@@ -43,7 +43,7 @@ BitmovinStream(
 /**
  * Bitmovin Streams Player Component.
  *
- * @param streamId The id of the stream to be played.
+ * @param streamId The id of the stream to be played. This is the only required parameter.
  *
  * @param modifier The modifier to be applied to the player.
  * @param jwToken The token to be used for authentication if the stream is protected.
@@ -74,7 +74,7 @@ fun BitmovinStream(
     enableAds : Boolean = true,
     styleConfig : StyleConfigStream = StyleConfigStream()
 ) {
-    Log.d("StreamsPlayer", "StreamsPlayer called")
+    Log.v("BitmovinStream", "Recomposition of a BitmovinStream. StreamId = $streamId.")
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     // The UPID (Unique Player ID) is maintained through recompositions to keep the ViewModel alive and used.

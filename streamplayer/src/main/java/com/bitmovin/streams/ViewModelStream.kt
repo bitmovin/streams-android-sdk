@@ -45,6 +45,7 @@ internal class ViewModelStream : ViewModel() {
     }
 
     fun fetchStreamConfigData(streamId: String, jwToken: String?, bitmovinStreamEventListener: BitmovinStreamEventListener?) {
+        Log.d("BitmovinStream", "Fetching the Stream Data of $streamId")
         this.streamEventListener = bitmovinStreamEventListener
         viewModelScope.launch {
             // Fetch the stream config data
@@ -54,22 +55,16 @@ internal class ViewModelStream : ViewModel() {
                 when (streamResponseError) {
                     200 -> {
                         streamConfigData = streamConfigDataResp.streamConfigData
-                        state = BitmovinStreamState.INITIALIZING
+                        updateState(Action.FETCHING_DONE)
+                        Log.d("BitmovinStream", "Stream Config Data of $streamId fetched")
                     }
 
                     else -> {
-                        Log.e(
-                            "StreamsPlayer",
-                            streamResponseError.toString() + "Error fetching stream config data."
-                        )
-                        streamEventListener?.onStreamError(streamResponseError, getErrorMessage(streamResponseError))
-                        state = BitmovinStreamState.DISPLAYING_ERROR
+                        updateState(Action.STREAM_ERROR)
                     }
                 }
             } catch (e: Exception) {
-                Log.e("StreamsPlayer", "No Internet Connection", e)
-                state = BitmovinStreamState.DISPLAYING_ERROR
-                streamEventListener?.onStreamError(streamResponseError, getErrorMessage(streamResponseError))
+                updateState(Action.STREAM_ERROR)
             }
         }
     }
@@ -93,7 +88,8 @@ internal class ViewModelStream : ViewModel() {
         enableAds: Boolean,
         styleConfigStream: StyleConfigStream
     ) {
-        pipChangesObserver.let { it ->
+        Log.d("BitmovinStream", "Initializing the BitmovinStream of $streamId")
+        pipChangesObserver.let {
             it.context = context
             lifecycleOwner.lifecycle.addObserver(it)
         }
@@ -101,29 +97,27 @@ internal class ViewModelStream : ViewModel() {
         val activity = context.getActivity()
 
         // 1. Initializing the player
+        Log.v("BitmovinStream", "1 - Initializing the player")
         val player = createPlayer(streamConfig, context, enableAds)
         this.player = player
         player.on(PlayerEvent.Ready::class.java) {
-            streamEventListener?.onPlayerReady(player)
-            if (state == BitmovinStreamState.INITIALIZING) {
-                state = BitmovinStreamState.WAITING_FOR_VIEW
-            } else if (state == BitmovinStreamState.WAITING_FOR_PLAYER) {
-                state = BitmovinStreamState.DISPLAYING
-                streamEventListener?.onStreamReady(player, playerView!!)
-            }
+            updateState(Action.PLAYER_READY)
         }
 
 
         // 2. Loading the stream source
+        Log.v("BitmovinStream", "2 - Loading the stream source")
         val streamSource =
             createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
         player.load(streamSource)
 
         // 3. Handling properties
+        Log.v("BitmovinStream", "3 - Handling properties")
         player.handleAttributes(autoPlay, muted, loop, start)
         this.immersiveFullScreen.value = fullscreenConfig.immersive
 
         // 4. Setting up Views
+        Log.v("BitmovinStream", "4 - Setting up views")
 
         // Setting up the player view
         playerView = createPlayerView(context, player, streamId, streamConfig, styleConfigStream)
@@ -135,6 +129,7 @@ internal class ViewModelStream : ViewModel() {
         subtitlesView.setPlayer(player)
 
         // 5. Initializing handlers
+        Log.v("BitmovinStream", "5 - Initializing handlers")
 
         if (fullscreenConfig.enable) {
             // Setting up the fullscreen feature
@@ -152,7 +147,6 @@ internal class ViewModelStream : ViewModel() {
 
             val pipExitHandler = object : PiPExitListener {
                 override fun onPiPExit() {
-                    Log.d("StreamsPlayer", "onPiPExit called")
                     this@ViewModelStream.pipHandler?.exitPictureInPicture()
                 }
 
@@ -162,13 +156,46 @@ internal class ViewModelStream : ViewModel() {
             }
             pipChangesObserver.addListener(pipExitHandler)
         }
-        
-        streamEventListener?.onPlayerViewReady(playerView)
-        if (state == BitmovinStreamState.INITIALIZING)
-            state = BitmovinStreamState.WAITING_FOR_PLAYER
-        else if (state == BitmovinStreamState.WAITING_FOR_VIEW) {
-            state = BitmovinStreamState.DISPLAYING
-            streamEventListener?.onStreamReady(player, playerView)
+
+        updateState(Action.PLAYER_VIEW_READY)
+        Log.d("BitmovinStream", "BitmovinStream of $streamId initialized")
+    }
+
+    private fun updateState(action: Action) {
+        when (action) {
+            Action.FETCHING_DONE -> {
+                state = BitmovinStreamState.INITIALIZING
+            }
+            Action.PLAYER_VIEW_READY -> {
+                if (state == BitmovinStreamState.INITIALIZING) {
+                    state = BitmovinStreamState.WAITING_FOR_PLAYER
+                    streamEventListener?.onPlayerViewReady(playerView!!)
+                    Log.d("BitmovinStream", "PlayerView ready")
+                }
+                else if (state == BitmovinStreamState.WAITING_FOR_VIEW)
+                {
+                    state = BitmovinStreamState.DISPLAYING
+                    streamEventListener?.onStreamReady(player!!, playerView!!)
+                    Log.d("BitmovinStream", "Stream ready")
+                }
+            }
+            Action.PLAYER_READY -> {
+                if (state == BitmovinStreamState.INITIALIZING) {
+                    state = BitmovinStreamState.WAITING_FOR_VIEW
+                    streamEventListener?.onPlayerReady(player!!)
+                    Log.d("BitmovinStream", "Player ready")
+                }
+                else if (state == BitmovinStreamState.WAITING_FOR_PLAYER)
+                {
+                    state = BitmovinStreamState.DISPLAYING
+                    streamEventListener?.onStreamReady(player!!, playerView!!)
+                    Log.d("BitmovinStream", "Stream ready")
+                }
+            }
+            Action.STREAM_ERROR -> {
+                streamEventListener?.onStreamError(streamResponseError, "Error fetching or initializing the player")
+                state = BitmovinStreamState.DISPLAYING_ERROR
+            }
         }
 
     }
@@ -222,4 +249,11 @@ enum class BitmovinStreamState {
     WAITING_FOR_PLAYER,
     DISPLAYING,
     DISPLAYING_ERROR,
+}
+
+enum class Action {
+    FETCHING_DONE,
+    PLAYER_VIEW_READY,
+    PLAYER_READY,
+    STREAM_ERROR,
 }

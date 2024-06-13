@@ -199,7 +199,7 @@ internal fun createPlayerView(context: Context, player: Player, streamId: String
     // Should be done at the end
     //TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
     streamConfig.styleConfig.playerStyle.backgroundColor?.let {
-        it.parseColor()?.toArgb()?.let { colorInt -> playerView.setBackgroundColor(colorInt) ; Log.d("Color", "Setting ALEERR color to $colorInt") }
+        it.parseColor()?.toArgb()?.let { colorInt -> playerView.setBackgroundColor(colorInt) }
     }
     return playerView
 }
@@ -209,14 +209,14 @@ internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>)
 }
 
 fun getErrorMessage(errorCode: Int) : String {
-    var message =
+    val message =
         when (errorCode) {
             0 -> "No Internet Connection"
-            401 -> "Unauthorized access to stream.\nThis stream may require a token."
-            403 -> "Forbidden access to stream.\nThe domain may not be allowed to access the stream or the token you provided may be invalid."
-            404 -> "Stream not found.\nThe stream you are trying to access does not exist."
-            500 -> "Internal server error.\nThe server encountered an error while processing your request."
-            503 -> "Service unavailable.\nPlease try again in few minutes."
+            401 -> "Unauthorized access to stream. This stream may require a token."
+            403 -> "Forbidden access to stream. The domain may not be allowed to access the stream or the token you provided may be invalid."
+            404 -> "Stream not found. The stream you are trying to access does not exist."
+            500 -> "Internal server error. The server encountered an error while processing your request."
+            503 -> "Service unavailable. Please try again in few minutes."
             else -> "An error occurred while fetching the stream data."
         }
     return message
@@ -227,7 +227,7 @@ internal fun writeCssToFile(context: Context, css: String, streamId: String): Fi
     return try {
         // Create a file in the app's private storage
         val cssFile = File(context.filesDir, "custom_css_${streamId}.css")
-        Log.d("CSS", "Writing CSS to file: $cssFile")
+        Log.d("BitmovinStreamStyle", "Writing CSS to file: $cssFile")
         if (cssFile.exists()) {
             cssFile.delete()
         }
@@ -253,9 +253,10 @@ internal fun getCustomCss(context : Context, id : String, streamConfig: StreamCo
         css.append(watermarkCss(it))
     }
     css.append("\n$userSupplCss")
-    Log.d("CSS", css.toString())
-    Log.d("CSS", "Writing CSS to file: \n$userSupplCss")
 
+    Log.d("BitmovinStreamStyle", "$css")
+
+    // Player does not support URI, that's why we still use URL.
     return writeCssToFile(context, css.toString(), id)?.toURL().toString()
 }
 
@@ -393,7 +394,6 @@ internal fun backgroundColor(color: String): String {
 
 fun Color.toCSS() : String {
     val s = "rgba(${(this.red*255).toInt()}, ${(this.green*255).toInt()}, ${(this.blue*255).toInt()}, ${this.alpha})"
-    Log.d("Color", "Converting color to CSS: $s")
     return s
 }
 
@@ -405,14 +405,14 @@ const val floatNumber = "([+-]?([0-9]+([.][0-9]*)?|[.][0-9]+))"
 // TODO: Change the parsing without using Regex because it seems overkill
 fun String.parseColor() : Color? {
 
-    Log.d("Color", "Parsing color from string: $this")
+    //Log.d("Color", "Parsing color from string: $this")
     val pattern = "rgba\\((\\d+), (\\d+), (\\d+), $floatNumber\\)".toRegex()
     val match = pattern.find(this)
     if (match != null) {
         val (r,g,b,a) = match.destructured
         return Color(r.toInt(), g.toInt(), b.toInt(), (a.toFloat()*255).toInt())
     } else {
-        Log.e("Color", "Failed to parse color from string: $this")
+        //Log.e("Color", "Failed to parse color from string: $this")
     }
     return null
 }
