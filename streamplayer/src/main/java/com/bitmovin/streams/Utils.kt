@@ -87,7 +87,7 @@ internal fun Context.getActivity(): Activity? {
 
 internal suspend fun getStreamConfigData(streamId: String, jwToken: String?) : StreamConfigDataResponse {
     return withContext(Dispatchers.IO) {
-        val client = OkHttpClient()
+        val client = StreamsAccessPool.okHttpClient
         var url = "https://streams.bitmovin.com/${streamId}/config"
         if (jwToken != null) {
             url = addURLParam(url, "token", jwToken)
