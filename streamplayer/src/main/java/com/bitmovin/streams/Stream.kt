@@ -143,13 +143,17 @@ internal class Stream(val psid: String) {
             }
         }
 
-        // 2. Loading the stream source
-        val streamSource =
-            createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
-        player.load(streamSource)
+        CoroutineScope(Dispatchers.IO).launch {
+            // 2. Loading the stream source
+            val streamSource =
+                createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
+            player.load(streamSource)
 
-        // 3. Handling properties
-        player.handleAttributes(autoPlay, muted, loop, start)
+            // 3. Handling properties
+            player.handleAttributes(autoPlay, muted, loop, start)
+
+            streamEventListener?.onPlayerViewReady(playerView!!)
+        }
 
         return player
     }
@@ -177,7 +181,6 @@ internal class Stream(val psid: String) {
         subtitlesView.setPlayer(player)
 
 
-        streamEventListener?.onPlayerViewReady(playerView)
         if (state == BitmovinStreamState.INITIALIZING)
             state = BitmovinStreamState.WAITING_FOR_PLAYER
         else if (state == BitmovinStreamState.WAITING_FOR_VIEW) {
