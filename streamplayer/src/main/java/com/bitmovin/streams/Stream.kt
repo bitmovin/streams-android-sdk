@@ -35,7 +35,6 @@ internal class Stream() {
     var context by mutableStateOf<Context?>(null)
     var pipHandler: PictureInPictureHandler? = null
     var fullscreenHandler: FullscreenHandler? = null
-    var immersiveFullScreen = mutableStateOf(true)
     var playerView by mutableStateOf<PlayerView?>(null)
     var player: Player? = null
     var streamEventListener: BitmovinStreamEventListener? = null
@@ -122,7 +121,6 @@ internal class Stream() {
 
         // 3. Handling properties
         player.handleAttributes(autoPlay, muted, loop, start)
-        this.immersiveFullScreen.value = fullscreenConfig.immersive
 
         // 4. Setting up Views
 
