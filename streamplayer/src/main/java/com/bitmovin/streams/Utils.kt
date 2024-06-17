@@ -234,6 +234,7 @@ internal fun writeCssToFile(context: Context, css: String): File? {
         FileOutputStream(cssFile).use { output ->
             output.write(css.toByteArray())
         }
+        Log.d(Tag.Stream, "Writing CSS to file: $cssFile")
         cssFile
     } catch (e: IOException) {
         Log.e(Tag.Stream, "Failed to write CSS rules to file. Stylization rules will be ignored.", e)
@@ -253,8 +254,6 @@ internal fun getCustomCss(context : Context, streamConfig: StreamConfigData, use
         css.append(watermarkCss(it))
     }
     css.append("\n$userSupplCss")
-    // Log.d("CSS", css.toString())
-    Log.d(Tag.Stream, "Writing CSS to file: \n$userSupplCss")
 
     return writeCssToFile(context, css.toString())?.toURL().toString()
 }
