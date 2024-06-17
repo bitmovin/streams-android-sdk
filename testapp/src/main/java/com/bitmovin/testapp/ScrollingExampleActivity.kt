@@ -92,7 +92,11 @@ fun BitmovinShowcase() {
             // Simplest way to use the Bitmovin Stream Player component
             BitmovinStream(
                 streamId = TestStreamsIds.SINTEL,
-                styleConfig = PlayerThemes.BITMOVIN_DEFAULT_THEME
+                styleConfig = PlayerThemes.BITMOVIN_DEFAULT_THEME,
+                fullscreenConfig = FullscreenConfig(
+                    enable = true,
+                    immersive = false
+                )
             )
         }
 

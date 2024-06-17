@@ -30,8 +30,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -99,6 +101,16 @@ internal fun FullScreen(
                     val dialogWindow = getDialogWindow()
                     val parentView = LocalView.current.parent as View
 
+                    var width by remember {
+                        mutableIntStateOf(
+                        activityWindow?.decorView?.width ?: 0)
+                    }
+                    var height by remember {
+                        mutableIntStateOf(
+                        activityWindow?.decorView?.height ?: 0)
+                    }
+
+
                     SideEffect {
                         if (activityWindow != null && dialogWindow != null) {
                             val attributes = WindowManager.LayoutParams().apply {
@@ -107,10 +119,28 @@ internal fun FullScreen(
                             }
                             dialogWindow.attributes = attributes
                             parentView.layoutParams = FrameLayout.LayoutParams(
-                                activityWindow.decorView.width,
-                                activityWindow.decorView.height
+                                width,
+                                height
                             )
                         }
+
+                        /*
+                         There is some unpredicatable delay depending of the device that leds to having the wrong width and height, especially while escaping from PiP mode and entering.
+                         This is a workaround to get the right width and height during a 3 seconds period (which should be reasonable for most devices).
+                         This method is not perfect and cause some short visual glitches, but it's better than having the wrong width and height.
+                         NB : This issue is not present when the dialog is not immersive.
+                        */
+                        Thread {
+                            for (i in 0..30) {
+                                Thread.sleep(100)
+                                activityWindow?.let {
+                                    if (it.decorView.width != width)
+                                        width = it.decorView.width
+                                    if (it.decorView.height != height)
+                                        height = it.decorView.height
+                                }
+                            }
+                        }.start()
                     }
 
                     val window = getDialogWindow()
@@ -129,8 +159,10 @@ internal fun FullScreen(
                         }
                     }
 
-                    Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
-                        content()
+                    key(width) {
+                        Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
+                            content()
+                        }
                     }
                 } else {
                     content()
@@ -145,7 +177,12 @@ internal fun FullScreen(
  * @param text The text to be displayed.
  */
 @Composable
-internal fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier, noiseEffect: Boolean = false, loadingEffect: Boolean = false) {
+internal fun TextVideoPlayerFiller(
+    text: String,
+    modifier: Modifier = Modifier,
+    noiseEffect: Boolean = false,
+    loadingEffect: Boolean = false
+) {
     // This is a hack to assert the same behavior as the PlayerView even when it don't exists to avoid breaking the layout of the users.
 //    val player = Player(LocalContext.current, PlayerConfig(key = "__FILLER_KEY__"))
 //    val playerView = PlayerView(LocalContext.current, player)
@@ -178,6 +215,7 @@ internal fun TextVideoPlayerFiller(text : String, modifier: Modifier = Modifier,
         }
     }
 }
+
 @Composable
 internal fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
     var message = getErrorMessage(error)
@@ -214,6 +252,7 @@ internal fun PictureInPictureHandlerForStreams(viewModel: ViewModelStream) {
 //    }
 
 }
+
 @Composable
 internal fun CircularLoadingAnimation(
     modifier: Modifier = Modifier,
@@ -250,19 +289,6 @@ internal fun CircularLoadingAnimation(
         )
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // LABORATORY
