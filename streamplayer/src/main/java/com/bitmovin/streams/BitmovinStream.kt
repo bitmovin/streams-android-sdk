@@ -93,7 +93,7 @@ fun BitmovinStream(
                 if (playerView.isFullscreen) {
                     FullScreen(
                         onDismissRequest = { viewModel.playerView?.exitFullscreen() },
-                        isImmersive = viewModel.immersiveFullScreen.value
+                        isImmersive = fullscreenConfig.immersive,
                     ) {
                         StreamVideoPlayer(playerView = playerView)
                     }

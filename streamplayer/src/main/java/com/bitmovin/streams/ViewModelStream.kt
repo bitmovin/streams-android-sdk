@@ -147,7 +147,7 @@ internal class ViewModelStream : ViewModel() {
         }
         // Setting up the PiP feature
         if (fullscreenConfig.enable) {
-            pipHandler = PiPHandler(context.getActivity()!!, playerView, this.immersiveFullScreen)
+            pipHandler = PiPHandler(context.getActivity()!!, playerView)
             playerView.setPictureInPictureHandler(pipHandler)
 
             val pipExitHandler = object : PiPExitListener {
