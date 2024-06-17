@@ -134,7 +134,6 @@ internal class Stream(val psid: String) {
         val player = createPlayer(streamConfig, context, enableAds)
         this.player = player
         player.on(PlayerEvent.Ready::class.java) {
-            streamEventListener?.onPlayerReady(player)
             if (state == BitmovinStreamState.INITIALIZING) {
                 state = BitmovinStreamState.WAITING_FOR_VIEW
             } else if (state == BitmovinStreamState.WAITING_FOR_PLAYER) {
@@ -151,8 +150,6 @@ internal class Stream(val psid: String) {
 
             // 3. Handling properties
             player.handleAttributes(autoPlay, muted, loop, start)
-
-            streamEventListener?.onPlayerViewReady(playerView!!)
         }
 
         return player
