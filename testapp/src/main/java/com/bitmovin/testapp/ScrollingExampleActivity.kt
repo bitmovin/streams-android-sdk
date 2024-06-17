@@ -94,8 +94,7 @@ fun BitmovinShowcase() {
                 streamId = TestStreamsIds.SINTEL,
                 styleConfig = PlayerThemes.BITMOVIN_DEFAULT_THEME,
                 fullscreenConfig = FullscreenConfig(
-                    enable = true,
-                    immersive = false
+                    enable = true
                 )
             )
         }
@@ -315,18 +314,10 @@ fun BitmovinShowcase() {
             BitmovinStream(
                 streamId = TestStreamsIds.SINTEL,
                 streamEventListener = object : BitmovinStreamEventListener {
-                    var playerView by remember { mutableStateOf<PlayerView?>(null) }
-                    override fun onPlayerReady(player: Player) {
-                        player.on(PlayerEvent.Play::class.java) {
-                            playerView?.isUiVisible = false
-                        }
-                    }
-
-                    override fun onPlayerViewReady(playerView: PlayerView) {
-                        this.playerView = playerView
-                    }
-
                     override fun onStreamReady(player: Player, playerView: PlayerView) {
+                        player.on(PlayerEvent.Play::class.java) {
+                            playerView.isUiVisible = false
+                        }
                     }
 
                     override fun onStreamError(errorCode: Int, errorMessage: String) {

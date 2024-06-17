@@ -135,15 +135,9 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
                 muted = true,
                 jwToken = token,
                 streamEventListener = object : BitmovinStreamEventListener {
-                    override fun onPlayerReady(player: Player) {
-                        playerHolder = player
-                    }
-
-                    override fun onPlayerViewReady(playerView: PlayerView) {
-                        playerView.isUiVisible = false
-                    }
-
                     override fun onStreamReady(player: Player, playerView: PlayerView) {
+                        playerHolder = player
+                        playerView.isUiVisible = false
                     }
 
                     override fun onStreamError(errorCode: Int, errorMessage: String) {
