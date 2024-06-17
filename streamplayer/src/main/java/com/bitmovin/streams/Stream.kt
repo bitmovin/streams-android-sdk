@@ -25,7 +25,6 @@ import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
 
 internal class Stream(val psid: String) {
     // These values are all set as mutableStateOf to trigger recompositions when they change
@@ -43,7 +42,7 @@ internal class Stream(val psid: String) {
         val pipChangesObserver = PiPChangesObserver()
     }
 
-    fun fetchStreamConfigData(
+    fun fetchStreamConfig(
         streamId: String,
         jwToken: String?,
         bitmovinStreamEventListener: BitmovinStreamEventListener?
@@ -88,7 +87,7 @@ internal class Stream(val psid: String) {
      * Initialize the player with the stream config data and Stream Player attributes
      * Should be called after the stream config data has been fetched.
      */
-    fun initializePlayer(
+    fun initializeStream(
         context: Context,
         lifecycleOwner: LifecycleOwner,
         streamConfig: StreamConfigData,
@@ -107,7 +106,28 @@ internal class Stream(val psid: String) {
             lifecycleOwner.lifecycle.addObserver(it)
         }
         this.context = context
-        val activity = context.getActivity()
+
+        val player = initializePlayerRelated(context, lifecycleOwner, streamConfig, autoPlay, loop, muted, start, enableAds, poster, subtitles)
+        initializeViewRelated(context, player, lifecycleOwner, streamConfig, styleConfigStream, fullscreenConfig)
+    }
+
+    private fun initializePlayerRelated(
+        context: Context,
+        lifecycleOwner: LifecycleOwner,
+        streamConfig: StreamConfigData,
+        autoPlay: Boolean,
+        loop: Boolean,
+        muted: Boolean,
+        start: Double,
+        enableAds: Boolean,
+        poster: String?,
+        subtitles: List<SubtitleTrack>
+    ) : Player {
+        pipChangesObserver.let {
+            it.context = context
+            lifecycleOwner.lifecycle.addObserver(it)
+        }
+        this.context = context
 
         // 1. Initializing the player
         val player = createPlayer(streamConfig, context, enableAds)
@@ -122,7 +142,6 @@ internal class Stream(val psid: String) {
             }
         }
 
-
         // 2. Loading the stream source
         val streamSource =
             createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
@@ -130,6 +149,20 @@ internal class Stream(val psid: String) {
 
         // 3. Handling properties
         player.handleAttributes(autoPlay, muted, loop, start)
+
+        return player
+    }
+
+    private fun initializeViewRelated(
+        context: Context,
+        player: Player,
+        lifecycleOwner: LifecycleOwner,
+        streamConfig: StreamConfigData,
+        styleConfigStream: StyleConfigStream,
+        fullscreenConfig: FullscreenConfig
+    ) {
+        this.context = context
+        val activity = context.getActivity()
 
         // 4. Setting up Views
 
@@ -141,6 +174,15 @@ internal class Stream(val psid: String) {
         // Setting up the subtitles view
         val subtitlesView = SubtitleView(context)
         subtitlesView.setPlayer(player)
+
+
+        streamEventListener?.onPlayerViewReady(playerView)
+        if (state == BitmovinStreamState.INITIALIZING)
+            state = BitmovinStreamState.WAITING_FOR_PLAYER
+        else if (state == BitmovinStreamState.WAITING_FOR_VIEW) {
+            state = BitmovinStreamState.DISPLAYING
+            streamEventListener?.onStreamReady(player, playerView)
+        }
 
         // 5. Initializing handlers
 
@@ -170,13 +212,6 @@ internal class Stream(val psid: String) {
             pipChangesObserver.addListener(pipExitHandler)
         }
 
-        streamEventListener?.onPlayerViewReady(playerView)
-        if (state == BitmovinStreamState.INITIALIZING)
-            state = BitmovinStreamState.WAITING_FOR_PLAYER
-        else if (state == BitmovinStreamState.WAITING_FOR_VIEW) {
-            state = BitmovinStreamState.DISPLAYING
-            streamEventListener?.onStreamReady(player, playerView)
-        }
     }
 }
 
