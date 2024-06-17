@@ -14,6 +14,8 @@ import com.bitmovin.streams.config.BitmovinStreamConfig
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.util.UUID
 
 
@@ -85,7 +87,7 @@ fun BitmovinStream(
 
     when (stream.state) {
         BitmovinStreamState.DISPLAYING -> {
-            // Should be safe to unwrap as we are in the DISPLAYING state and the playerView should NEVER be null at this point
+            // Safe to unwrap as we are in the DISPLAYING state and the playerView should NEVER be null at this point
             val playerView = stream.playerView!!
 
             if (playerView.isFullscreen) {
@@ -129,6 +131,7 @@ fun BitmovinStream(
     Log.i(Tag.Stream, "[$upid] Stream recomposed in ${System.currentTimeMillis() - recompositionTimeStart}ms")
 
     DisposableEffect(Unit) {
+
         onDispose {
             stream.dispose()
         }
