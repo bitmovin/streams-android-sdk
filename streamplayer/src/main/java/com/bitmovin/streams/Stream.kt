@@ -90,7 +90,6 @@ internal class Stream(val psid: String) {
      */
     fun initializePlayer(
         context: Context,
-        streamId: String,
         lifecycleOwner: LifecycleOwner,
         streamConfig: StreamConfigData,
         autoPlay: Boolean,
@@ -135,7 +134,7 @@ internal class Stream(val psid: String) {
         // 4. Setting up Views
 
         // Setting up the player view
-        playerView = createPlayerView(context, player, streamId, streamConfig, styleConfigStream)
+        playerView = createPlayerView(context, player, streamConfig, styleConfigStream)
         val playerView = playerView!!
         // Adding the playerView to the lifecycle
         lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
@@ -178,9 +177,9 @@ internal class Stream(val psid: String) {
             state = BitmovinStreamState.DISPLAYING
             streamEventListener?.onStreamReady(player, playerView)
         }
-
     }
 }
+
 
 private fun Player.handleAttributes(
     autoPlay: Boolean,

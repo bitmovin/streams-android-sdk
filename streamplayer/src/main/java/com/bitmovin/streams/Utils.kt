@@ -41,6 +41,7 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.UUID
 import kotlin.reflect.KProperty
 
 /**
@@ -174,12 +175,12 @@ internal fun createSource(streamConfigData: StreamConfigData, customPosterSource
     )
 }
 
-internal fun createPlayerView(context: Context, player: Player, streamId: String, streamConfig : StreamConfigData, styleConfigStream: StyleConfigStream) : PlayerView{
+internal fun createPlayerView(context: Context, player: Player, streamConfig : StreamConfigData, styleConfigStream: StyleConfigStream) : PlayerView{
 
     // Should be done at the beginning or the attributes values will be ignored.
     streamConfig.styleConfig.affectConfig(styleConfigStream)
 
-    val suppCssLocation = getCustomCss(context, streamId, streamConfig, userSupplCss = styleConfigStream.customCss)
+    val suppCssLocation = getCustomCss(context, streamConfig, userSupplCss = styleConfigStream.customCss)
     val playerViewConfig = PlayerViewConfig(
             UiConfig.WebUi(
                 supplementalCssLocation = suppCssLocation,
@@ -222,10 +223,10 @@ fun getErrorMessage(errorCode: Int) : String {
 }
 
 
-internal fun writeCssToFile(context: Context, css: String, streamId: String): File? {
+internal fun writeCssToFile(context: Context, css: String): File? {
     return try {
         // Create a file in the app's private storage
-        val cssFile = File(context.filesDir, "custom_css_${streamId}.css")
+        val cssFile = File(context.filesDir, "custom_css_${UUID.randomUUID().toString()}.css")
         if (cssFile.exists()) {
             cssFile.delete()
         }
@@ -235,11 +236,12 @@ internal fun writeCssToFile(context: Context, css: String, streamId: String): Fi
         }
         cssFile
     } catch (e: IOException) {
+        Log.e(Tag.Stream, "Failed to write CSS rules to file. Stylization rules will be ignored.", e)
         null
     }
 }
 
-internal fun getCustomCss(context : Context, id : String, streamConfig: StreamConfigData, userSupplCss: String) : String {
+internal fun getCustomCss(context : Context, streamConfig: StreamConfigData, userSupplCss: String) : String {
 
     val style = streamConfig.styleConfig
     val css = StringBuilder()
@@ -254,7 +256,7 @@ internal fun getCustomCss(context : Context, id : String, streamConfig: StreamCo
     // Log.d("CSS", css.toString())
     Log.d(Tag.Stream, "Writing CSS to file: \n$userSupplCss")
 
-    return writeCssToFile(context, css.toString(), id)?.toURL().toString()
+    return writeCssToFile(context, css.toString())?.toURL().toString()
 }
 
 
