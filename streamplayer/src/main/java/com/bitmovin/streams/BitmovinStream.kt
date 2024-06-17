@@ -81,19 +81,19 @@ fun BitmovinStream(
     // We do not use the streamId to allow to user to have multiple players with the same streamId.
     val upid: String by rememberSaveable { UUID.randomUUID().toString() }
     // Make the StreamViewModel unique for each instance of the Streams Player (1:1 relationship)
-    val viewModel: ViewModelStream = viewModel(key = upid)
+    val stream: Stream = StreamsAccessPool.getInstance().getStream(upid)
     // PiP related stuffs
     // PictureInPictureHandlerForStreams(viewModel)
-    when (viewModel.state) {
+    when (stream.state) {
         BitmovinStreamState.DISPLAYING -> {
             // Should be safe to unwrap as we are in the DISPLAYING state and the playerView should NEVER be null at this point
-            val playerView = viewModel.playerView!!
+            val playerView = stream.playerView!!
 
             key (playerView.isFullscreen, playerView.isPictureInPicture) {
                 if (playerView.isFullscreen) {
                     FullScreen(
-                        onDismissRequest = { viewModel.playerView?.exitFullscreen() },
-                        isImmersive = fullscreenConfig.immersive,
+                        onDismissRequest = { stream.playerView?.exitFullscreen() },
+                        isImmersive = stream.immersiveFullScreen.value
                     ) {
                         StreamVideoPlayer(playerView = playerView)
                     }
@@ -113,20 +113,20 @@ fun BitmovinStream(
         BitmovinStreamState.INITIALIZING,
         BitmovinStreamState.WAITING_FOR_VIEW,
         BitmovinStreamState.WAITING_FOR_PLAYER -> {
-            if (BitmovinStreamState.FETCHING == viewModel.state) {
+            if (BitmovinStreamState.FETCHING == stream.state) {
                 LaunchedEffect(Unit) {
-                    viewModel.fetchStreamConfigData(streamId, jwToken, streamEventListener)
+                    stream.fetchStreamConfigData(streamId, jwToken, streamEventListener)
                 }
-            } else if (BitmovinStreamState.INITIALIZING == viewModel.state) {
+            } else if (BitmovinStreamState.INITIALIZING == stream.state) {
                 LaunchedEffect(Unit) {
-                    viewModel.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, viewModel.streamConfigData!!, autoPlay, loop, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
+                    stream.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, stream.streamConfigData!!, autoPlay, loop, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
                 }
             }
-            val loadingMess: String = getLoadingScreenMessage(viewModel.state)
+            val loadingMess: String = getLoadingScreenMessage(stream.state)
             TextVideoPlayerFiller(loadingMess, modifier, loadingEffect = true)
         }
         BitmovinStreamState.DISPLAYING_ERROR -> {
-            ErrorHandling(error = viewModel.streamResponseError, modifier)
+            ErrorHandling(error = stream.streamResponseError, modifier)
         }
     }
 }
