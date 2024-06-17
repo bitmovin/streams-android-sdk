@@ -67,8 +67,6 @@ data class BitmovinStreamConfig(
         fullscreenConfig: FullscreenConfig = FullscreenConfig(),
         subtitles : List<SubtitleTrack> = emptyList(),
         onStreamReady : (Player, PlayerView) -> Unit = { _, _ -> },
-        onPlayerReady : (Player) -> Unit = {},
-        onPlayerViewReady : (PlayerView) -> Unit = {},
         onStreamError : (Int, String) -> Unit = { _, _ -> },
         enableAds : Boolean = true,
         styleConfig : StyleConfigStream = StyleConfigStream()
@@ -90,13 +88,6 @@ data class BitmovinStreamConfig(
 
                 override fun onStreamError(errorCode: Int, errorMessage: String) {
                     onStreamError(errorCode, errorMessage)
-                }
-
-                override fun onPlayerReady(player: Player) {
-                        onPlayerReady(player)
-                }
-                override fun onPlayerViewReady(playerView: PlayerView) {
-                    onPlayerViewReady(playerView)
                 }
             },
         enableAds,

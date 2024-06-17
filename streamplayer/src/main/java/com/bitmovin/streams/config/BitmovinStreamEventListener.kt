@@ -4,9 +4,6 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 
 interface BitmovinStreamEventListener {
-    fun onPlayerReady(player: Player)
-    fun onPlayerViewReady(playerView: PlayerView)
-
     /**
      * Called when the stream is ready to be played.
      */
