@@ -88,21 +88,19 @@ fun BitmovinStream(
             // Should be safe to unwrap as we are in the DISPLAYING state and the playerView should NEVER be null at this point
             val playerView = stream.playerView!!
 
-            key (playerView.isFullscreen, playerView.isPictureInPicture) {
-                if (playerView.isFullscreen) {
-                    FullScreen(
-                        onDismissRequest = { stream.playerView?.exitFullscreen() },
-                        isImmersive = fullscreenConfig.immersive
-                    ) {
-                        StreamVideoPlayer(playerView = playerView)
-                    }
-                    TextVideoPlayerFiller(text = "In Fullscreen", modifier)
-                } else {
-                    StreamVideoPlayer(
-                        playerView = playerView,
-                        modifier = modifier
-                    )
+            if (playerView.isFullscreen) {
+                FullScreen(
+                    onDismissRequest = { stream.playerView?.exitFullscreen() },
+                    isImmersive = fullscreenConfig.immersive
+                ) {
+                    StreamVideoPlayer(playerView = playerView)
                 }
+                TextVideoPlayerFiller(text = "In Fullscreen", modifier)
+            } else {
+                StreamVideoPlayer(
+                    playerView = playerView,
+                    modifier = modifier
+                )
             }
         }
 
