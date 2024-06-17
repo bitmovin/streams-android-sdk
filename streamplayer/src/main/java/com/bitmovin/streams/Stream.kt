@@ -6,10 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.SubtitleView
 import com.bitmovin.player.api.Player
@@ -25,9 +22,12 @@ import com.bitmovin.streams.pipmode.PiPChangesObserver
 import com.bitmovin.streams.pipmode.PiPExitListener
 import com.bitmovin.streams.pipmode.PiPHandler
 import com.bitmovin.streams.streamsjson.StreamConfigData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 
-internal class ViewModelStream : ViewModel() {
+internal class Stream() {
     // These values are all set as mutableStateOf to trigger recompositions when they change
     var streamConfigData by mutableStateOf<StreamConfigData?>(null)
     var streamResponseError by mutableIntStateOf(0)
@@ -46,7 +46,8 @@ internal class ViewModelStream : ViewModel() {
 
     fun fetchStreamConfigData(streamId: String, jwToken: String?, bitmovinStreamEventListener: BitmovinStreamEventListener?) {
         this.streamEventListener = bitmovinStreamEventListener
-        viewModelScope.launch {
+        // Coroutine IO to fetch the stream config data IO
+        CoroutineScope(Dispatchers.IO).launch {
             // Fetch the stream config data
             try {
                 val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
@@ -153,11 +154,11 @@ internal class ViewModelStream : ViewModel() {
             val pipExitHandler = object : PiPExitListener {
                 override fun onPiPExit() {
                     Log.d("StreamsPlayer", "onPiPExit called")
-                    this@ViewModelStream.pipHandler?.exitPictureInPicture()
+                    this@Stream.pipHandler?.exitPictureInPicture()
                 }
 
                 override fun isInPiPMode(): Boolean {
-                    return this@ViewModelStream.pipHandler?.isPictureInPicture ?: false
+                    return this@Stream.pipHandler?.isPictureInPicture ?: false
                 }
             }
             pipChangesObserver.addListener(pipExitHandler)
