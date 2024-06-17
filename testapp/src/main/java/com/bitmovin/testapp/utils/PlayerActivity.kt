@@ -111,7 +111,7 @@ class PlayerActivity : ComponentActivity() {
                     screenDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                 ),
                 streamEventListener = object : BitmovinStreamEventListener {
-                    override fun onPlayerReady(player: Player) {
+                    override fun onStreamReady(player: Player, playerView: PlayerView) {
                         name = player.source?.config?.title ?: "Unknown"
                         description = player.source?.config?.description ?: "None"
                         // Launch a separated thread that will search for videoQualities until it find at least one
@@ -132,17 +132,12 @@ class PlayerActivity : ComponentActivity() {
                                 Log.e("PlayerActivity", "No video qualities found")
                             }
                         }.start()
-                    }
 
-                    override fun onPlayerViewReady(playerView: PlayerView) {
                         playerViewHolder = playerView
                         if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                             if (!playerView.isFullscreen)
                                 playerView.enterFullscreen()
                         }
-                    }
-
-                    override fun onStreamReady(player: Player, playerView: PlayerView) {
                     }
 
                     override fun onStreamError(errorCode: Int, errorMessage: String) {
