@@ -10,23 +10,22 @@ import okhttp3.Cache
 import okhttp3.OkHttpClient
 import java.io.File
 
-internal class StreamsAccessPool {
+internal class StreamsProvider : ContentProvider() {
     companion object {
-        private val instance = StreamsAccessPool()
+        private val instance = StreamsProvider()
         lateinit var appContext: Context
         lateinit var okHttpClient: OkHttpClient
 
         fun init(application: Context) {
-            Log.e("StreamsAccessPool", "init...!!")
             appContext = application
             okHttpClient = OkHttpClient.Builder()
                 .cache(Cache(
                     directory = File(appContext.cacheDir, "http_cache_streams"),
-                    maxSize = 1L * 1024L * 1024L // 1 MiB
+                    maxSize = 1L * 1024L * 1024L // 1 MiB (we don't expect to cache much data here)
                 )).build()
         }
 
-        fun getInstance(): StreamsAccessPool {
+        fun getInstance(): StreamsProvider {
             return instance
         }
 
@@ -34,21 +33,31 @@ internal class StreamsAccessPool {
 
     private val streams = mutableMapOf<String, Stream>()
 
-    fun getStream(streamId: String): Stream {
-        return streams.getOrPut(streamId) {
-            Stream()
+    fun getStream(psid: String): Stream {
+        return streams.getOrPut(psid) {
+            Stream(psid)
         }
     }
-}
 
-internal class AppContextProvider : ContentProvider() {
+    /**
+     * Called when the application starts (due to the ContentProvider being registered in the manifest)
+     */
     override fun onCreate(): Boolean {
-        Log.e("DummyProvider","creating...!!")
-        //Initialize your library and other components here.
-        StreamsAccessPool.init(context!!.applicationContext)
+        init(context!!.applicationContext)
+        Log.i(Tag.Stream,"Streams Pool initialized successfully")
         return false
     }
 
+
+
+
+
+
+
+
+
+
+    // IGNORE THE FOLLOWING METHODS, NO NEED TO IMPLEMENT THEM
     override fun query(
         uri: Uri,
         projection: Array<out String>?,
@@ -68,7 +77,7 @@ internal class AppContextProvider : ContentProvider() {
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
-        return 0;
+        return 0
     }
 
     override fun update(
@@ -77,6 +86,6 @@ internal class AppContextProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?
     ): Int {
-        return 0;
+        return 0
     }
 }

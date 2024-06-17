@@ -8,6 +8,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.ui.FullscreenHandler
+import com.bitmovin.streams.Tag
 import com.bitmovin.streams.config.FullscreenConfig
 import java.lang.IndexOutOfBoundsException
 
@@ -22,6 +23,7 @@ class StreamFullscreenHandler(val playerView: PlayerView, val activity: Activity
 
     override fun onFullscreenExitRequested() {
         if (fullscreen.value) {
+            Log.d(Tag.Stream, "exitFullscreen")
             doOrientationChanges(false)
             fullscreen.value = false
         }
@@ -65,17 +67,18 @@ class StreamFullscreenHandler(val playerView: PlayerView, val activity: Activity
     override fun onFullscreenRequested() {
         // Store the user orientation to restore it when exiting fullscreen
         if (!fullscreen.value) {
+            Log.d(Tag.Stream, "enterFullscreen")
             doOrientationChanges(true)
             fullscreen.value = true
         }
     }
 
     override fun onPause() {
-        Log.d("FullScreenHandler", "onPause")
+        // Nothing to do
     }
 
     override fun onResume() {
-        Log.d("FullScreenHandler", "onResume")
+        // Nothing to do
     }
 
     override val isFullscreen: Boolean

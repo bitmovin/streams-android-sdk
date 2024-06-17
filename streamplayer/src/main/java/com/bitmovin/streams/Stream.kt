@@ -27,7 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 
-internal class Stream() {
+internal class Stream(val psid: String) {
     // These values are all set as mutableStateOf to trigger recompositions when they change
     var streamConfigData by mutableStateOf<StreamConfigData?>(null)
     var streamResponseError by mutableIntStateOf(0)
@@ -43,7 +43,11 @@ internal class Stream() {
         val pipChangesObserver = PiPChangesObserver()
     }
 
-    fun fetchStreamConfigData(streamId: String, jwToken: String?, bitmovinStreamEventListener: BitmovinStreamEventListener?) {
+    fun fetchStreamConfigData(
+        streamId: String,
+        jwToken: String?,
+        bitmovinStreamEventListener: BitmovinStreamEventListener?
+    ) {
         this.streamEventListener = bitmovinStreamEventListener
         // Coroutine IO to fetch the stream config data IO
         CoroutineScope(Dispatchers.IO).launch {
@@ -59,24 +63,30 @@ internal class Stream() {
 
                     else -> {
                         Log.e(
-                            "StreamsPlayer",
-                            streamResponseError.toString() + "Error fetching stream config data."
+                            Tag.Stream,
+                            streamResponseError.toString() + "Error fetching stream [$streamId] config data."
                         )
-                        streamEventListener?.onStreamError(streamResponseError, getErrorMessage(streamResponseError))
+                        streamEventListener?.onStreamError(
+                            streamResponseError,
+                            getErrorMessage(streamResponseError)
+                        )
                         state = BitmovinStreamState.DISPLAYING_ERROR
                     }
                 }
             } catch (e: Exception) {
-                Log.e("StreamsPlayer", "No Internet Connection", e)
+                Log.e(Tag.Stream, "No Internet Connection", e)
                 state = BitmovinStreamState.DISPLAYING_ERROR
-                streamEventListener?.onStreamError(streamResponseError, getErrorMessage(streamResponseError))
+                streamEventListener?.onStreamError(
+                    streamResponseError,
+                    getErrorMessage(streamResponseError)
+                )
             }
         }
     }
 
-    /*
-        * Initialize the player with the stream config data and Stream Player attributes
-        * Should be called after the stream config data has been fetched.
+    /**
+     * Initialize the player with the stream config data and Stream Player attributes
+     * Should be called after the stream config data has been fetched.
      */
     fun initializePlayer(
         context: Context,
@@ -93,7 +103,7 @@ internal class Stream() {
         enableAds: Boolean,
         styleConfigStream: StyleConfigStream
     ) {
-        pipChangesObserver.let { it ->
+        pipChangesObserver.let {
             it.context = context
             lifecycleOwner.lifecycle.addObserver(it)
         }
@@ -151,7 +161,6 @@ internal class Stream() {
 
             val pipExitHandler = object : PiPExitListener {
                 override fun onPiPExit() {
-                    Log.d("StreamsPlayer", "onPiPExit called")
                     this@Stream.pipHandler?.exitPictureInPicture()
                 }
 
@@ -161,7 +170,7 @@ internal class Stream() {
             }
             pipChangesObserver.addListener(pipExitHandler)
         }
-        
+
         streamEventListener?.onPlayerViewReady(playerView)
         if (state == BitmovinStreamState.INITIALIZING)
             state = BitmovinStreamState.WAITING_FOR_PLAYER

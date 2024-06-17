@@ -37,7 +37,6 @@ internal class PiPChangesObserver() : LifecycleEventObserver {
     }
 
     private fun onPictureInPictureModeChanged(inPipMode: Boolean, newConfig: Configuration) {
-        Log.d("StreamPlayer", "onPictureInPictureModeChanged: $inPipMode $this")
         if (!inPipMode) {
             listeners.forEach { if (it.isInPiPMode()) {
                 it.onPiPExit()
