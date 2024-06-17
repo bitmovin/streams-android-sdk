@@ -37,6 +37,7 @@ internal class Stream(val psid: String) {
     var playerView by mutableStateOf<PlayerView?>(null)
     var player: Player? = null
     var streamEventListener: BitmovinStreamEventListener? = null
+    var pipExitHandler : PiPExitListener? = null
 
     companion object {
         val pipChangesObserver = PiPChangesObserver()
@@ -209,9 +210,20 @@ internal class Stream(val psid: String) {
                     return this@Stream.pipHandler?.isPictureInPicture ?: false
                 }
             }
+            this.pipExitHandler = pipExitHandler
             pipChangesObserver.addListener(pipExitHandler)
         }
 
+    }
+
+    fun dispose() {
+        player?.destroy()
+        pipExitHandler?.let { pipChangesObserver.removeListener(it) }
+        playerView?.let {
+            it.setFullscreenHandler(null)
+            it.setPictureInPictureHandler(null)
+        }
+        StreamsProvider.getInstance().removeStream(psid)
     }
 }
 

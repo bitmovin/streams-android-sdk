@@ -39,6 +39,10 @@ internal class StreamsProvider : ContentProvider() {
         }
     }
 
+    fun removeStream(psid: String) {
+        streams.remove(psid)
+    }
+
     /**
      * Called when the application starts (due to the ContentProvider being registered in the manifest)
      */

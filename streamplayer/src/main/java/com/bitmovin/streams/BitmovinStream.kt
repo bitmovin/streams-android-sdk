@@ -2,6 +2,7 @@ package com.bitmovin.streams
 
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -128,4 +129,10 @@ fun BitmovinStream(
         }
     }
     Log.i(Tag.Stream, "[$upid] Stream recomposed in ${System.currentTimeMillis() - recompositionTimeStart}ms")
+
+    DisposableEffect(Unit) {
+        onDispose {
+            stream.dispose()
+        }
+    }
 }
