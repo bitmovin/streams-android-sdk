@@ -117,7 +117,7 @@ fun BitmovinStream(
                 }
             } else if (BitmovinStreamState.INITIALIZING == stream.state) {
                 LaunchedEffect(Unit) {
-                    stream.initializePlayer(context, streamId, lifecycleOwner = lifecycleOwner, stream.streamConfigData!!, autoPlay, loop, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
+                    stream.initializePlayer(context, lifecycleOwner = lifecycleOwner, stream.streamConfigData!!, autoPlay, loop, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
                 }
             }
             val loadingMess: String = getLoadingScreenMessage(stream.state)
