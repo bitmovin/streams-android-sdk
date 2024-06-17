@@ -37,7 +37,6 @@ import com.bitmovin.streams.streamsjson.StreamConfigDataResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
@@ -87,7 +86,7 @@ internal fun Context.getActivity(): Activity? {
 
 internal suspend fun getStreamConfigData(streamId: String, jwToken: String?) : StreamConfigDataResponse {
     return withContext(Dispatchers.IO) {
-        val client = StreamsAccessPool.okHttpClient
+        val client = StreamsProvider.okHttpClient
         var url = "https://streams.bitmovin.com/${streamId}/config"
         if (jwToken != null) {
             url = addURLParam(url, "token", jwToken)
@@ -96,7 +95,7 @@ internal suspend fun getStreamConfigData(streamId: String, jwToken: String?) : S
             .url(url)
             .build()
 
-        Log.d("Streams", "Request: $request")
+        Log.d(Tag.Stream, "Request: $request")
         val response = client.newCall(request).execute()
         val code = response.code
         if (!response.isSuccessful) {
@@ -199,7 +198,7 @@ internal fun createPlayerView(context: Context, player: Player, streamId: String
     // Should be done at the end
     //TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
     streamConfig.styleConfig.playerStyle.backgroundColor?.let {
-        it.parseColor()?.toArgb()?.let { colorInt -> playerView.setBackgroundColor(colorInt) ; Log.d("Color", "Setting ALEERR color to $colorInt") }
+        it.parseColor()?.toArgb()?.let { colorInt -> playerView.setBackgroundColor(colorInt) }
     }
     return playerView
 }
@@ -209,7 +208,7 @@ internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>)
 }
 
 fun getErrorMessage(errorCode: Int) : String {
-    var message =
+    val message =
         when (errorCode) {
             0 -> "No Internet Connection"
             401 -> "Unauthorized access to stream.\nThis stream may require a token."
@@ -227,7 +226,6 @@ internal fun writeCssToFile(context: Context, css: String, streamId: String): Fi
     return try {
         // Create a file in the app's private storage
         val cssFile = File(context.filesDir, "custom_css_${streamId}.css")
-        Log.d("CSS", "Writing CSS to file: $cssFile")
         if (cssFile.exists()) {
             cssFile.delete()
         }
@@ -253,8 +251,8 @@ internal fun getCustomCss(context : Context, id : String, streamConfig: StreamCo
         css.append(watermarkCss(it))
     }
     css.append("\n$userSupplCss")
-    Log.d("CSS", css.toString())
-    Log.d("CSS", "Writing CSS to file: \n$userSupplCss")
+    // Log.d("CSS", css.toString())
+    Log.d(Tag.Stream, "Writing CSS to file: \n$userSupplCss")
 
     return writeCssToFile(context, css.toString(), id)?.toURL().toString()
 }
@@ -393,7 +391,6 @@ internal fun backgroundColor(color: String): String {
 
 fun Color.toCSS() : String {
     val s = "rgba(${(this.red*255).toInt()}, ${(this.green*255).toInt()}, ${(this.blue*255).toInt()}, ${this.alpha})"
-    Log.d("Color", "Converting color to CSS: $s")
     return s
 }
 
@@ -405,14 +402,13 @@ const val floatNumber = "([+-]?([0-9]+([.][0-9]*)?|[.][0-9]+))"
 // TODO: Change the parsing without using Regex because it seems overkill
 fun String.parseColor() : Color? {
 
-    Log.d("Color", "Parsing color from string: $this")
     val pattern = "rgba\\((\\d+), (\\d+), (\\d+), $floatNumber\\)".toRegex()
     val match = pattern.find(this)
     if (match != null) {
         val (r,g,b,a) = match.destructured
         return Color(r.toInt(), g.toInt(), b.toInt(), (a.toFloat()*255).toInt())
     } else {
-        Log.e("Color", "Failed to parse color from string: $this")
+        Log.e(Tag.Stream, "Failed to parse color from string: $this\n The only supported format is rgba(r, g, b, a) for now. Please change the color config from the dashboard to respect this format.")
     }
     return null
 }

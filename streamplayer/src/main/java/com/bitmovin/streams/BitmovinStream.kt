@@ -8,7 +8,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.config.BitmovinStreamConfig
 import com.bitmovin.streams.config.BitmovinStreamEventListener
@@ -74,16 +73,15 @@ fun BitmovinStream(
     enableAds : Boolean = true,
     styleConfig : StyleConfigStream = StyleConfigStream()
 ) {
-    Log.d("StreamsPlayer", "StreamsPlayer called")
+    val recompositionTimeStart = System.currentTimeMillis()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     // The UPID (Unique Player ID) is maintained through recompositions to keep the ViewModel alive and used.
     // We do not use the streamId to allow to user to have multiple players with the same streamId.
     val upid: String by rememberSaveable { UUID.randomUUID().toString() }
     // Make the StreamViewModel unique for each instance of the Streams Player (1:1 relationship)
-    val stream: Stream = StreamsAccessPool.getInstance().getStream(upid)
-    // PiP related stuffs
-    // PictureInPictureHandlerForStreams(viewModel)
+    val stream: Stream = StreamsProvider.getInstance().getStream(upid)
+
     when (stream.state) {
         BitmovinStreamState.DISPLAYING -> {
             // Should be safe to unwrap as we are in the DISPLAYING state and the playerView should NEVER be null at this point
@@ -129,4 +127,5 @@ fun BitmovinStream(
             ErrorHandling(error = stream.streamResponseError, modifier)
         }
     }
+    Log.i(Tag.Stream, "[$upid] Stream recomposed in ${System.currentTimeMillis() - recompositionTimeStart}ms")
 }

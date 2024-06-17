@@ -34,7 +34,6 @@ class PlayerStyle {
             textColor = it.toCSS()
         }
         style.backgroundColor?.let {
-            Log.d("Color", "Setting background color to ${it.toCSS()}")
             backgroundColor = it.toCSS()
         }
     }
