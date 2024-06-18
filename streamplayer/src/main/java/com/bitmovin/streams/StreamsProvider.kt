@@ -13,21 +13,30 @@ import java.io.File
 internal class StreamsProvider : ContentProvider() {
     companion object {
         private val instance = StreamsProvider()
-        lateinit var appContext: Context
+        private lateinit var applicationContext: Context
         lateinit var okHttpClient: OkHttpClient
 
         fun init(application: Context) {
-            appContext = application
+            applicationContext = application
             okHttpClient = OkHttpClient.Builder()
-                .cache(Cache(
-                    directory = File(appContext.cacheDir, "http_cache_streams"),
-                    maxSize = 1L * 1024L * 1024L // 1 MiB (we don't expect to cache much data here)
-                )).build()
+                .cache(
+                    Cache(
+                        directory = File(applicationContext.cacheDir, "http_cache_streams"),
+                        maxSize = 1L * 1024L * 1024L // 1 MiB (we don't expect to cache much data here)
+                    )
+                ).build()
         }
 
         fun getInstance(): StreamsProvider {
             return instance
         }
+
+        val appContext: Context
+            get() = try {
+                applicationContext
+            } catch (e: UninitializedPropertyAccessException) {
+                throw IllegalStateException("StreamsProvider not initialized. THAT SHOULD NOT HAPPEN. However, you can initialize it manually by calling StreamsProvider.init(<ApplicationContext>) in your Application class.")
+            }
 
     }
 
@@ -48,17 +57,9 @@ internal class StreamsProvider : ContentProvider() {
      */
     override fun onCreate(): Boolean {
         init(context!!.applicationContext)
-        Log.i(Tag.Stream,"Streams Pool initialized successfully")
+        Log.i(Tag.Stream, "Streams Pool initialized successfully")
         return false
     }
-
-
-
-
-
-
-
-
 
 
     // IGNORE THE FOLLOWING METHODS, NO NEED TO IMPLEMENT THEM

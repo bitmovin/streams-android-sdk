@@ -32,7 +32,6 @@ internal class Stream(private val usid: String) {
     var streamConfigData by mutableStateOf<StreamConfigData?>(null)
     var streamResponseError by mutableIntStateOf(0)
     var state by mutableStateOf(BitmovinStreamState.FETCHING)
-    var context by mutableStateOf<Context?>(null)
     var pipHandler: PictureInPictureHandler? = null
     var fullscreenHandler: FullscreenHandler? = null
     var playerView by mutableStateOf<PlayerView?>(null)
@@ -64,7 +63,6 @@ internal class Stream(private val usid: String) {
         bitmovinStreamEventListener: BitmovinStreamEventListener?
     ) {
         state = BitmovinStreamState.FETCHING
-        this.context = context
         this.streamEventListener = bitmovinStreamEventListener
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -109,49 +107,6 @@ internal class Stream(private val usid: String) {
         state = BitmovinStreamState.DISPLAYING_ERROR
     }
 
-
-    @Deprecated("How fetching method, not useful anymore")
-    private fun fetchStreamConfig(
-        streamId: String,
-        jwToken: String?,
-        bitmovinStreamEventListener: BitmovinStreamEventListener?
-    ) {
-        this.streamEventListener = bitmovinStreamEventListener
-        // Coroutine IO to fetch the stream config data IO
-        CoroutineScope(Dispatchers.IO).launch {
-            // Fetch the stream config data
-            try {
-                val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
-                streamResponseError = streamConfigDataResp.responseHttpCode
-                when (streamResponseError) {
-                    200 -> {
-                        streamConfigData = streamConfigDataResp.streamConfigData
-                        state = BitmovinStreamState.INITIALIZING
-                    }
-
-                    else -> {
-                        Log.e(
-                            Tag.Stream,
-                            streamResponseError.toString() + "Error fetching stream [$streamId] config data."
-                        )
-                        streamEventListener?.onStreamError(
-                            streamResponseError,
-                            getErrorMessage(streamResponseError)
-                        )
-                        state = BitmovinStreamState.DISPLAYING_ERROR
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(Tag.Stream, "No Internet Connection", e)
-                state = BitmovinStreamState.DISPLAYING_ERROR
-                streamEventListener?.onStreamError(
-                    streamResponseError,
-                    getErrorMessage(streamResponseError)
-                )
-            }
-        }
-    }
-
     /**
      * Initialize the player with the stream config data and Stream Player attributes
      * Should be called after the stream config data has been fetched.
@@ -175,7 +130,6 @@ internal class Stream(private val usid: String) {
             it.context = context
             lifecycleOwner.lifecycle.addObserver(it)
         }
-        this.context = context
 
         val player = initializePlayerRelated(
             context,
@@ -215,7 +169,6 @@ internal class Stream(private val usid: String) {
             it.context = context
             lifecycleOwner.lifecycle.addObserver(it)
         }
-        this.context = context
 
         // 1. Initializing the player
         val player = createPlayer(streamConfig, context, enableAds)
@@ -240,6 +193,8 @@ internal class Stream(private val usid: String) {
             player.load(streamSource)
 
             // 3. Handling properties
+            // Warning: The stream source has to be loaded before setting the properties. This is why we do it here.
+            // PlayerEvent.Ready event not be called before the source is loaded.
             player.handleAttributes(autoPlay, muted, loop, start)
         }
 
@@ -254,7 +209,6 @@ internal class Stream(private val usid: String) {
         styleConfigStream: StyleConfigStream,
         fullscreenConfig: FullscreenConfig
     ) {
-        this.context = context
         val activity = context.getActivity()
 
         // 4. Setting up Views
@@ -314,11 +268,55 @@ internal class Stream(private val usid: String) {
             it.setFullscreenHandler(null)
             it.setPictureInPictureHandler(null)
         }
-        context?.let {
+        StreamsProvider.appContext.let {
             File(it.filesDir, "custom_css_${usid}.css")
                 .takeIf { file -> file.exists() }?.delete()
         }
         StreamsProvider.getInstance().removeStream(usid)
+        Log.i(Tag.Stream, "[$usid] Stream disposed")
+    }
+
+
+    @Deprecated("How fetching method, not useful anymore")
+    private fun fetchStreamConfig(
+        streamId: String,
+        jwToken: String?,
+        bitmovinStreamEventListener: BitmovinStreamEventListener?
+    ) {
+        this.streamEventListener = bitmovinStreamEventListener
+        // Coroutine IO to fetch the stream config data IO
+        CoroutineScope(Dispatchers.IO).launch {
+            // Fetch the stream config data
+            try {
+                val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
+                streamResponseError = streamConfigDataResp.responseHttpCode
+                when (streamResponseError) {
+                    200 -> {
+                        streamConfigData = streamConfigDataResp.streamConfigData
+                        state = BitmovinStreamState.INITIALIZING
+                    }
+
+                    else -> {
+                        Log.e(
+                            Tag.Stream,
+                            streamResponseError.toString() + "Error fetching stream [$streamId] config data."
+                        )
+                        streamEventListener?.onStreamError(
+                            streamResponseError,
+                            getErrorMessage(streamResponseError)
+                        )
+                        state = BitmovinStreamState.DISPLAYING_ERROR
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(Tag.Stream, "No Internet Connection", e)
+                state = BitmovinStreamState.DISPLAYING_ERROR
+                streamEventListener?.onStreamError(
+                    streamResponseError,
+                    getErrorMessage(streamResponseError)
+                )
+            }
+        }
     }
 }
 
