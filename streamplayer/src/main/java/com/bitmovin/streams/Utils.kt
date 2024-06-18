@@ -56,7 +56,8 @@ internal fun FrameLayout.removeFromParent() {
 
 // Window getter utils for Composable, credits goes to the stackoverflow-guy
 @Composable
-internal fun getDialogWindow(): Window? = (LocalView.current.parent as? DialogWindowProvider)?.window
+internal fun getDialogWindow(): Window? =
+    (LocalView.current.parent as? DialogWindowProvider)?.window
 
 @Composable
 internal fun getActivityWindow(): Window? = LocalView.current.context.getActivityWindow()
@@ -85,7 +86,10 @@ internal fun Context.getActivity(): Activity? {
 }
 
 
-internal suspend fun getStreamConfigData(streamId: String, jwToken: String?) : StreamConfigDataResponse {
+internal suspend fun getStreamConfigData(
+    streamId: String,
+    jwToken: String?
+): StreamConfigDataResponse {
     return withContext(Dispatchers.IO) {
         val client = StreamsProvider.okHttpClient
         var url = "https://streams.bitmovin.com/${streamId}/config"
@@ -113,9 +117,13 @@ internal fun addURLParam(url: String, attribute: String, value: String): String 
     return "$url$separator$attribute=$value"
 }
 
-internal fun createPlayer(streamConfigData: StreamConfigData, context: Context, enableAds: Boolean): Player {
-    val analyticsConfig : AnalyticsConfig = getAnalyticsConfig(streamConfigData)
-    val advertisingConfig : AdvertisingConfig? =
+internal fun createPlayer(
+    streamConfigData: StreamConfigData,
+    context: Context,
+    enableAds: Boolean
+): Player {
+    val analyticsConfig: AnalyticsConfig = getAnalyticsConfig(streamConfigData)
+    val advertisingConfig: AdvertisingConfig? =
         when (enableAds) {
             true -> getAdvertisingConfig(streamConfigData)
             false -> null
@@ -123,7 +131,7 @@ internal fun createPlayer(streamConfigData: StreamConfigData, context: Context, 
 
     val playerConfig = PlayerConfig(
         key = streamConfigData.key,
-        advertisingConfig = advertisingConfig?: AdvertisingConfig(),
+        advertisingConfig = advertisingConfig ?: AdvertisingConfig(),
     )
 
     return Player(
@@ -132,6 +140,7 @@ internal fun createPlayer(streamConfigData: StreamConfigData, context: Context, 
         analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig)
     )
 }
+
 internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
     // Bitmovin and Progressive ads only for now
     val ads = streamConfig.adConfig.ads.map { ad ->
@@ -147,20 +156,23 @@ internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingCo
     return AdvertisingConfig(ads)
 }
 
-internal fun getAnalyticsConfig(streamConfig: StreamConfigData) : AnalyticsConfig {
+internal fun getAnalyticsConfig(streamConfig: StreamConfigData): AnalyticsConfig {
     return AnalyticsConfig(
         streamConfig.analytics.key,
     )
 }
 
 
-
-internal fun createSource(streamConfigData: StreamConfigData, customPosterSource: String?, subtitlesSources: List<SubtitleTrack> = emptyList()): Source {
+internal fun createSource(
+    streamConfigData: StreamConfigData,
+    customPosterSource: String?,
+    subtitlesSources: List<SubtitleTrack> = emptyList()
+): Source {
     val sourceConfig = SourceConfig(
         url = streamConfigData.sources.hls,
         type = SourceType.Hls, // Might be different in some cases but let's pretend it's always HLS for now
         title = streamConfigData.sources.title,
-        posterSource = customPosterSource?: streamConfigData.sources.poster,
+        posterSource = customPosterSource ?: streamConfigData.sources.poster,
         subtitleTracks = subtitlesSources,
     )
     val sourceMetadata = SourceMetadata(
@@ -175,27 +187,38 @@ internal fun createSource(streamConfigData: StreamConfigData, customPosterSource
     )
 }
 
-internal fun createPlayerView(context: Context, player: Player, streamConfig : StreamConfigData, styleConfigStream: StyleConfigStream, styleFileKey: String) : PlayerView{
+internal fun createPlayerView(
+    context: Context,
+    player: Player,
+    streamConfig: StreamConfigData,
+    styleConfigStream: StyleConfigStream,
+    styleFileKey: String
+): PlayerView {
 
     // Should be done at the beginning or the attributes values will be ignored.
     streamConfig.styleConfig.affectConfig(styleConfigStream)
 
-    val suppCssLocation = getCustomCss(context, streamConfig, userSupplCss = styleConfigStream.customCss, styleFileKey)
+    val suppCssLocation = getCustomCss(
+        context,
+        streamConfig,
+        userSupplCss = styleConfigStream.customCss,
+        styleFileKey
+    )
     val playerViewConfig = PlayerViewConfig(
-            UiConfig.WebUi(
-                supplementalCssLocation = suppCssLocation,
-                forceSubtitlesIntoViewContainer = true,
-            )
+        UiConfig.WebUi(
+            supplementalCssLocation = suppCssLocation,
+            forceSubtitlesIntoViewContainer = true,
         )
+    )
 
     val playerView = PlayerView(context, player, config = playerViewConfig)
         .apply {
-        layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
-        keepScreenOn = true
-    }
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            keepScreenOn = true
+        }
     // Should be done at the end
     //TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
     streamConfig.styleConfig.playerStyle.backgroundColor?.let {
@@ -208,7 +231,7 @@ internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>)
     return this
 }
 
-fun getErrorMessage(errorCode: Int) : String {
+fun getErrorMessage(errorCode: Int): String {
     val message =
         when (errorCode) {
             0 -> "No Internet Connection"
@@ -237,12 +260,21 @@ internal fun writeCssToFile(fileKey: String, context: Context, css: String): Fil
         Log.d(Tag.Stream, "Writing CSS to file: $cssFile")
         cssFile
     } catch (e: IOException) {
-        Log.e(Tag.Stream, "Failed to write CSS rules to file. Stylization rules will be ignored.", e)
+        Log.e(
+            Tag.Stream,
+            "Failed to write CSS rules to file. Stylization rules will be ignored.",
+            e
+        )
         null
     }
 }
 
-internal fun getCustomCss(context : Context, streamConfig: StreamConfigData, userSupplCss: String, styleFileKey: String) : String {
+internal fun getCustomCss(
+    context: Context,
+    streamConfig: StreamConfigData,
+    userSupplCss: String,
+    styleFileKey: String
+): String {
 
     val style = streamConfig.styleConfig
     val css = StringBuilder()
@@ -259,8 +291,7 @@ internal fun getCustomCss(context : Context, streamConfig: StreamConfigData, use
 }
 
 
-
-internal fun watermarkCss(watermarkImg: String) : String {
+internal fun watermarkCss(watermarkImg: String): String {
     return """
         .bmpui-ui-watermark {
             background-image: url("$watermarkImg") !important;
@@ -281,9 +312,8 @@ internal fun watermarkCss(watermarkImg: String) : String {
     """.trimIndent()
 }
 
-internal fun playerStyle(playerStyle: PlayerStyle) : String
-{
-    val playerStyles : StringBuilder = StringBuilder()
+internal fun playerStyle(playerStyle: PlayerStyle): String {
+    val playerStyles: StringBuilder = StringBuilder()
     playerStyle.playbackMarkerBgColor?.let {
         playerStyles.append(stylePlaybackMarkerBgColor(it))
     }
@@ -310,9 +340,7 @@ internal fun playerStyle(playerStyle: PlayerStyle) : String
 }
 
 
-
-internal fun stylePlaybackMarkerBgColor(color: String) : String
-{
+internal fun stylePlaybackMarkerBgColor(color: String): String {
     // Volume slider is not used in this playerView but I based the impl on the web player UI.
     return """
         .bmpui-ui-seekbar .bmpui-seekbar .bmpui-seekbar-playbackposition-marker,
@@ -371,6 +399,7 @@ internal fun styleTextColor(color: String): String {
         
     """.trimIndent()
 }
+
 internal fun backgroundColor(color: String): String {
     return """ 
         .bitmovin-stream-wrapper
@@ -390,8 +419,9 @@ internal fun backgroundColor(color: String): String {
     """.trimIndent()
 }
 
-fun Color.toCSS() : String {
-    val s = "rgba(${(this.red*255).toInt()}, ${(this.green*255).toInt()}, ${(this.blue*255).toInt()}, ${this.alpha})"
+fun Color.toCSS(): String {
+    val s =
+        "rgba(${(this.red * 255).toInt()}, ${(this.green * 255).toInt()}, ${(this.blue * 255).toInt()}, ${this.alpha})"
     return s
 }
 
@@ -401,20 +431,23 @@ const val floatNumber = "([+-]?([0-9]+([.][0-9]*)?|[.][0-9]+))"
 
 // TODO: Add support for other color formats
 // TODO: Change the parsing without using Regex because it seems overkill
-fun String.parseColor() : Color? {
+fun String.parseColor(): Color? {
 
     val pattern = "rgba\\((\\d+), (\\d+), (\\d+), $floatNumber\\)".toRegex()
     val match = pattern.find(this)
     if (match != null) {
-        val (r,g,b,a) = match.destructured
-        return Color(r.toInt(), g.toInt(), b.toInt(), (a.toFloat()*255).toInt())
+        val (r, g, b, a) = match.destructured
+        return Color(r.toInt(), g.toInt(), b.toInt(), (a.toFloat() * 255).toInt())
     } else {
-        Log.e(Tag.Stream, "Failed to parse color from string: $this\n The only supported format is rgba(r, g, b, a) for now. Please change the color config from the dashboard to respect this format.")
+        Log.e(
+            Tag.Stream,
+            "Failed to parse color from string: $this\n The only supported format is rgba(r, g, b, a) for now. Please change the color config from the dashboard to respect this format."
+        )
     }
     return null
 }
 
-fun getLoadingScreenMessage(state: BitmovinStreamState) : String {
+fun getLoadingScreenMessage(state: BitmovinStreamState): String {
     return when (state) {
         BitmovinStreamState.FETCHING -> "Fetching stream config data"
         BitmovinStreamState.INITIALIZING -> "Initializing player"

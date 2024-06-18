@@ -21,49 +21,105 @@ class DefaultTest : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-                Column {
+            Column {
 
-                    Box(
-                        modifier = Modifier
-                            .size(400.dp)
-                            .padding(40.dp)
-                    ) {
-                        Column {
-                            Text(text = "Video 1")
-                            BitmovinStream(
-                                streamId = TestStreamsIds.VERTICAL_VIDEO,
-                                subtitles = emptyList(),
-                                modifier = Modifier,
-                                styleConfig = StyleConfigStream(
-                                        customCss = """
+                Box(
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(20.dp)
+                ) {
+                    Column {
+                        Text(text = "Video 1")
+                        BitmovinStream(
+                            streamId = TestStreamsIds.VERTICAL_VIDEO,
+                            subtitles = emptyList(),
+                            modifier = Modifier,
+                            styleConfig = StyleConfigStream(
+                                customCss = """
                                             div {
                                               font-size: 15pt !important;
                                             }
                                         """.trimIndent()
-                                    )
                             )
+                        )
 
-                        }
-                    }
-                    Box(
-                        modifier = Modifier
-                            .size(400.dp)
-                            .padding(40.dp)
-                    ) {
-                        Column {
-                            Text(text = "Video 2")
-                            BitmovinStream(
-                                streamId = TestStreamsIds.SQUARE_VIDEO,
-                                modifier = Modifier,
-                                enableAds = false,
-                                subtitles = listOf(
-                                    SubtitleTrack(language = "French", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"),
-                                    SubtitleTrack(language = "German", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt"),
-                                )
-                            )
-                        }
                     }
                 }
+
+                BitmovinStream(
+                    streamId = TestStreamsIds.SQUARE_VIDEO,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(20.dp),
+                    enableAds = false,
+                    subtitles = listOf(
+                        SubtitleTrack(
+                            language = "French",
+                            url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_fr.vtt"
+                        ),
+                        SubtitleTrack(
+                            language = "German",
+                            url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt"
+                        ),
+                    )
+                )
+                BitmovinStream(
+                    streamId = TestStreamsIds.SQUARE_VIDEO,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(20.dp),
+                    enableAds = false,
+                )
+                BitmovinStream(
+                    streamId = TestStreamsIds.SQUARE_VIDEO,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(20.dp),
+                    enableAds = false,
+                )
+                BitmovinStream(
+                    streamId = TestStreamsIds.SQUARE_VIDEO,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(20.dp),
+                    enableAds = false,
+                )
+                BitmovinStream(
+                    streamId = TestStreamsIds.SQUARE_VIDEO,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(20.dp),
+                    enableAds = false,
+                )
+                BitmovinStream(
+                    streamId = TestStreamsIds.SQUARE_VIDEO,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(20.dp),
+                    enableAds = false,
+                )
+                BitmovinStream(
+                    streamId = TestStreamsIds.SQUARE_VIDEO,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(20.dp),
+                    enableAds = false,
+                )
+                BitmovinStream(
+                    streamId = TestStreamsIds.SQUARE_VIDEO,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(20.dp),
+                    enableAds = false,
+                )
+                BitmovinStream(
+                    streamId = TestStreamsIds.SQUARE_VIDEO,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(20.dp),
+                    enableAds = false,
+                )
+            }
         }
     }
 }

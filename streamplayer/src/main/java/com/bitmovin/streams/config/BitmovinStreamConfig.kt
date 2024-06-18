@@ -23,18 +23,18 @@ import com.bitmovin.player.api.media.subtitle.SubtitleTrack
  */
 
 data class BitmovinStreamConfig(
-    var streamId : String,
-    var modifier : Modifier = Modifier,
-    var jwToken : String? = null,
-    var autoPlay : Boolean = false,
-    var muted : Boolean = false,
-    var poster : String? = null,
-    var start : Double = 0.0,
+    var streamId: String,
+    var modifier: Modifier = Modifier,
+    var jwToken: String? = null,
+    var autoPlay: Boolean = false,
+    var muted: Boolean = false,
+    var poster: String? = null,
+    var start: Double = 0.0,
     var fullscreenConfig: FullscreenConfig,
-    var subtitles : List<SubtitleTrack> = emptyList(),
+    var subtitles: List<SubtitleTrack> = emptyList(),
     var streamEventListener: BitmovinStreamEventListener? = null,
-    var enableAds : Boolean = true,
-    var styleConfig : StyleConfigStream = StyleConfigStream()
+    var enableAds: Boolean = true,
+    var styleConfig: StyleConfigStream = StyleConfigStream()
 ) {
 
     /**
@@ -57,19 +57,19 @@ data class BitmovinStreamConfig(
      * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard
      */
     constructor(
-        streamId : String,
-        modifier : Modifier = Modifier,
-        jwToken : String? = null,
-        autoPlay : Boolean = false,
-        muted : Boolean = false,
-        poster : String? = null,
-        start : Double = 0.0,
+        streamId: String,
+        modifier: Modifier = Modifier,
+        jwToken: String? = null,
+        autoPlay: Boolean = false,
+        muted: Boolean = false,
+        poster: String? = null,
+        start: Double = 0.0,
         fullscreenConfig: FullscreenConfig = FullscreenConfig(),
-        subtitles : List<SubtitleTrack> = emptyList(),
-        onStreamReady : (Player, PlayerView) -> Unit = { _, _ -> },
-        onStreamError : (Int, String) -> Unit = { _, _ -> },
-        enableAds : Boolean = true,
-        styleConfig : StyleConfigStream = StyleConfigStream()
+        subtitles: List<SubtitleTrack> = emptyList(),
+        onStreamReady: (Player, PlayerView) -> Unit = { _, _ -> },
+        onStreamError: (Int, String) -> Unit = { _, _ -> },
+        enableAds: Boolean = true,
+        styleConfig: StyleConfigStream = StyleConfigStream()
     ) : this(
         streamId,
         modifier,
@@ -82,14 +82,14 @@ data class BitmovinStreamConfig(
         subtitles,
         object :
             BitmovinStreamEventListener {
-                override fun onStreamReady(player: Player, playerView: PlayerView) {
-                    onStreamReady(player, playerView)
-                }
+            override fun onStreamReady(player: Player, playerView: PlayerView) {
+                onStreamReady(player, playerView)
+            }
 
-                override fun onStreamError(errorCode: Int, errorMessage: String) {
-                    onStreamError(errorCode, errorMessage)
-                }
-            },
+            override fun onStreamError(errorCode: Int, errorMessage: String) {
+                onStreamError(errorCode, errorMessage)
+            }
+        },
         enableAds,
         styleConfig
     )

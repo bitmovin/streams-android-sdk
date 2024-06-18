@@ -21,7 +21,7 @@ data class StyleConfigStream(
     val playbackTrackBgColor: Color? = null,
     val textColor: Color? = null,
     val backgroundColor: Color? = null,
-    val customCss : String = ""
+    val customCss: String = ""
 )
 
 class PlayerThemes {
@@ -63,5 +63,5 @@ class PlayerThemes {
 fun getColor(
     red: Int, green: Int, blue: Int, alpha: Float
 ): Color {
-    return Color(red, green, blue, (alpha*255).toInt())
+    return Color(red, green, blue, (alpha * 255).toInt())
 }

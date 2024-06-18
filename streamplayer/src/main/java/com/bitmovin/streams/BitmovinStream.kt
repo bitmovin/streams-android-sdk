@@ -22,7 +22,7 @@ private const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
 fun BitmovinStream(
     config: BitmovinStreamConfig
 ) {
-BitmovinStream(
+    BitmovinStream(
         streamId = config.streamId,
         modifier = config.modifier,
         jwToken = config.jwToken,
@@ -58,19 +58,19 @@ BitmovinStream(
  */
 @Composable
 fun BitmovinStream(
-    streamId : String,
-    modifier : Modifier = Modifier,
-    jwToken : String? = null,
-    autoPlay : Boolean = false,
-    loop : Boolean = false,
-    muted : Boolean = true, // temporary true to avoid loud noises in the office when I forget to turn off the sound
-    poster : String? = null,
-    start : Double = 0.0,
-    subtitles : List<SubtitleTrack> = emptyList(),
+    streamId: String,
+    modifier: Modifier = Modifier,
+    jwToken: String? = null,
+    autoPlay: Boolean = false,
+    loop: Boolean = false,
+    muted: Boolean = true, // temporary true to avoid loud noises in the office when I forget to turn off the sound
+    poster: String? = null,
+    start: Double = 0.0,
+    subtitles: List<SubtitleTrack> = emptyList(),
     fullscreenConfig: FullscreenConfig = FullscreenConfig(),
     streamEventListener: BitmovinStreamEventListener? = null,
-    enableAds : Boolean = true,
-    styleConfig : StyleConfigStream = StyleConfigStream()
+    enableAds: Boolean = true,
+    styleConfig: StyleConfigStream = StyleConfigStream()
 ) {
     val recompositionTimeStart = System.currentTimeMillis()
     val context = LocalContext.current
@@ -104,11 +104,19 @@ fun BitmovinStream(
         BitmovinStreamState.DISPLAYING_ERROR -> {
             ErrorHandling(error = stream.streamResponseError, modifier)
         }
+
         else -> {
-            TextVideoPlayerFiller(getLoadingScreenMessage(stream.state), modifier, loadingEffect = true)
+            TextVideoPlayerFiller(
+                getLoadingScreenMessage(stream.state),
+                modifier,
+                loadingEffect = true
+            )
         }
     }
-    Log.i(Tag.Stream, "[$usid] Stream recomposed in ${System.currentTimeMillis() - recompositionTimeStart}ms")
+    Log.i(
+        Tag.Stream,
+        "[$usid] Stream recomposed in ${System.currentTimeMillis() - recompositionTimeStart}ms"
+    )
 
     DisposableEffect(Unit) {
 

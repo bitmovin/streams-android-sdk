@@ -93,11 +93,13 @@ internal fun FullScreen(
 
                     var width by remember {
                         mutableIntStateOf(
-                        activityWindow?.decorView?.width ?: 0)
+                            activityWindow?.decorView?.width ?: 0
+                        )
                     }
                     var height by remember {
                         mutableIntStateOf(
-                        activityWindow?.decorView?.height ?: 0)
+                            activityWindow?.decorView?.height ?: 0
+                        )
                     }
 
 
@@ -115,7 +117,7 @@ internal fun FullScreen(
                         }
 
                         /*
-                         There is some unpredicatable delay depending of the device that leds to having the wrong width and height, especially while escaping from PiP mode and entering.
+                         There is some unpredicatable delay depending of the device that led to having the wrong width and height, especially while escaping from PiP mode and entering.
                          This is a workaround to get the right width and height during a 3 seconds period (which should be reasonable for most devices).
                          This method is not perfect and cause some short visual glitches, but it's better than having the wrong width and height.
                          NB : This issue is not present when the dialog is not immersive.
@@ -170,24 +172,12 @@ internal fun FullScreen(
 internal fun TextVideoPlayerFiller(
     text: String,
     modifier: Modifier = Modifier,
-    noiseEffect: Boolean = false,
     loadingEffect: Boolean = false
 ) {
-    // This is a hack to assert the same behavior as the PlayerView even when it don't exists to avoid breaking the layout of the users.
-//    val player = Player(LocalContext.current, PlayerConfig(key = "__FILLER_KEY__"))
-//    val playerView = PlayerView(LocalContext.current, player)
-//    playerView.alpha = 0.0f
     Box(
         modifier = modifier.background(color = Color.Black)
     )
     {
-        if (noiseEffect)
-            NoiseEffect() // Seems to be a bit heavy so I just let this here for now
-//        AndroidView(factory =
-//        { _ -> playerView.apply {
-//            if (parent != null)
-//                this.removeFromParent() }
-//        }, modifier = modifier)
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -211,36 +201,7 @@ internal fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
     var message = getErrorMessage(error)
     if (error != 0)
         message = "Error $error\n$message"
-    TextVideoPlayerFiller(message, modifier, noiseEffect = false)
-}
-
-@Composable
-internal fun PictureInPictureHandlerForStreams(viewModel: Stream) {
-    // There is only one PiPManager for the whole application
-
-    // Get local fragment if it exists
-//    val pitiee = LocalContext.current.getActivity()
-//    val pipManager: PiPChangesObserver = viewModel()
-//
-//    LocalLifecycleOwner.current.lifecycle.addObserver(pipManager) // /!\ It only matters the first time a BitmovinStream is created, afterwards it is ignored
-//    DisposableEffect(Unit) {
-//        val obj = object : PiPExitListener {
-//            override fun onPiPExit() {
-//                Log.d("StreamsPlayer", "onPiPExit called")
-//                viewModel.pipHandler?.exitPictureInPicture()
-//            }
-//
-//            override fun isInPiPMode(): Boolean {
-//                return viewModel.pipHandler?.isPictureInPicture ?: false
-//            }
-//        }
-//        pipManager.addListener(obj)
-//
-//        onDispose {
-//            pipManager.removeListener(obj)
-//        }
-//    }
-
+    TextVideoPlayerFiller(message, modifier)
 }
 
 @Composable
@@ -277,58 +238,6 @@ internal fun CircularLoadingAnimation(
             useCenter = false,
             style = Stroke(width = circleStrokeWidth)
         )
-    }
-}
-
-
-// LABORATORY
-@Deprecated("Too heavy for now, need to be optimized or just not used.")
-@Composable
-fun NoiseEffect(
-    modifier: Modifier = Modifier,
-    noiseFactor: Float = 0.5f
-) {
-    Box(modifier = modifier.fillMaxSize()) {
-        val noiseSeed = remember { mutableLongStateOf(0) }
-
-        LaunchedEffect(noiseSeed) {
-            while (true) {
-                noiseSeed.longValue = (noiseSeed.longValue + 1) % 1000
-                delay(75)
-            }
-        }
-
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            drawNoise(
-                noiseValue = noiseFactor,
-                noiseSeed = (noiseSeed.longValue),
-                size = size
-            )
-        }
-    }
-}
-
-internal fun DrawScope.drawNoise(
-    noiseValue: Float,
-    noiseSeed: Long,
-    size: Size
-) {
-    val random = java.util.Random(noiseSeed)
-    val pixelSize = 3.dp.toPx()
-    val width = (size.width / pixelSize).toInt()
-    val height = (size.height / pixelSize).toInt()
-
-    for (x in 0 until width) {
-        for (y in 0 until height) {
-            val noiseThreshold = random.nextFloat()
-            val color = if (noiseThreshold < noiseValue) Color.Black else Color.DarkGray
-            // Too Heavy
-            drawRect(
-                color = color,
-                topLeft = Offset(x * pixelSize, y * pixelSize),
-                size = Size(pixelSize, pixelSize)
-            )
-        }
     }
 }
 
