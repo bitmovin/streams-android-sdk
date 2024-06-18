@@ -41,7 +41,7 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.UUID
+import java.lang.Thread.sleep
 import kotlin.reflect.KProperty
 
 /**
@@ -91,6 +91,8 @@ internal suspend fun getStreamConfigData(
     jwToken: String?
 ): StreamConfigDataResponse {
     return withContext(Dispatchers.IO) {
+        //TODO: Remove before release
+        sleep(1000) // Simulating a network delay
         val client = StreamsProvider.okHttpClient
         var url = "https://streams.bitmovin.com/${streamId}/config"
         if (jwToken != null) {
@@ -134,11 +136,15 @@ internal fun createPlayer(
         advertisingConfig = advertisingConfig ?: AdvertisingConfig(),
     )
 
-    return Player(
-        context,
-        playerConfig = playerConfig,
-        analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig)
-    )
+        return recordDuration("Creating player") {
+            // From the countTime function, we can see that the creation of the Player is the most expensive part of the process by really far.
+            // I unfortunately can't do much about it since it's part of the Bitmovin SDK.
+            Player(
+                context,
+                playerConfig = playerConfig,
+                analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig)
+            )
+        }
 }
 
 internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
@@ -211,13 +217,15 @@ internal fun createPlayerView(
         )
     )
 
-    val playerView = PlayerView(context, player, config = playerViewConfig)
-        .apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
-            keepScreenOn = true
+    val playerView = recordDuration("PlayerView Creation") {
+        PlayerView(context, player, config = playerViewConfig)
+            .apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                keepScreenOn = true
+            }
         }
     // Should be done at the end
     //TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
@@ -454,5 +462,14 @@ fun getLoadingScreenMessage(state: BitmovinStreamState): String {
         BitmovinStreamState.WAITING_FOR_VIEW -> "Waiting for player view"
         BitmovinStreamState.WAITING_FOR_PLAYER -> "Waiting for player"
         else -> "An error occurred while fetching the stream data."
+    }
+}
+
+fun <T>recordDuration(title: String, block: () -> T): T {
+    val start = System.currentTimeMillis()
+    return block().also {
+        val end = System.currentTimeMillis()
+        val thread = Thread.currentThread().name
+        Log.d(Tag.Perf, "$title took ${end - start}ms [$thread]")
     }
 }
