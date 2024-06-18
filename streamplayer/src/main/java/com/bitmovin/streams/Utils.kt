@@ -91,26 +91,26 @@ internal suspend fun getStreamConfigData(
     jwToken: String?
 ): StreamConfigDataResponse {
     return withContext(Dispatchers.IO) {
-        //TODO: Remove before release
-        sleep(1000) // Simulating a network delay
-        val client = StreamsProvider.okHttpClient
-        var url = "https://streams.bitmovin.com/${streamId}/config"
-        if (jwToken != null) {
-            url = addURLParam(url, "token", jwToken)
-        }
-        val request: Request = Request.Builder()
-            .url(url)
-            .build()
+        return@withContext recordDuration("Fetching stream config data") {
+            val client = StreamsProvider.okHttpClient
+            var url = "https://streams.bitmovin.com/${streamId}/config"
+            if (jwToken != null) {
+                url = addURLParam(url, "token", jwToken)
+            }
+            val request: Request = Request.Builder()
+                .url(url)
+                .build()
 
-        Log.d(Tag.Stream, "Request: $request")
-        val response = client.newCall(request).execute()
-        val code = response.code
-        if (!response.isSuccessful) {
-            return@withContext StreamConfigDataResponse(null, code)
+            Log.d(Tag.Stream, "Request: $request")
+            val response = client.newCall(request).execute()
+            val code = response.code
+            if (!response.isSuccessful) {
+                StreamConfigDataResponse(null, code)
+            }
+            val responseBody = response.body?.string()
+            val streamConfigData = Gson().fromJson(responseBody, StreamConfigData::class.java)
+            StreamConfigDataResponse(streamConfigData, code)
         }
-        val responseBody = response.body?.string()
-        val streamConfigData = Gson().fromJson(responseBody, StreamConfigData::class.java)
-        return@withContext StreamConfigDataResponse(streamConfigData, code)
     }
 }
 
@@ -136,15 +136,15 @@ internal fun createPlayer(
         advertisingConfig = advertisingConfig ?: AdvertisingConfig(),
     )
 
-        return recordDuration("Creating player") {
-            // From the countTime function, we can see that the creation of the Player is the most expensive part of the process by really far.
-            // I unfortunately can't do much about it since it's part of the Bitmovin SDK.
-            Player(
-                context,
-                playerConfig = playerConfig,
-                analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig)
-            )
-        }
+    return recordDuration("Creating player") {
+        // From the countTime function, we can see that the creation of the Player is the most expensive part of the process by really far.
+        // I unfortunately can't do much about it since it's part of the Bitmovin SDK.
+        Player(
+            context,
+            playerConfig = playerConfig,
+            analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig)
+        )
+    }
 }
 
 internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
@@ -193,7 +193,7 @@ internal fun createSource(
     )
 }
 
-internal fun createPlayerView(
+internal suspend fun createPlayerView(
     context: Context,
     player: Player,
     streamConfig: StreamConfigData,
@@ -217,16 +217,18 @@ internal fun createPlayerView(
         )
     )
 
-    val playerView = recordDuration("PlayerView Creation") {
-        PlayerView(context, player, config = playerViewConfig)
-            .apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                keepScreenOn = true
-            }
+    val playerView = withContext(Dispatchers.IO) {
+        recordDuration("PlayerView Creation") {
+            PlayerView(context, player, config = playerViewConfig)
+                .apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    keepScreenOn = true
+                }
         }
+    }
     // Should be done at the end
     //TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
     streamConfig.styleConfig.playerStyle.backgroundColor?.let {
@@ -465,7 +467,7 @@ fun getLoadingScreenMessage(state: BitmovinStreamState): String {
     }
 }
 
-fun <T>recordDuration(title: String, block: () -> T): T {
+fun <T> recordDuration(title: String, block: () -> T): T {
     val start = System.currentTimeMillis()
     return block().also {
         val end = System.currentTimeMillis()
