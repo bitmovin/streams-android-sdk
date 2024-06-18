@@ -3,8 +3,6 @@ package com.bitmovin.streams
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -14,8 +12,6 @@ import com.bitmovin.streams.config.BitmovinStreamConfig
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import java.util.UUID
 
 
@@ -79,11 +75,12 @@ fun BitmovinStream(
     val recompositionTimeStart = System.currentTimeMillis()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    // The UPID (Unique Player ID) is maintained through recompositions to keep the ViewModel alive and used.
+    // The USID (Unique Stream ID) is maintained through recompositions to keep the link between the component and the stream.
+    // Warning : The USID is not the same as the streamId. The streamId is the id of the stream to be played.
     // We do not use the streamId to allow to user to have multiple players with the same streamId.
-    val upid: String by rememberSaveable { UUID.randomUUID().toString() }
+    val usid: String by rememberSaveable { UUID.randomUUID().toString() }
     // Make the StreamViewModel unique for each instance of the Streams Player (1:1 relationship)
-    val stream: Stream = StreamsProvider.getInstance().getStream(upid)
+    val stream: Stream = StreamsProvider.getInstance().getStream(usid)
 
     when (stream.state) {
         BitmovinStreamState.DISPLAYING -> {
@@ -94,9 +91,7 @@ fun BitmovinStream(
                 FullScreen(
                     onDismissRequest = { stream.playerView?.exitFullscreen() },
                     isImmersive = fullscreenConfig.immersive
-                ) {
-                    StreamVideoPlayer(playerView = playerView)
-                }
+                ) { StreamVideoPlayer(playerView = playerView) }
                 TextVideoPlayerFiller(text = "In Fullscreen", modifier)
             } else {
                 StreamVideoPlayer(
@@ -106,32 +101,33 @@ fun BitmovinStream(
             }
         }
 
-
-        // One-time actions for fetching and initializing the player
-        BitmovinStreamState.FETCHING,
-        BitmovinStreamState.INITIALIZING,
-        BitmovinStreamState.WAITING_FOR_VIEW,
-        BitmovinStreamState.WAITING_FOR_PLAYER -> {
-            if (BitmovinStreamState.FETCHING == stream.state) {
-                LaunchedEffect(Unit) {
-                    stream.fetchStreamConfig(streamId, jwToken, streamEventListener)
-                }
-            } else if (BitmovinStreamState.INITIALIZING == stream.state) {
-                LaunchedEffect(Unit) {
-                    stream.initializeStream(context, lifecycleOwner = lifecycleOwner, stream.streamConfigData!!, autoPlay, loop, muted, start, poster, subtitles, fullscreenConfig, enableAds, styleConfig)
-                }
-            }
-            val loadingMess: String = getLoadingScreenMessage(stream.state)
-            TextVideoPlayerFiller(loadingMess, modifier, loadingEffect = true)
-        }
         BitmovinStreamState.DISPLAYING_ERROR -> {
             ErrorHandling(error = stream.streamResponseError, modifier)
         }
+        else -> {
+            TextVideoPlayerFiller(getLoadingScreenMessage(stream.state), modifier, loadingEffect = true)
+        }
     }
-    Log.i(Tag.Stream, "[$upid] Stream recomposed in ${System.currentTimeMillis() - recompositionTimeStart}ms")
+    Log.i(Tag.Stream, "[$usid] Stream recomposed in ${System.currentTimeMillis() - recompositionTimeStart}ms")
 
     DisposableEffect(Unit) {
 
+        stream.initStream(
+            context = context,
+            lifecycleOwner = lifecycleOwner,
+            streamId = streamId,
+            jwToken = jwToken,
+            autoPlay = autoPlay,
+            loop = loop,
+            muted = muted,
+            poster = poster,
+            start = start,
+            subtitles = subtitles,
+            fullscreenConfig = fullscreenConfig,
+            bitmovinStreamEventListener = streamEventListener,
+            enableAds = enableAds,
+            styleConfigStream = styleConfig
+        )
         onDispose {
             stream.dispose()
         }

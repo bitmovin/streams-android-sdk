@@ -25,8 +25,9 @@ import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 
-internal class Stream(val psid: String) {
+internal class Stream(private val usid: String) {
     // These values are all set as mutableStateOf to trigger recompositions when they change
     var streamConfigData by mutableStateOf<StreamConfigData?>(null)
     var streamResponseError by mutableIntStateOf(0)
@@ -37,13 +38,80 @@ internal class Stream(val psid: String) {
     var playerView by mutableStateOf<PlayerView?>(null)
     var player: Player? = null
     var streamEventListener: BitmovinStreamEventListener? = null
-    var pipExitHandler : PiPExitListener? = null
+    var pipExitHandler: PiPExitListener? = null
 
     companion object {
         val pipChangesObserver = PiPChangesObserver()
     }
 
-    fun fetchStreamConfig(
+    /**
+     * Will do both the fetching and the initialization of the stream
+     */
+    fun initStream(
+        context: Context,
+        lifecycleOwner: LifecycleOwner,
+        streamId: String,
+        jwToken: String?,
+        autoPlay: Boolean,
+        loop: Boolean,
+        muted: Boolean,
+        start: Double,
+        poster: String?,
+        subtitles: List<SubtitleTrack>,
+        fullscreenConfig: FullscreenConfig,
+        enableAds: Boolean,
+        styleConfigStream: StyleConfigStream,
+        bitmovinStreamEventListener: BitmovinStreamEventListener?
+    ) {
+        state = BitmovinStreamState.FETCHING
+        this.context = context
+        this.streamEventListener = bitmovinStreamEventListener
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
+                this@Stream.streamResponseError = streamConfigDataResp.responseHttpCode
+                if (streamResponseError == 200) {
+                    this@Stream.streamConfigData = streamConfigDataResp.streamConfigData
+                    CoroutineScope(Dispatchers.Main).launch {
+                        initializeStream(
+                            context,
+                            lifecycleOwner,
+                            streamConfigData!!,
+                            autoPlay,
+                            loop,
+                            muted,
+                            start,
+                            poster,
+                            subtitles,
+                            fullscreenConfig,
+                            enableAds,
+                            styleConfigStream
+                        )
+                    }
+                } else {
+                    error(streamId)
+                }
+            } catch (e: Exception) {
+                error(streamId)
+            }
+        }
+    }
+
+    private fun error(streamId: String, msg: String? = null) {
+        Log.e(
+            Tag.Stream,
+            "[$streamId] $streamResponseError : ${msg ?: getErrorMessage(streamResponseError)}"
+        )
+        streamEventListener?.onStreamError(
+            streamResponseError,
+            getErrorMessage(streamResponseError)
+        )
+        state = BitmovinStreamState.DISPLAYING_ERROR
+    }
+
+
+    @Deprecated("How fetching method, not useful anymore")
+    private fun fetchStreamConfig(
         streamId: String,
         jwToken: String?,
         bitmovinStreamEventListener: BitmovinStreamEventListener?
@@ -88,7 +156,7 @@ internal class Stream(val psid: String) {
      * Initialize the player with the stream config data and Stream Player attributes
      * Should be called after the stream config data has been fetched.
      */
-    fun initializeStream(
+    private fun initializeStream(
         context: Context,
         lifecycleOwner: LifecycleOwner,
         streamConfig: StreamConfigData,
@@ -102,14 +170,33 @@ internal class Stream(val psid: String) {
         enableAds: Boolean,
         styleConfigStream: StyleConfigStream
     ) {
+        state = BitmovinStreamState.INITIALIZING
         pipChangesObserver.let {
             it.context = context
             lifecycleOwner.lifecycle.addObserver(it)
         }
         this.context = context
 
-        val player = initializePlayerRelated(context, lifecycleOwner, streamConfig, autoPlay, loop, muted, start, enableAds, poster, subtitles)
-        initializeViewRelated(context, player, lifecycleOwner, streamConfig, styleConfigStream, fullscreenConfig)
+        val player = initializePlayerRelated(
+            context,
+            lifecycleOwner,
+            streamConfig,
+            autoPlay,
+            loop,
+            muted,
+            start,
+            enableAds,
+            poster,
+            subtitles
+        )
+        initializeViewRelated(
+            context,
+            player,
+            lifecycleOwner,
+            streamConfig,
+            styleConfigStream,
+            fullscreenConfig
+        )
     }
 
     private fun initializePlayerRelated(
@@ -123,7 +210,7 @@ internal class Stream(val psid: String) {
         enableAds: Boolean,
         poster: String?,
         subtitles: List<SubtitleTrack>
-    ) : Player {
+    ): Player {
         pipChangesObserver.let {
             it.context = context
             lifecycleOwner.lifecycle.addObserver(it)
@@ -145,7 +232,11 @@ internal class Stream(val psid: String) {
         CoroutineScope(Dispatchers.IO).launch {
             // 2. Loading the stream source
             val streamSource =
-                createSource(streamConfig, customPosterSource = poster, subtitlesSources = subtitles)
+                createSource(
+                    streamConfig,
+                    customPosterSource = poster,
+                    subtitlesSources = subtitles
+                )
             player.load(streamSource)
 
             // 3. Handling properties
@@ -169,7 +260,7 @@ internal class Stream(val psid: String) {
         // 4. Setting up Views
 
         // Setting up the player view
-        playerView = createPlayerView(context, player, streamConfig, styleConfigStream)
+        playerView = createPlayerView(context, player, streamConfig, styleConfigStream, usid)
         val playerView = playerView!!
         // Adding the playerView to the lifecycle
         lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
@@ -223,7 +314,11 @@ internal class Stream(val psid: String) {
             it.setFullscreenHandler(null)
             it.setPictureInPictureHandler(null)
         }
-        StreamsProvider.getInstance().removeStream(psid)
+        context?.let {
+            File(it.filesDir, "custom_css_${usid}.css")
+                .takeIf { file -> file.exists() }?.delete()
+        }
+        StreamsProvider.getInstance().removeStream(usid)
     }
 }
 
