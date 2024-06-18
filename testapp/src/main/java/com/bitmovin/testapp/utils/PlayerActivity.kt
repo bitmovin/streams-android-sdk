@@ -59,46 +59,65 @@ class PlayerActivity : ComponentActivity() {
 
         var aspectRatio by remember { mutableFloatStateOf(16f / 9f) }
         // not really useful but it looks cleaner.
-        val aspectRatioAnim by animateFloatAsState(targetValue = aspectRatio, label = "Video Aspect Ratio Anim",)
+        val aspectRatioAnim by animateFloatAsState(
+            targetValue = aspectRatio,
+            label = "Video Aspect Ratio Anim",
+        )
         val activity = LocalContext.current as Activity
         var playerViewHolder by remember { mutableStateOf<PlayerView?>(null) }
 
         // Simple example of how to use OrientationEventListener to force landscape mode
-        remember { mutableStateOf<OrientationEventListener?>(
-        object : OrientationEventListener(activity) {
-            var AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
-            override fun onOrientationChanged(orientation: Int) {
+        remember {
+            mutableStateOf<OrientationEventListener?>(
+                object : OrientationEventListener(activity) {
+                    var AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
+                    override fun onOrientationChanged(orientation: Int) {
 
-                if (aspectRatio <= 0.8f) return
-                when (AUTO_ROTATE_STATE) {
-                    AutoRotateState.WaitingForEnter -> {
-                        if (playerViewHolder?.isFullscreen == false && (abs(orientation - 90) < FS_TREESHOLD || abs(orientation - 270) < FS_TREESHOLD)) {
-                            AUTO_ROTATE_STATE = AutoRotateState.WaitingForExit
-                            playerViewHolder?.enterFullscreen()
-                        }
-                    }
-                    AutoRotateState.WaitingForExit -> {
-                        if (playerViewHolder?.isFullscreen == false) {
-                            AUTO_ROTATE_STATE = AutoRotateState.WaitingForReset
-                        } else {
-                            if (abs(orientation - 0) < FS_TREESHOLD || abs(orientation - 360) < FS_TREESHOLD || abs(orientation - 180) < FS_TREESHOLD) {
-                                playerViewHolder?.exitFullscreen()
-                                AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
+                        if (aspectRatio <= 0.8f) return
+                        when (AUTO_ROTATE_STATE) {
+                            AutoRotateState.WaitingForEnter -> {
+                                if (playerViewHolder?.isFullscreen == false && (abs(orientation - 90) < FS_TREESHOLD || abs(
+                                        orientation - 270
+                                    ) < FS_TREESHOLD)
+                                ) {
+                                    AUTO_ROTATE_STATE = AutoRotateState.WaitingForExit
+                                    playerViewHolder?.enterFullscreen()
+                                }
+                            }
+
+                            AutoRotateState.WaitingForExit -> {
+                                if (playerViewHolder?.isFullscreen == false) {
+                                    AUTO_ROTATE_STATE = AutoRotateState.WaitingForReset
+                                } else {
+                                    if (abs(orientation - 0) < FS_TREESHOLD || abs(orientation - 360) < FS_TREESHOLD || abs(
+                                            orientation - 180
+                                        ) < FS_TREESHOLD
+                                    ) {
+                                        playerViewHolder?.exitFullscreen()
+                                        AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
+                                    }
+                                }
+
+                            }
+
+                            AutoRotateState.WaitingForReset -> {
+                                if (abs(orientation - 0) < FS_TREESHOLD || abs(orientation - 360) < FS_TREESHOLD || abs(
+                                        orientation - 180
+                                    ) < FS_TREESHOLD
+                                ) {
+                                    AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
+                                }
                             }
                         }
-
+                        Log.d(
+                            "PlayerActivity",
+                            "Orientation: $orientation, State $AUTO_ROTATE_STATE"
+                        )
                     }
-                    AutoRotateState.WaitingForReset -> {
-                        if (abs(orientation - 0) < FS_TREESHOLD || abs(orientation - 360) < FS_TREESHOLD || abs(orientation - 180) < FS_TREESHOLD){
-                            AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
-                        }
-                    }
-                }
-                Log.d("PlayerActivity", "Orientation: $orientation, State $AUTO_ROTATE_STATE")
-            }
 
-        }.apply { enable() }
-        )}
+                }.apply { enable() }
+            )
+        }
 
         Column(Modifier.safeDrawingPadding()) {
             BitmovinStream(
@@ -112,28 +131,20 @@ class PlayerActivity : ComponentActivity() {
                 ),
                 streamEventListener = object : BitmovinStreamEventListener {
                     override fun onStreamReady(player: Player, playerView: PlayerView) {
+                        playerViewHolder = playerView
+
+                        // Affect the aspect ratio of the source to the player
                         name = player.source?.config?.title ?: "Unknown"
                         description = player.source?.config?.description ?: "None"
-                        // Launch a separated thread that will search for videoQualities until it find at least one
-                        Thread {
-                            var attempts = 0
-                            while (attempts < 30) {
-                                Thread.sleep(75)
-                                if (player.source?.availableVideoQualities?.isNotEmpty() == true) {
-                                    break
-                                }
-                                attempts++
-                            }
-                            val videoQualities = player.source?.availableVideoQualities
-                            if (!videoQualities.isNullOrEmpty()) {
-                                aspectRatio =
-                                    videoQualities[0].width.toFloat() / videoQualities[0].height.toFloat()
-                            } else {
-                                Log.e("PlayerActivity", "No video qualities found")
-                            }
-                        }.start()
+                        val videoQualities = player.source?.availableVideoQualities
+                        if (!videoQualities.isNullOrEmpty()) {
+                            aspectRatio =
+                                videoQualities[0].width.toFloat() / videoQualities[0].height.toFloat()
+                        } else {
+                            Log.e("PlayerActivity", "No video qualities found")
+                        }
 
-                        playerViewHolder = playerView
+                        // Force fullscreen if the user is in landscape mode
                         if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                             if (!playerView.isFullscreen)
                                 playerView.enterFullscreen()
@@ -141,6 +152,7 @@ class PlayerActivity : ComponentActivity() {
                     }
 
                     override fun onStreamError(errorCode: Int, errorMessage: String) {
+                        // Do nothing
                     }
                 },
                 styleConfig = PlayerThemes.RED_EXAMPLE_THEME

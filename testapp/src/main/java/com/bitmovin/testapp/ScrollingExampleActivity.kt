@@ -92,10 +92,7 @@ fun BitmovinShowcase() {
             // Simplest way to use the Bitmovin Stream Player component
             BitmovinStream(
                 streamId = TestStreamsIds.SINTEL,
-                styleConfig = PlayerThemes.BITMOVIN_DEFAULT_THEME,
-                fullscreenConfig = FullscreenConfig(
-                    enable = true
-                )
+                styleConfig = PlayerThemes.BITMOVIN_DEFAULT_THEME
             )
         }
 
@@ -216,9 +213,7 @@ fun BitmovinShowcase() {
                 description = """
                     The listener for the player events.
                     
-                    This is the gateway to modify the player behavior.
-                    - onPlayerReady : Called when the player is ready to play and pass the Player instance.
-                    - onPlayerViewReady : Called when the player view is ready to be displayed and pass the PlayerView instance.
+                    This is the gateway to modify the internal behaviour behavior.
                     - onStreamReady : Called when the stream is ready to be played and pass the Player and PlayerView instances.
                     - onStreamError : Called when an error occurs and pass the error code and message.
                         This callback only works for the stream setup errors. For the player errors, you should use the PlayerEvent.Error callback.
