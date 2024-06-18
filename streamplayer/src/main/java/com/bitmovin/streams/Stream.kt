@@ -25,6 +25,7 @@ import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 internal class Stream(private val usid: String) {
@@ -70,7 +71,7 @@ internal class Stream(private val usid: String) {
                 this@Stream.streamResponseError = streamConfigDataResp.responseHttpCode
                 if (streamResponseError == 200) {
                     this@Stream.streamConfigData = streamConfigDataResp.streamConfigData
-                    CoroutineScope(Dispatchers.Main).launch {
+                    withContext(Dispatchers.Main) {
                         initializeStream(
                             context,
                             lifecycleOwner,
@@ -111,7 +112,7 @@ internal class Stream(private val usid: String) {
      * Initialize the player with the stream config data and Stream Player attributes
      * Should be called after the stream config data has been fetched.
      */
-    private fun initializeStream(
+    private suspend fun initializeStream(
         context: Context,
         lifecycleOwner: LifecycleOwner,
         streamConfig: StreamConfigData,
@@ -182,7 +183,9 @@ internal class Stream(private val usid: String) {
             }
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        // Warning: Running this block in the IO dispatcher could results in a crash (RuntimeException) if the component disappears before the end (because of the disposal effects)
+        // This is also a lot faster on the main thread. However, it's a huge tradeoff because it's blocking the UI thread. No choice since we can't handle a RuntimeException.
+        recordDuration("Loading Source") {
             // 2. Loading the stream source
             val streamSource =
                 createSource(
@@ -191,6 +194,7 @@ internal class Stream(private val usid: String) {
                     subtitlesSources = subtitles
                 )
             player.load(streamSource)
+
 
             // 3. Handling properties
             // Warning: The stream source has to be loaded before setting the properties. This is why we do it here.
@@ -201,7 +205,8 @@ internal class Stream(private val usid: String) {
         return player
     }
 
-    private fun initializeViewRelated(
+
+    private suspend fun initializeViewRelated(
         context: Context,
         player: Player,
         lifecycleOwner: LifecycleOwner,
