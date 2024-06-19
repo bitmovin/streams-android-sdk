@@ -28,10 +28,10 @@ import java.lang.Thread.sleep
 
 internal class Stream(private val usid: String) {
     // These values are all set as mutableStateOf to trigger recompositions when they change
-    var streamConfigData : StreamConfigData? = null
+    var streamConfigData: StreamConfigData? = null
     var streamResponseError = 0
     var state by mutableStateOf(BitmovinStreamState.FETCHING)
-    var playerView : PlayerView? = null
+    var playerView: PlayerView? = null
     var player: Player? = null
     var streamEventListener: BitmovinStreamEventListener? = null
     var pipExitHandler: PiPExitListener? = null
@@ -57,28 +57,26 @@ internal class Stream(private val usid: String) {
     ) {
         state = BitmovinStreamState.FETCHING
         this.streamEventListener = bitmovinStreamEventListener
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             try {
                 val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
                 this@Stream.streamResponseError = streamConfigDataResp.responseHttpCode
                 if (streamResponseError == 200) {
                     this@Stream.streamConfigData = streamConfigDataResp.streamConfigData
-                    withContext(Dispatchers.Main) {
-                        initializeStream(
-                            context,
-                            lifecycleOwner,
-                            streamConfigData!!,
-                            autoPlay,
-                            loop,
-                            muted,
-                            start,
-                            poster,
-                            subtitles,
-                            fullscreenConfig,
-                            enableAds,
-                            styleConfigStream
-                        )
-                    }
+                    initializeStream(
+                        context,
+                        lifecycleOwner,
+                        streamConfigData!!,
+                        autoPlay,
+                        loop,
+                        muted,
+                        start,
+                        poster,
+                        subtitles,
+                        fullscreenConfig,
+                        enableAds,
+                        styleConfigStream
+                    )
                 } else {
                     error(streamId)
                 }
@@ -138,9 +136,6 @@ internal class Stream(private val usid: String) {
             fullscreenConfig
         )
 
-        withContext(Dispatchers.IO) {
-            sleep(50)
-        } // Sleep to avoid a crash on the main thread
         // Warning: Running this block in the IO dispatcher could results in a crash (RuntimeException) if the component disappears before the end (because of the disposal effects)
         // This is also a lot faster on the main thread. However, it's a huge tradeoff because it's blocking the UI thread. No choice since we can't handle a RuntimeException.
         recordDuration("Loading Source") {
@@ -320,20 +315,18 @@ private fun Player.handleAttributes(
             // Delay action
             val player = this@handleAttributes
             var scheduledSeek = false
-            if (player.currentTime > player.duration - 0.3 && !scheduledSeek) {
-                object : Thread() {
-                    override fun run() {
-                        scheduledSeek = true
-                        // Limit : If the video is paused at the end, it will be restarted anyway, but that is not a big deal since it's a really short window anyway
-                        // 0.05 seems to be sufficient to never ever trigger the ui but it might not be enough for all devices, need some testing
-                        val waitingTime =
-                            ((player.duration - player.currentTime - 0.8) * 1000).toLong()
-                        if (waitingTime > 0)
-                            Thread.sleep(waitingTime)
-                        scheduledSeek = false
-                        player.seek(0.00)
-                    }
-                }.start()
+            if (player.currentTime > player.duration - 0.4 && !scheduledSeek) {
+                scheduledSeek = true
+                CoroutineScope(Dispatchers.IO).launch {
+                    // Limit : If the video is paused at the end, it will be restarted anyway, but that is not a big deal since it's a really short window anyway
+                    // 0.1 seems to be sufficient to never ever trigger the ui while not being noticeable by the user
+                    val waitingTime =
+                        ((player.duration - player.currentTime - 0.1) * 1000).toLong()
+                    if (waitingTime > 0)
+                        sleep(waitingTime)
+                    scheduledSeek = false
+                    player.seek(0.00)
+                }
             }
         }
     }
