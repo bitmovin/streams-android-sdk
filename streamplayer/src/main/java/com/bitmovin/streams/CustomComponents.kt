@@ -87,9 +87,9 @@ internal fun FullScreen(
         onDismissRequest = onDismissRequest,
         properties = properties,
         content = {
+            val dialogWindow = getDialogWindow()
             if (isImmersive) {
                 val activityWindow = getActivityWindow()
-                val dialogWindow = getDialogWindow()
                 val parentView = LocalView.current.parent as View
 
                 var width by remember {
@@ -103,58 +103,57 @@ internal fun FullScreen(
                     )
                 }
 
-
-                SideEffect {
-                    Log.d("FullScreen", "Width: $width, Height: $height")
-                    if (activityWindow != null && dialogWindow != null) {
-                        val attributes = WindowManager.LayoutParams().apply {
-                            copyFrom(activityWindow.attributes)
-                            type = dialogWindow.attributes.type
-                        }
-                        dialogWindow.attributes = attributes
-                        parentView.layoutParams = FrameLayout.LayoutParams(
-                            width,
-                            height
-                        )
+                key(LocalConfiguration.current.orientation) {
+                    SideEffect {
+                        if (activityWindow != null && dialogWindow != null) {
+                            val attributes = WindowManager.LayoutParams().apply {
+                                copyFrom(activityWindow.attributes)
+                                type = dialogWindow.attributes.type
+                            }
+                            dialogWindow.attributes = attributes
+                            parentView.layoutParams = FrameLayout.LayoutParams(
+                                width,
+                                height
+                            )
 
                             /*
-                         There is some unpredictable delay depending of the device that led to having the wrong width and height, especially while escaping from PiP mode and entering.
-                         This is a workaround to get the right width and height during a 0.5 seconds period which restart itself whenever there's a change (which should be reasonable for most devices).
-                         This method is not perfect and cause some short visual glitches, but it's better than having the wrong width and height.
-                         NB : This issue is not present when the dialog is not immersive.
-                        */
-                        CoroutineScope(Dispatchers.IO).launch {
-                            for (i in 0..10) {
-                                Thread.sleep(50)
-                                if (activityWindow.decorView.width != width || activityWindow.decorView.height != height) {
-                                    width = activityWindow.decorView.width
-                                    height = activityWindow.decorView.height
-                                    break
+                             There is some unpredictable delay depending of the device that led to having the wrong width and height, especially while escaping from PiP mode and entering.
+                             This is a workaround to get the right width and height during a 0.5 seconds period which restart itself whenever there's a change (which should be reasonable for most devices).
+                             This method is not perfect and cause some short visual glitches, but it's better than having the wrong width and height.
+                             NB : This issue is not present when the dialog is not immersive.
+                            */
+                            CoroutineScope(Dispatchers.IO).launch {
+                                for (i in 0..10) {
+                                    Thread.sleep(50)
+                                    if (activityWindow.decorView.width != width || activityWindow.decorView.height != height) {
+                                        width = activityWindow.decorView.width
+                                        height = activityWindow.decorView.height
+                                        // Break it since the SideEffect will be called again anyway
+                                        break
+                                    }
                                 }
                             }
                         }
                     }
-
-
                 }
 
-                val window = getDialogWindow()
-
                 DisposableEffect(Unit) {
-                    window?.decorView?.systemUiVisibility =
+                    dialogWindow?.decorView?.systemUiVisibility =
                         (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                                 or View.SYSTEM_UI_FLAG_FULLSCREEN
-                                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+                                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                or View.KEEP_SCREEN_ON)
 
                     onDispose {
-                        window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+                        dialogWindow?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
                     }
                 }
 
-                key(width, width) {
+                key(width /* height is not required since both will be updated anyway if there is a change */) {
                     Surface(modifier = Modifier.fillMaxSize(), color = Color.Black) {
                         content()
                     }

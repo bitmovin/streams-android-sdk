@@ -63,62 +63,6 @@ class DefaultTest : ComponentActivity() {
                         ),
                     )
                 )
-                BitmovinStream(
-                    streamId = TestStreamsIds.SQUARE_VIDEO,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .padding(20.dp),
-                    enableAds = false,
-                )
-                BitmovinStream(
-                    streamId = TestStreamsIds.SQUARE_VIDEO,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .padding(20.dp),
-                    enableAds = false,
-                )
-                BitmovinStream(
-                    streamId = TestStreamsIds.SQUARE_VIDEO,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .padding(20.dp),
-                    enableAds = false,
-                )
-                BitmovinStream(
-                    streamId = TestStreamsIds.SQUARE_VIDEO,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .padding(20.dp),
-                    enableAds = false,
-                )
-                BitmovinStream(
-                    streamId = TestStreamsIds.SQUARE_VIDEO,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .padding(20.dp),
-                    enableAds = false,
-                )
-                BitmovinStream(
-                    streamId = TestStreamsIds.SQUARE_VIDEO,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .padding(20.dp),
-                    enableAds = false,
-                )
-                BitmovinStream(
-                    streamId = TestStreamsIds.SQUARE_VIDEO,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .padding(20.dp),
-                    enableAds = false,
-                )
-                BitmovinStream(
-                    streamId = TestStreamsIds.SQUARE_VIDEO,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .padding(20.dp),
-                    enableAds = false,
-                )
             }
         }
     }
