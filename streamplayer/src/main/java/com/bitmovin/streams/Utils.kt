@@ -123,10 +123,10 @@ internal fun createPlayer(
     context: Context,
     enableAds: Boolean
 ): Player {
-    val analyticsConfig: AnalyticsConfig = getAnalyticsConfig(streamConfigData)
+    val analyticsConfig: AnalyticsConfig = createAnalyticsConfig(streamConfigData)
     val advertisingConfig: AdvertisingConfig? =
         when (enableAds) {
-            true -> getAdvertisingConfig(streamConfigData)
+            true -> createAdvertisingConfig(streamConfigData)
             false -> null
         }
 
@@ -147,7 +147,7 @@ internal fun createPlayer(
     }
 }
 
-internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
+internal fun createAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
     // Bitmovin and Progressive ads only for now
     val ads = streamConfig.adConfig.ads.map { ad ->
         val fileExt = ad.url.split(".").last()
@@ -166,7 +166,7 @@ internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingCo
     return AdvertisingConfig(ads)
 }
 
-internal fun getAnalyticsConfig(streamConfig: StreamConfigData): AnalyticsConfig {
+internal fun createAnalyticsConfig(streamConfig: StreamConfigData): AnalyticsConfig {
     return AnalyticsConfig(
         streamConfig.analytics.key,
     )
@@ -180,7 +180,7 @@ internal fun createSource(
 ): Source {
     val sourceConfig = SourceConfig(
         url = streamConfigData.sources.hls,
-        type = SourceType.Hls, // Might be different in some cases but let's pretend it's always HLS for now
+        type = SourceType.Hls, // Always HLS since Streams only supports HLS for now
         title = streamConfigData.sources.title,
         posterSource = customPosterSource ?: streamConfigData.sources.poster,
         subtitleTracks = subtitlesSources,
@@ -188,7 +188,7 @@ internal fun createSource(
     val sourceMetadata = SourceMetadata(
         videoId = streamConfigData.analytics.videoId,
         title = streamConfigData.analytics.videoTitle,
-        isLive = streamConfigData.type == "LIVE",
+        isLive = streamConfigData.isLive(),
         customData = CustomData("STREAMS-ANDROID-COMPONENT"),
     )
     return Source(
@@ -197,7 +197,7 @@ internal fun createSource(
     )
 }
 
-internal suspend fun createPlayerView(
+internal fun createPlayerView(
     context: Context,
     player: Player,
     streamConfig: StreamConfigData,
@@ -209,7 +209,6 @@ internal suspend fun createPlayerView(
     streamConfig.styleConfig.affectConfig(styleConfigStream)
 
     val suppCssLocation = getCustomCss(
-        context,
         streamConfig,
         userSupplCss = styleConfigStream.customCss,
         styleFileKey
@@ -251,6 +250,12 @@ internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>)
     return this
 }
 
+
+/**
+ * Get an error message based on the error code.
+ * @param errorCode The error code.
+ * @return The error message.
+ */
 fun getErrorMessage(errorCode: Int): String {
     val message =
         when (errorCode) {
@@ -265,7 +270,13 @@ fun getErrorMessage(errorCode: Int): String {
     return message
 }
 
-
+/**
+ * Create a file in the app's private storage and write the CSS content to it.
+ * @param fileKey The unique key to identify the file.
+ * @param context The context of the app.
+ * @param css The CSS content to write to the file.
+ * @return The file if the operation was successful, null otherwise.
+ */
 internal fun writeCssToFile(fileKey: String, context: Context, css: String): File? {
     return try {
         // Create a file in the app's private storage
@@ -289,8 +300,15 @@ internal fun writeCssToFile(fileKey: String, context: Context, css: String): Fil
     }
 }
 
+/**
+ * Get the URL of the CSS file.
+ * @param context The context of the app.
+ * @param streamConfig The stream configuration data.
+ * @param userSupplCss The user-supplied CSS content.
+ * @param styleFileKey The unique key to identify the file.
+ *
+ */
 internal fun getCustomCss(
-    context: Context,
     streamConfig: StreamConfigData,
     userSupplCss: String,
     styleFileKey: String
@@ -307,30 +325,12 @@ internal fun getCustomCss(
     }
     css.append("\n$userSupplCss")
 
-    return writeCssToFile(styleFileKey, context, css.toString())?.toURL().toString()
+    return writeCssToFile(styleFileKey, StreamsProvider.appContext, css.toString())?.toURL().toString()
 }
 
-
-internal fun watermarkCss(watermarkImg: String): String {
-    return """
-        .bmpui-ui-watermark {
-            background-image: url("$watermarkImg") !important;
-            background-size: contain !important;
-            background-repeat: no-repeat !important;
-            background-position: center center !important;
-            font-size: .7em !important;
-            display: block !important;
-            pointer-events: none !important;
-            top: 20px !important;
-            opacity: 1 !important;
-            transition: opacity 0.5s ease, top 0.5s ease !important;
-        }
-        .bmpui-controls-hidden .bmpui-ui-watermark {
-            top: 0px !important;
-            opacity: 0.2 !important;
-        }
-    """.trimIndent()
-}
+/*
+    CSS ZONE
+*/
 
 internal fun playerStyle(playerStyle: PlayerStyle): String {
     val playerStyles: StringBuilder = StringBuilder()
@@ -359,6 +359,26 @@ internal fun playerStyle(playerStyle: PlayerStyle): String {
     return playerStyles.toString()
 }
 
+internal fun watermarkCss(watermarkImg: String): String {
+    return """
+        .bmpui-ui-watermark {
+            background-image: url("$watermarkImg") !important;
+            background-size: contain !important;
+            background-repeat: no-repeat !important;
+            background-position: center center !important;
+            font-size: .7em !important;
+            display: block !important;
+            pointer-events: none !important;
+            top: 20px !important;
+            opacity: 1 !important;
+            transition: opacity 0.5s ease, top 0.5s ease !important;
+        }
+        .bmpui-controls-hidden .bmpui-ui-watermark {
+            top: 0px !important;
+            opacity: 0.2 !important;
+        }
+    """.trimIndent()
+}
 
 internal fun stylePlaybackMarkerBgColor(color: String): String {
     // Volume slider is not used in this playerView but I based the impl on the web player UI.

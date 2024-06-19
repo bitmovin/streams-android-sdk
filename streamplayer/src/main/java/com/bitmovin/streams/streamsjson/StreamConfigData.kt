@@ -10,4 +10,8 @@ class StreamConfigData {
     lateinit var type: String // VIDEO | LIVE
     var styleConfig: StyleConfig = StyleConfig()
     var adConfig: AdConfig = AdConfig()
+
+    fun isLive(): Boolean {
+        return type == "LIVE"
+    }
 }
