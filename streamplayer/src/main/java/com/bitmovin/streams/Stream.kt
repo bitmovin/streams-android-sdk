@@ -3,22 +3,19 @@ package com.bitmovin.streams
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LifecycleOwner
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.SubtitleView
 import com.bitmovin.player.api.Player
-import com.bitmovin.player.api.event.*
+import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.player.api.ui.FullscreenHandler
-import com.bitmovin.player.api.ui.PictureInPictureHandler
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.fullscreenmode.StreamFullscreenHandler
-import com.bitmovin.streams.pipmode.PiPChangesObserver
 import com.bitmovin.streams.pipmode.PiPExitListener
 import com.bitmovin.streams.pipmode.PiPHandler
 import com.bitmovin.streams.streamsjson.StreamConfigData
@@ -27,22 +24,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.lang.Thread.sleep
 
 internal class Stream(private val usid: String) {
     // These values are all set as mutableStateOf to trigger recompositions when they change
-    var streamConfigData by mutableStateOf<StreamConfigData?>(null)
-    var streamResponseError by mutableIntStateOf(0)
+    var streamConfigData : StreamConfigData? = null
+    var streamResponseError = 0
     var state by mutableStateOf(BitmovinStreamState.FETCHING)
-    var pipHandler: PictureInPictureHandler? = null
-    var fullscreenHandler: FullscreenHandler? = null
-    var playerView by mutableStateOf<PlayerView?>(null)
+    var playerView : PlayerView? = null
     var player: Player? = null
     var streamEventListener: BitmovinStreamEventListener? = null
     var pipExitHandler: PiPExitListener? = null
-
-    companion object {
-        val pipChangesObserver = PiPChangesObserver()
-    }
 
     /**
      * Will do both the fetching and the initialization of the stream
@@ -98,7 +90,7 @@ internal class Stream(private val usid: String) {
 
     private fun error(streamId: String, msg: String? = null) {
         Log.e(
-            Tag.Stream,
+            Tag.STREAM,
             "[$streamId] $streamResponseError : ${msg ?: getErrorMessage(streamResponseError)}"
         )
         streamEventListener?.onStreamError(
@@ -127,22 +119,15 @@ internal class Stream(private val usid: String) {
         styleConfigStream: StyleConfigStream
     ) {
         state = BitmovinStreamState.INITIALIZING
-        pipChangesObserver.let {
+        StreamsProvider.getInstance().pipChangesObserver.let {
             it.context = context
             lifecycleOwner.lifecycle.addObserver(it)
         }
 
         val player = initializePlayerRelated(
             context,
-            lifecycleOwner,
             streamConfig,
-            autoPlay,
-            loop,
-            muted,
-            start,
-            enableAds,
-            poster,
-            subtitles
+            enableAds
         )
         initializeViewRelated(
             context,
@@ -152,37 +137,10 @@ internal class Stream(private val usid: String) {
             styleConfigStream,
             fullscreenConfig
         )
-    }
 
-    private fun initializePlayerRelated(
-        context: Context,
-        lifecycleOwner: LifecycleOwner,
-        streamConfig: StreamConfigData,
-        autoPlay: Boolean,
-        loop: Boolean,
-        muted: Boolean,
-        start: Double,
-        enableAds: Boolean,
-        poster: String?,
-        subtitles: List<SubtitleTrack>
-    ): Player {
-        pipChangesObserver.let {
-            it.context = context
-            lifecycleOwner.lifecycle.addObserver(it)
-        }
-
-        // 1. Initializing the player
-        val player = createPlayer(streamConfig, context, enableAds)
-        this.player = player
-        player.on(PlayerEvent.Ready::class.java) {
-            if (state == BitmovinStreamState.INITIALIZING) {
-                state = BitmovinStreamState.WAITING_FOR_VIEW
-            } else if (state == BitmovinStreamState.WAITING_FOR_PLAYER) {
-                state = BitmovinStreamState.DISPLAYING
-                streamEventListener?.onStreamReady(player, playerView!!)
-            }
-        }
-
+        withContext(Dispatchers.IO) {
+            sleep(50)
+        } // Sleep to avoid a crash on the main thread
         // Warning: Running this block in the IO dispatcher could results in a crash (RuntimeException) if the component disappears before the end (because of the disposal effects)
         // This is also a lot faster on the main thread. However, it's a huge tradeoff because it's blocking the UI thread. No choice since we can't handle a RuntimeException.
         recordDuration("Loading Source") {
@@ -194,12 +152,28 @@ internal class Stream(private val usid: String) {
                     subtitlesSources = subtitles
                 )
             player.load(streamSource)
+        }
+        // 3. Handling properties
+        // Warning: The stream source has to be loaded before setting the properties. This is why we do it here.
+        // PlayerEvent.Ready event not be called before the source is loaded.
+        player.handleAttributes(autoPlay, muted, loop, start)
+    }
 
-
-            // 3. Handling properties
-            // Warning: The stream source has to be loaded before setting the properties. This is why we do it here.
-            // PlayerEvent.Ready event not be called before the source is loaded.
-            player.handleAttributes(autoPlay, muted, loop, start)
+    private fun initializePlayerRelated(
+        context: Context,
+        streamConfig: StreamConfigData,
+        enableAds: Boolean,
+    ): Player {
+        // 1. Initializing the player
+        val player = createPlayer(streamConfig, context, enableAds)
+        this.player = player
+        player.on(PlayerEvent.Ready::class.java) {
+            if (state == BitmovinStreamState.INITIALIZING) {
+                state = BitmovinStreamState.WAITING_FOR_VIEW
+            } else if (state == BitmovinStreamState.WAITING_FOR_PLAYER) {
+                state = BitmovinStreamState.DISPLAYING
+                streamEventListener?.onStreamReady(player, playerView!!)
+            }
         }
 
         return player
@@ -227,16 +201,8 @@ internal class Stream(private val usid: String) {
         val subtitlesView = SubtitleView(context)
         subtitlesView.setPlayer(player)
 
-
-        if (state == BitmovinStreamState.INITIALIZING)
-            state = BitmovinStreamState.WAITING_FOR_PLAYER
-        else if (state == BitmovinStreamState.WAITING_FOR_VIEW) {
-            state = BitmovinStreamState.DISPLAYING
-            streamEventListener?.onStreamReady(player, playerView)
-        }
-
         // 5. Initializing handlers
-
+        val fullscreenHandler: FullscreenHandler
         if (fullscreenConfig.enable) {
             // Setting up the fullscreen feature
             fullscreenHandler = StreamFullscreenHandler(
@@ -248,27 +214,34 @@ internal class Stream(private val usid: String) {
         }
         // Setting up the PiP feature
         if (fullscreenConfig.enable) {
-            pipHandler = PiPHandler(context.getActivity()!!, playerView)
+            val pipHandler = PiPHandler(context.getActivity()!!, playerView)
             playerView.setPictureInPictureHandler(pipHandler)
 
             val pipExitHandler = object : PiPExitListener {
                 override fun onPiPExit() {
-                    this@Stream.pipHandler?.exitPictureInPicture()
+                    pipHandler.exitPictureInPicture()
                 }
 
                 override fun isInPiPMode(): Boolean {
-                    return this@Stream.pipHandler?.isPictureInPicture ?: false
+                    return pipHandler.isPictureInPicture
                 }
             }
             this.pipExitHandler = pipExitHandler
-            pipChangesObserver.addListener(pipExitHandler)
+            StreamsProvider.getInstance().pipChangesObserver.addListener(pipExitHandler)
+        }
+
+        if (state == BitmovinStreamState.INITIALIZING)
+            state = BitmovinStreamState.WAITING_FOR_PLAYER
+        else if (state == BitmovinStreamState.WAITING_FOR_VIEW) {
+            state = BitmovinStreamState.DISPLAYING
+            streamEventListener?.onStreamReady(player, playerView)
         }
 
     }
 
     fun dispose() {
         player?.destroy()
-        pipExitHandler?.let { pipChangesObserver.removeListener(it) }
+        pipExitHandler?.let { StreamsProvider.getInstance().pipChangesObserver.removeListener(it) }
         playerView?.let {
             it.setFullscreenHandler(null)
             it.setPictureInPictureHandler(null)
@@ -278,7 +251,7 @@ internal class Stream(private val usid: String) {
                 .takeIf { file -> file.exists() }?.delete()
         }
         StreamsProvider.getInstance().removeStream(usid)
-        Log.i(Tag.Stream, "[$usid] Stream disposed")
+        Log.i(Tag.STREAM, "[$usid] Stream disposed")
     }
 
 
@@ -303,7 +276,7 @@ internal class Stream(private val usid: String) {
 
                     else -> {
                         Log.e(
-                            Tag.Stream,
+                            Tag.STREAM,
                             streamResponseError.toString() + "Error fetching stream [$streamId] config data."
                         )
                         streamEventListener?.onStreamError(
@@ -314,7 +287,7 @@ internal class Stream(private val usid: String) {
                     }
                 }
             } catch (e: Exception) {
-                Log.e(Tag.Stream, "No Internet Connection", e)
+                Log.e(Tag.STREAM, "No Internet Connection", e)
                 state = BitmovinStreamState.DISPLAYING_ERROR
                 streamEventListener?.onStreamError(
                     streamResponseError,

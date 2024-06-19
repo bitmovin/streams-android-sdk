@@ -41,7 +41,6 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Thread.sleep
 import kotlin.reflect.KProperty
 
 /**
@@ -101,7 +100,7 @@ internal suspend fun getStreamConfigData(
                 .url(url)
                 .build()
 
-            Log.d(Tag.Stream, "Request: $request")
+            Log.d(Tag.STREAM, "Request: $request")
             val response = client.newCall(request).execute()
             val code = response.code
             if (!response.isSuccessful) {
@@ -139,6 +138,7 @@ internal fun createPlayer(
     return recordDuration("Creating player") {
         // From the countTime function, we can see that the creation of the Player is the most expensive part of the process by really far.
         // I unfortunately can't do much about it since it's part of the Bitmovin SDK.
+        // It also has to be done on the main thread.
         Player(
             context,
             playerConfig = playerConfig,
@@ -216,8 +216,15 @@ internal suspend fun createPlayerView(
             forceSubtitlesIntoViewContainer = true,
         )
     )
-
-    val playerView = withContext(Dispatchers.IO) {
+    /*
+    Ideally, the creation of the PlayerView should be done on an IO thread since it's quicker and
+    doesn't require the main thread (that's what I thought at least)
+    But there is some rare cases where creating the PlayerView on an IO thread will cause
+    the WebView to not show the fullscreen button. TODO: Investigate why with the Player Jedis
+    However, since the perf anyway only really matters on launch on the fist time (because of cache)
+    It is better and safer to keep it on the main thread for now.
+     */
+    val playerView =
         recordDuration("PlayerView Creation") {
             PlayerView(context, player, config = playerViewConfig)
                 .apply {
@@ -228,7 +235,6 @@ internal suspend fun createPlayerView(
                     keepScreenOn = true
                 }
         }
-    }
     // Should be done at the end
     //TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
     streamConfig.styleConfig.playerStyle.backgroundColor?.let {
@@ -267,11 +273,11 @@ internal fun writeCssToFile(fileKey: String, context: Context, css: String): Fil
         FileOutputStream(cssFile).use { output ->
             output.write(css.toByteArray())
         }
-        Log.d(Tag.Stream, "Writing CSS to file: $cssFile")
+        Log.d(Tag.STREAM, "Writing CSS to file: $cssFile")
         cssFile
     } catch (e: IOException) {
         Log.e(
-            Tag.Stream,
+            Tag.STREAM,
             "Failed to write CSS rules to file. Stylization rules will be ignored.",
             e
         )
@@ -450,7 +456,7 @@ fun String.parseColor(): Color? {
         return Color(r.toInt(), g.toInt(), b.toInt(), (a.toFloat() * 255).toInt())
     } else {
         Log.e(
-            Tag.Stream,
+            Tag.STREAM,
             "Failed to parse color from string: $this\n The only supported format is rgba(r, g, b, a) for now. Please change the color config from the dashboard to respect this format."
         )
     }
@@ -472,6 +478,6 @@ fun <T> recordDuration(title: String, block: () -> T): T {
     return block().also {
         val end = System.currentTimeMillis()
         val thread = Thread.currentThread().name
-        Log.d(Tag.Perf, "$title took ${end - start}ms [$thread]")
+        Log.d(Tag.PERF, "$title took ${end - start}ms [$thread]")
     }
 }
