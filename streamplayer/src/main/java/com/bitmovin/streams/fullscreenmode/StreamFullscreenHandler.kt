@@ -23,7 +23,7 @@ class StreamFullscreenHandler(val playerView: PlayerView, val activity: Activity
 
     override fun onFullscreenExitRequested() {
         if (fullscreen.value) {
-            Log.d(Tag.Stream, "exitFullscreen")
+            Log.d(Tag.STREAM, "exitFullscreen")
             doOrientationChanges(false)
             fullscreen.value = false
         }
@@ -67,7 +67,7 @@ class StreamFullscreenHandler(val playerView: PlayerView, val activity: Activity
     override fun onFullscreenRequested() {
         // Store the user orientation to restore it when exiting fullscreen
         if (!fullscreen.value) {
-            Log.d(Tag.Stream, "enterFullscreen")
+            Log.d(Tag.STREAM, "enterFullscreen")
             doOrientationChanges(true)
             fullscreen.value = true
         }

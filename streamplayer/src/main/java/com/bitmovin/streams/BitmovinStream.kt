@@ -114,7 +114,7 @@ fun BitmovinStream(
         }
     }
     Log.i(
-        Tag.Stream,
+        Tag.STREAM,
         "[$usid] Stream recomposed in ${System.currentTimeMillis() - recompositionTimeStart}ms"
     )
 

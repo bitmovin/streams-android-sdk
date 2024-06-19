@@ -6,15 +6,19 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.util.Log
+import com.bitmovin.streams.pipmode.PiPChangesObserver
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import java.io.File
 
 internal class StreamsProvider : ContentProvider() {
+
+    val pipChangesObserver = PiPChangesObserver()
     companion object {
         private val instance = StreamsProvider()
         private lateinit var applicationContext: Context
         lateinit var okHttpClient: OkHttpClient
+
 
         fun init(application: Context) {
             applicationContext = application
@@ -30,7 +34,6 @@ internal class StreamsProvider : ContentProvider() {
         fun getInstance(): StreamsProvider {
             return instance
         }
-
         val appContext: Context
             get() = try {
                 applicationContext
@@ -57,7 +60,7 @@ internal class StreamsProvider : ContentProvider() {
      */
     override fun onCreate(): Boolean {
         init(context!!.applicationContext)
-        Log.i(Tag.Stream, "Streams Pool initialized successfully")
+        Log.i(Tag.STREAM, "Streams Pool initialized successfully")
         return false
     }
 

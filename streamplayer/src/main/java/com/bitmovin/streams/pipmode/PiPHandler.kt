@@ -1,9 +1,7 @@
 package com.bitmovin.streams.pipmode
 
 import android.app.Activity
-import android.os.Build
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.ui.DefaultPictureInPictureHandler
 import com.bitmovin.streams.Tag
@@ -16,7 +14,7 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
     private var previousUiVisibility = true
 
     override fun enterPictureInPicture() {
-        Log.d(Tag.Stream, "enterPictureInPicture")
+        Log.d(Tag.STREAM, "enterPictureInPicture")
         super.enterPictureInPicture()
         isInPictureInPicture = true
 
@@ -34,7 +32,7 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
     }
 
     override fun exitPictureInPicture() {
-        Log.d(Tag.Stream, "exitPictureInPicture")
+        Log.d(Tag.STREAM, "exitPictureInPicture")
         // Restore the previous values
         isInPictureInPicture = false
         playerView.isUiVisible = previousUiVisibility
