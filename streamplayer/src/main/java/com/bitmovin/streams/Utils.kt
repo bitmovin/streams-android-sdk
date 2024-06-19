@@ -152,10 +152,14 @@ internal fun getAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingCo
     val ads = streamConfig.adConfig.ads.map { ad ->
         val fileExt = ad.url.split(".").last()
         val adSource = when (fileExt) {
+            // From testing, it seems mp4 is the only supported format for Progressive ads.
+            // I didn't find any documentation about how to automatically detect the type of ad source.
             "mp4" -> AdSource(AdSourceType.Progressive, ad.url)
             "xml" -> AdSource(AdSourceType.Bitmovin, ad.url)
             // "..." -> AdSource(AdSourceType.Ima, ad.url) ignoring this case for now
-            else -> AdSource(AdSourceType.Unknown, ad.url)
+            // Does not support IMAs.
+            // If nothing is detected, let's try as a Bitmovin ad. It's common and should not affect negatively the player if it fails.
+            else -> AdSource(AdSourceType.Bitmovin, ad.url)
         }
         AdItem(ad.position, adSource)
     }
