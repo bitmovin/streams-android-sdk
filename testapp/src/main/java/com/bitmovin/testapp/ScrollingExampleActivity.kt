@@ -318,7 +318,10 @@ fun BitmovinShowcase() {
                     override fun onStreamError(errorCode: Int, errorMessage: String) {
                     }
                 },
-                enableAds = false
+                enableAds = false,
+                fullscreenConfig = FullscreenConfig(
+                    autoOrientation = false,
+                )
             )
         }
     }

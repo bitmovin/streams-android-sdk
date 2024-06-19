@@ -137,6 +137,7 @@ fun BitmovinStream(
             styleConfigStream = styleConfig
         )
         onDispose {
+
             stream.dispose()
         }
     }
