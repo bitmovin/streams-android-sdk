@@ -30,5 +30,4 @@ internal class LifeCycleRedirectForPlayer(
             else -> {}
         }
     }
-
 }

@@ -27,14 +27,13 @@ import java.io.File
 import java.lang.Thread.sleep
 
 internal class Stream(private val usid: String) {
-    // These values are all set as mutableStateOf to trigger recompositions when they change
-    var streamConfigData: StreamConfigData? = null
-    var streamResponseError = 0
     var state by mutableStateOf(BitmovinStreamState.FETCHING)
+
+    var streamResponseError = 0
     var playerView: PlayerView? = null
     var player: Player? = null
-    var streamEventListener: BitmovinStreamEventListener? = null
-    var pipExitHandler: PiPExitListener? = null
+    private var streamEventListener: BitmovinStreamEventListener? = null
+    private var pipExitHandler: PiPExitListener? = null
 
     /**
      * Will do both the fetching and the initialization of the stream
@@ -61,12 +60,11 @@ internal class Stream(private val usid: String) {
             try {
                 val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
                 this@Stream.streamResponseError = streamConfigDataResp.responseHttpCode
-                if (streamResponseError == 200) {
-                    this@Stream.streamConfigData = streamConfigDataResp.streamConfigData
+                if (streamResponseError == 200 && streamConfigDataResp.streamConfigData != null) {
                     initializeStream(
                         context,
                         lifecycleOwner,
-                        streamConfigData!!,
+                        streamConfigDataResp.streamConfigData,
                         autoPlay,
                         loop,
                         muted,
@@ -122,11 +120,14 @@ internal class Stream(private val usid: String) {
             lifecycleOwner.lifecycle.addObserver(it)
         }
 
+        // 1. Initializing the player
         val player = initializePlayerRelated(
             context,
             streamConfig,
             enableAds
         )
+
+        // 2. Initializing the views
         initializeViewRelated(
             context,
             player,
@@ -136,10 +137,10 @@ internal class Stream(private val usid: String) {
             fullscreenConfig
         )
 
+        // 3. Loading the source
         // Warning: Running this block in the IO dispatcher could results in a crash (RuntimeException) if the component disappears before the end (because of the disposal effects)
         // This is also a lot faster on the main thread. However, it's a huge tradeoff because it's blocking the UI thread. No choice since we can't handle a RuntimeException.
         recordDuration("Loading Source") {
-            // 2. Loading the stream source
             val streamSource =
                 createSource(
                     streamConfig,
@@ -148,7 +149,7 @@ internal class Stream(private val usid: String) {
                 )
             player.load(streamSource)
         }
-        // 3. Handling properties
+        // 4. Handling properties
         // Warning: The stream source has to be loaded before setting the properties. This is why we do it here.
         // PlayerEvent.Ready event not be called before the source is loaded.
         player.handleAttributes(autoPlay, muted, loop, start)
@@ -159,7 +160,6 @@ internal class Stream(private val usid: String) {
         streamConfig: StreamConfigData,
         enableAds: Boolean,
     ): Player {
-        // 1. Initializing the player
         val player = createPlayer(streamConfig, context, enableAds)
         this.player = player
         player.on(PlayerEvent.Ready::class.java) {
@@ -185,8 +185,6 @@ internal class Stream(private val usid: String) {
     ) {
         val activity = context.getActivity()
 
-        // 4. Setting up Views
-
         // Setting up the player view
         playerView = createPlayerView(context, player, streamConfig, styleConfigStream, usid)
         val playerView = playerView!!
@@ -196,7 +194,6 @@ internal class Stream(private val usid: String) {
         val subtitlesView = SubtitleView(context)
         subtitlesView.setPlayer(player)
 
-        // 5. Initializing handlers
         val fullscreenHandler: FullscreenHandler
         if (fullscreenConfig.enable) {
             // Setting up the fullscreen feature
@@ -248,51 +245,7 @@ internal class Stream(private val usid: String) {
         StreamsProvider.getInstance().removeStream(usid)
         Log.i(Tag.STREAM, "[$usid] Stream disposed")
     }
-
-
-    @Deprecated("How fetching method, not useful anymore")
-    private fun fetchStreamConfig(
-        streamId: String,
-        jwToken: String?,
-        bitmovinStreamEventListener: BitmovinStreamEventListener?
-    ) {
-        this.streamEventListener = bitmovinStreamEventListener
-        // Coroutine IO to fetch the stream config data IO
-        CoroutineScope(Dispatchers.IO).launch {
-            // Fetch the stream config data
-            try {
-                val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
-                streamResponseError = streamConfigDataResp.responseHttpCode
-                when (streamResponseError) {
-                    200 -> {
-                        streamConfigData = streamConfigDataResp.streamConfigData
-                        state = BitmovinStreamState.INITIALIZING
-                    }
-
-                    else -> {
-                        Log.e(
-                            Tag.STREAM,
-                            streamResponseError.toString() + "Error fetching stream [$streamId] config data."
-                        )
-                        streamEventListener?.onStreamError(
-                            streamResponseError,
-                            getErrorMessage(streamResponseError)
-                        )
-                        state = BitmovinStreamState.DISPLAYING_ERROR
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(Tag.STREAM, "No Internet Connection", e)
-                state = BitmovinStreamState.DISPLAYING_ERROR
-                streamEventListener?.onStreamError(
-                    streamResponseError,
-                    getErrorMessage(streamResponseError)
-                )
-            }
-        }
-    }
 }
-
 
 private fun Player.handleAttributes(
     autoPlay: Boolean,
@@ -308,7 +261,6 @@ private fun Player.handleAttributes(
     if (start > 0)
         this.seek(start)
 
-    // Prototype for an autoplay feature, but it's not looking great for now
     if (loop) {
         // Impl detail : we do not use the PlayerEvent.PlaybackFinished event because it triggers the ui visibility which seems undesirable
         this.on(PlayerEvent.TimeChanged::class.java) {
