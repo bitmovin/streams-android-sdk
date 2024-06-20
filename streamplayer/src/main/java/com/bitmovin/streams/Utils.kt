@@ -25,6 +25,7 @@ import com.bitmovin.player.api.advertising.AdvertisingConfig
 import com.bitmovin.player.api.analytics.AnalyticsPlayerConfig
 import com.bitmovin.player.api.analytics.AnalyticsSourceConfig
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
+import com.bitmovin.player.api.media.thumbnail.ThumbnailTrack
 import com.bitmovin.player.api.source.Source
 import com.bitmovin.player.api.source.SourceConfig
 import com.bitmovin.player.api.source.SourceType
@@ -106,6 +107,7 @@ internal suspend fun getStreamConfigData(
             if (!response.isSuccessful) {
                 StreamConfigDataResponse(null, code)
             }
+            // This is not risky since the content should not be too big.
             val responseBody = response.body?.string()
             val streamConfigData = Gson().fromJson(responseBody, StreamConfigData::class.java)
             StreamConfigDataResponse(streamConfigData, code)
@@ -172,32 +174,47 @@ internal fun createAnalyticsConfig(streamConfig: StreamConfigData): AnalyticsCon
     )
 }
 
+internal fun createSourceConfig(
+    streamConfigData: StreamConfigData,
+    customPosterSource: String?,
+    subtitlesSources: List<SubtitleTrack> = emptyList()
+): SourceConfig {
+    return SourceConfig(
+        url = streamConfigData.sources.hls,
+        type = SourceType.Hls, // Always HLS since Streams only supports HLS for now
+        title = streamConfigData.sources.title,
+        posterSource = customPosterSource ?: streamConfigData.sources.poster,
+        subtitleTracks = subtitlesSources,
+        thumbnailTrack = streamConfigData.sources.thumbnailTrack.url?.let { ThumbnailTrack(it) }
+    )
+}
+
+internal fun createMetadata(
+    streamConfigData: StreamConfigData
+): SourceMetadata {
+    return SourceMetadata(
+        videoId = streamConfigData.analytics.videoId,
+        title = streamConfigData.analytics.videoTitle,
+        isLive = streamConfigData.isLive(),
+        customData = CustomData("STREAMS-ANDROID-COMPONENT"),
+    )
+}
 
 internal fun createSource(
     streamConfigData: StreamConfigData,
     customPosterSource: String?,
     subtitlesSources: List<SubtitleTrack> = emptyList()
 ): Source {
-    val sourceConfig = SourceConfig(
-        url = streamConfigData.sources.hls,
-        type = SourceType.Hls, // Always HLS since Streams only supports HLS for now
-        title = streamConfigData.sources.title,
-        posterSource = customPosterSource ?: streamConfigData.sources.poster,
-        subtitleTracks = subtitlesSources,
-    )
-    val sourceMetadata = SourceMetadata(
-        videoId = streamConfigData.analytics.videoId,
-        title = streamConfigData.analytics.videoTitle,
-        isLive = streamConfigData.isLive(),
-        customData = CustomData("STREAMS-ANDROID-COMPONENT"),
-    )
+    val sourceConfig = createSourceConfig(streamConfigData, customPosterSource, subtitlesSources)
+    val sourceMetadata = createMetadata(streamConfigData)
+
     return Source(
         sourceConfig,
         AnalyticsSourceConfig.Enabled(sourceMetadata)
     )
 }
 
-internal fun createPlayerView(
+internal suspend fun createPlayerView(
     context: Context,
     player: Player,
     streamConfig: StreamConfigData,
@@ -208,11 +225,14 @@ internal fun createPlayerView(
     // Should be done at the beginning or the attributes values will be ignored.
     streamConfig.styleConfig.affectConfig(styleConfigStream)
 
-    val suppCssLocation = getCustomCss(
-        streamConfig,
-        userSupplCss = styleConfigStream.customCss,
-        styleFileKey
-    )
+
+    val suppCssLocation = withContext(Dispatchers.IO) {
+        return@withContext getCustomCss(
+            streamConfig,
+            userSupplCss = styleConfigStream.customCss,
+            styleFileKey
+        )
+    }
     val playerViewConfig = PlayerViewConfig(
         UiConfig.WebUi(
             supplementalCssLocation = suppCssLocation,
@@ -241,7 +261,7 @@ internal fun createPlayerView(
     // Should be done at the end
     //TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
     streamConfig.styleConfig.playerStyle.backgroundColor?.let {
-        it.parseColor()?.toArgb()?.let { colorInt -> playerView.setBackgroundColor(colorInt) }
+        Color.parseColor(it)?.toArgb()?.let { colorInt -> playerView.setBackgroundColor(colorInt) }
     }
     return playerView
 }
@@ -325,7 +345,8 @@ internal fun getCustomCss(
     }
     css.append("\n$userSupplCss")
 
-    return writeCssToFile(styleFileKey, StreamsProvider.appContext, css.toString())?.toURL().toString()
+    return writeCssToFile(styleFileKey, StreamsProvider.appContext, css.toString())?.toURL()
+        .toString()
 }
 
 /*
@@ -471,10 +492,10 @@ const val floatNumber = "([+-]?([0-9]+([.][0-9]*)?|[.][0-9]+))"
 
 // TODO: Add support for other color formats
 // TODO: Change the parsing without using Regex because it seems overkill
-fun String.parseColor(): Color? {
+fun Color.Companion.parseColor(str: String): Color? {
 
     val pattern = "rgba\\((\\d+), (\\d+), (\\d+), $floatNumber\\)".toRegex()
-    val match = pattern.find(this)
+    val match = pattern.find(str)
     if (match != null) {
         val (r, g, b, a) = match.destructured
         return Color(r.toInt(), g.toInt(), b.toInt(), (a.toFloat() * 255).toInt())
