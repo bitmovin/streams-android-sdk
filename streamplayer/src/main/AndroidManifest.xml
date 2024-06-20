@@ -4,7 +4,7 @@
     <application>
         <provider
             android:name=".StreamsProvider"
-            android:authorities="com.bitmovin.streams"
+            android:authorities="${applicationId}.streamsprovider"
             android:exported="false" />
     </application>
 </manifest>
