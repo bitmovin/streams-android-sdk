@@ -6,11 +6,8 @@ plugins {
 android {
     namespace = "com.bitmovin.streams"
     compileSdk = 34
-
     defaultConfig {
         minSdk = 21
-
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -56,8 +53,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.google.gson)
     implementation(libs.bitmovin.player)
 
