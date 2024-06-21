@@ -1,6 +1,7 @@
 package com.bitmovin.streams.config
 
 import androidx.compose.ui.graphics.Color
+import java.io.File
 
 /**
  * This class is used to store the configuration data of a stream.
@@ -13,7 +14,7 @@ import androidx.compose.ui.graphics.Color
  * @param backgroundColor The color of the background.
  * @param customCss CSS rules that you can add to make the player look as you expect. Does not support URL or URI, has to be plain text. Please refer to the the Player UI documentation for more information : https://developer.bitmovin.com/playback/docs/player-ui-css-class-reference.
  */
-data class StyleConfigStream(
+class StyleConfigStream(
     val playbackMarkerBgColor: Color? = null,
     val playbackMarkerBorderColor: Color? = null,
     val playbackTrackPlayedColor: Color? = null,
@@ -22,7 +23,20 @@ data class StyleConfigStream(
     val textColor: Color? = null,
     val backgroundColor: Color? = null,
     val customCss: String = ""
-)
+) {
+    companion object {
+        fun fromFile(file: File): StyleConfigStream {
+            if (!file.exists())
+                throw IllegalArgumentException("File does not exist")
+            if (!file.isFile)
+                throw IllegalArgumentException("File is not a file")
+            if (!file.canRead())
+                throw IllegalArgumentException("File cannot be read")
+
+            return StyleConfigStream(customCss = file.readText())
+        }
+    }
+}
 
 class PlayerThemes {
     companion object {
