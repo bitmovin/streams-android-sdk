@@ -490,26 +490,13 @@ fun Color.toCSS(): String {
     return s
 }
 
-
-// Credits to https://stackoverflow.com/questions/12643009/regular-expression-for-floating-point-numbers
-const val floatNumber = "([+-]?([0-9]+([.][0-9]*)?|[.][0-9]+))"
-
-// TODO: Add support for other color formats
-// TODO: Change the parsing without using Regex because it seems overkill
 fun Color.Companion.parseColor(str: String): Color? {
-
-    val pattern = "rgba\\((\\d+), (\\d+), (\\d+), $floatNumber\\)".toRegex()
-    val match = pattern.find(str)
-    if (match != null) {
-        val (r, g, b, a) = match.destructured
-        return Color(r.toInt(), g.toInt(), b.toInt(), (a.toFloat() * 255).toInt())
-    } else {
-        Log.e(
-            Tag.STREAM,
-            "Failed to parse color from string: $this\n The only supported format is rgba(r, g, b, a) for now. Please change the color config from the dashboard to respect this format."
-        )
+    try {
+        val c = org.silentsoft.csscolor4j.Color.valueOf(str)
+        return Color(c.red, c.green, c.blue, (c.opacity*255).toInt())
+    } catch(e: IllegalArgumentException) {
+        return null
     }
-    return null
 }
 
 fun getLoadingScreenMessage(state: BitmovinStreamState): String {
