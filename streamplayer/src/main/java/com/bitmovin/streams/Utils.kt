@@ -392,11 +392,15 @@ internal fun watermarkCss(watermarkImg: String): String {
             pointer-events: none !important;
             top: 20px !important;
             opacity: 1 !important;
-            transition: opacity 0.5s ease, top 0.5s ease !important;
+            transition: opacity 0.3s ease, top 0.5s ease-out !important;
         }
         .bmpui-controls-hidden .bmpui-ui-watermark {
-            top: 0px !important;
+            top: -16px !important;
             opacity: 0.2 !important;
+        }
+        
+        :has(.bmpui-ui-settingstogglebutton.bmpui-on) .bmpui-ui-watermark {
+            opacity: 0.0 !important;
         }
     """.trimIndent()
 }
