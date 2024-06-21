@@ -28,6 +28,7 @@ import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.TestStreamsIds
+import com.bitmovin.streams.config.BitmovinStreamConfig
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.PlayerThemes
@@ -139,109 +140,6 @@ fun BitmovinShowcase() {
             modifier = Modifier.padding(16.dp),
             fontWeight = FontWeight.Bold
         )
-        val optProperties : List<Property> = listOf(
-            Property(
-                name = "modifier",
-                description = """
-                    The modifier to be applied to the player. 
-                    Warning : It does not support all the modifiers available in Compose.
-                """.trimIndent(),
-                defaultValue = "Modifier"
-            ),
-            Property(
-                name = "jwToken",
-                description = """
-                    The token to be used for authentication if the stream is protected.
-                    If the token is not provided for a stream which needs it, A 401 error will appear on the player. 
-                """.trimIndent(),
-                defaultValue = "null"
-            ),
-            Property(
-                name = "autoPlay",
-                description = """
-                    Whether the player should start playing automatically.
-                """.trimIndent(),
-                defaultValue = "false"
-            ),
-            Property(
-                name = "loop",
-                description = """
-                    Whether the player should loop the stream.
-                """.trimIndent(),
-                defaultValue = "false"
-            ),
-            Property(
-                name = "muted",
-                description = """
-                    Whether the player should be muted.
-                """.trimIndent(),
-                defaultValue = "false"
-            ),
-            Property(
-                name = "poster",
-                description = """
-                    The poster image to be displayed before the player starts. 
-                    This property has priority over the poster image from the dashboard.
-                    If the poster is not provided neither in the dashboard nor in the player, the poster image will be an image from the video.
-                """.trimIndent(),
-                defaultValue = "null"
-            ),
-            Property(
-                name = "start",
-                description = """
-                    The time in seconds at which the player marker should start.
-                """.trimIndent(),
-                defaultValue = "0.0"
-            ),
-            Property(
-                name = "subtitles",
-                description = """
-                    The list of subtitle tracks available for the stream.
-                """.trimIndent(),
-                defaultValue = "Empty list"
-            ),
-            Property(
-                name = "fullscreenConfig",
-                description = """
-                    The configuration for the fullscreen mode.
-                """.trimIndent(),
-                defaultValue = "None"
-            ),
-            Property(
-                name = "streamEventListener",
-                description = """
-                    The listener for the player events.
-                    
-                    This is the gateway to modify the internal behaviour behavior.
-                    - onStreamReady : Called when the stream is ready to be played and pass the Player and PlayerView instances.
-                    - onStreamError : Called when an error occurs and pass the error code and message.
-                        This callback only works for the stream setup errors. For the player errors, you should use the PlayerEvent.Error callback.
-                    
-                    Warning : The Stream Component may not work properly for some of the modification of the Player / PlayerView. Please consider using the Bitmovin Player SDK directly if you need a deep control over the player behavior.
-                    
-                    Problematic modifications include (but are not limited to) :
-                    - Changing the Fullscreen handler
-                    - Changing the Picture in Picture handler
-                """.trimIndent(),
-                defaultValue = "null"
-            ),
-            Property(
-                name = "enableAds",
-                description = """
-                    Whether ads should be enabled.
-                    Ads are retrieved from the stream's dashboard configuration.
-                """.trimIndent(),
-                defaultValue = "true"
-            ),
-            Property(
-                name = "styleConfig",
-                description = """
-                    The style configuration for the player.
-                    This property has priority over the style configuration from the dashboard.
-                """.trimIndent(),
-                defaultValue = "None"
-            )
-        )
 
         repeat(optProperties.size) {
             PropertyCard(optProperties[it])
@@ -253,33 +151,36 @@ fun BitmovinShowcase() {
         Text(
             text = """
                 Here are some examples of how you can take advantage of the different properties to sweet your own need.
+                Please note that plenty of options are feasible through the dashboard also feasible through the dashboard options.
             """.trimIndent(),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(16.dp)
         )
 
         FlipCard(
-            "Example 1 - Theme customization",
-            R.drawable.code_example_1
+            "Example 1 - Gif-like player",
+            R.drawable.carbon_1
         ) {
-
-            BitmovinStream(
+            val reusableGifVidConfig = BitmovinStreamConfig(
                 streamId = TestStreamsIds.SQUARE_VIDEO,
-                styleConfig = PlayerThemes.RED_EXAMPLE_THEME,
                 autoPlay = true,
                 muted = true,
                 loop = true,
                 fullscreenConfig = FullscreenConfig(
                     enable = false
-                )
+                ),
+                onStreamReady = { _, playerView ->
+                    playerView.isUiVisible = false
+                }
             )
+            BitmovinStream(config = reusableGifVidConfig)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         FlipCard(
-            "Example 2 - Vertical Video",
-            R.drawable.code_example_2,
+            "Example 2 - Styled Vertical Video",
+            R.drawable.carbon_2,
             aspectRatio = 1.3f
         ) {
             // Custom style configuration
@@ -302,24 +203,50 @@ fun BitmovinShowcase() {
         }
         Spacer(modifier = Modifier.height(16.dp))
         FlipCard(
-            "Example 3 - No UI when started",
-            R.drawable.code_example_3,
+            "Example 3 - Fullscreen on Play",
+            R.drawable.carbon_3,
+            aspectRatio = 1.5f
         ) {
             BitmovinStream(
                 streamId = TestStreamsIds.SINTEL,
                 streamEventListener = object : BitmovinStreamEventListener {
                     override fun onStreamReady(player: Player, playerView: PlayerView) {
                         player.on(PlayerEvent.Play::class.java) {
-                            playerView.isUiVisible = false
+                            playerView.enterFullscreen()
+                        }
+                        player.on(PlayerEvent.Paused::class.java) {
+                            playerView.exitFullscreen()
                         }
                     }
 
                     override fun onStreamError(errorCode: Int, errorMessage: String) {
+                        // Handle the error...
                     }
                 },
-                enableAds = false,
-                fullscreenConfig = FullscreenConfig(
-                    autoOrientation = false,
+                enableAds = false
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        FlipCard(
+            "Example 4 - Some UI elements hidden",
+            R.drawable.carbon_4,
+            aspectRatio = 1.4f
+        ) {
+            BitmovinStream(
+                streamId = TestStreamsIds.SINTEL,
+                styleConfig = StyleConfigStream(
+                    customCss =
+                    // Please refer to https://developer.bitmovin.com/playback/docs/player-ui-css-class-reference
+                        """
+                            .bmpui-ui-volumetogglebutton {
+                                display: none;
+                            }
+                            .bmpui-ui-settingstogglebutton {
+                                display: none;
+                            }
+                        """.trimIndent()
                 )
             )
         }
@@ -405,7 +332,10 @@ fun FlipCard(
                         contentDescription = "Source Code",
                         modifier = Modifier.clip(shape = RoundedCornerShape(corners))
                             .fillMaxWidth(),
-                        contentScale = ContentScale.FillWidth
+                        contentScale = ContentScale.FillWidth,
+                        // Does not center vertically
+                        alignment = Alignment.TopEnd
+
                     )
                 } else {
                     Box(Modifier.clip(shape = RoundedCornerShape(corners))) {
@@ -428,8 +358,112 @@ fun FlipCard(
     }
 }
 
-class Property(
+data class Property(
     val name: String,
     val description: String,
     val defaultValue: String? = null
+)
+
+val optProperties : List<Property> = listOf(
+    Property(
+        name = "modifier",
+        description = """
+                    The modifier to be applied to the player. 
+                    Warning : It does not support all the modifiers available in Compose.
+                """.trimIndent(),
+        defaultValue = "Modifier"
+    ),
+    Property(
+        name = "jwToken",
+        description = """
+                    The token to be used for authentication if the stream is protected.
+                    If the token is not provided for a stream which needs it, A 401 error will appear on the player. 
+                """.trimIndent(),
+        defaultValue = "null"
+    ),
+    Property(
+        name = "autoPlay",
+        description = """
+                    Whether the player should start playing automatically.
+                """.trimIndent(),
+        defaultValue = "false"
+    ),
+    Property(
+        name = "loop",
+        description = """
+                    Whether the player should loop the stream.
+                """.trimIndent(),
+        defaultValue = "false"
+    ),
+    Property(
+        name = "muted",
+        description = """
+                    Whether the player should be muted.
+                """.trimIndent(),
+        defaultValue = "false"
+    ),
+    Property(
+        name = "poster",
+        description = """
+                    The poster image to be displayed before the player starts. 
+                    This property has priority over the poster image from the dashboard.
+                    If the poster is not provided neither in the dashboard nor in the player, the poster image will be an image from the video.
+                """.trimIndent(),
+        defaultValue = "null"
+    ),
+    Property(
+        name = "start",
+        description = """
+                    The time in seconds at which the player marker should start.
+                """.trimIndent(),
+        defaultValue = "0.0"
+    ),
+    Property(
+        name = "subtitles",
+        description = """
+                    The list of subtitle tracks available for the stream.
+                """.trimIndent(),
+        defaultValue = "Empty list"
+    ),
+    Property(
+        name = "fullscreenConfig",
+        description = """
+                    The configuration for the fullscreen mode.
+                """.trimIndent(),
+        defaultValue = "None"
+    ),
+    Property(
+        name = "streamEventListener",
+        description = """
+                    The listener for the player events.
+                    
+                    This is the gateway to modify the internal behaviour behavior.
+                    - onStreamReady : Called when the stream is ready to be played and pass the Player and PlayerView instances.
+                    - onStreamError : Called when an error occurs and pass the error code and message.
+                        This callback only works for the stream setup errors. For the player errors, you should use the PlayerEvent.Error callback.
+                    
+                    Warning : The Stream Component may not work properly for some of the modification of the Player / PlayerView. Please consider using the Bitmovin Player SDK directly if you need a deep control over the player behavior.
+                    
+                    Problematic modifications include (but are not limited to) :
+                    - Changing the Fullscreen handler
+                    - Changing the Picture in Picture handler
+                """.trimIndent(),
+        defaultValue = "null"
+    ),
+    Property(
+        name = "enableAds",
+        description = """
+                    Whether ads should be enabled.
+                    Ads are retrieved from the stream's dashboard configuration.
+                """.trimIndent(),
+        defaultValue = "true"
+    ),
+    Property(
+        name = "styleConfig",
+        description = """
+                    The style configuration for the player.
+                    This property has priority over the style configuration from the dashboard.
+                """.trimIndent(),
+        defaultValue = "None"
+    )
 )
