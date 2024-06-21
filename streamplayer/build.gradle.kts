@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.google.gson)
     implementation(libs.bitmovin.player)
+    implementation(libs.csscolor4j)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
