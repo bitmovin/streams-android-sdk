@@ -71,6 +71,7 @@ internal fun StreamVideoPlayer(playerView: PlayerView, modifier: Modifier = Modi
  *
  * TODO: More flexible parameters to allow for more use-cases, but it's doing the job well for the video player
  */
+@Suppress("DEPRECATION")
 @Composable
 internal fun FullScreen(
     onDismissRequest: () -> Unit,
