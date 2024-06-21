@@ -66,7 +66,6 @@ class StreamFullscreenHandler(
                     }
                 }
             }
-
             false -> {
                 activity?.requestedOrientation =
                     config.screenDefaultOrientation ?: previousOrientation

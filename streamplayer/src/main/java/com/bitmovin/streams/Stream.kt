@@ -170,6 +170,13 @@ internal class Stream(private val usid: String) {
                 streamEventListener?.onStreamReady(player, playerView!!)
             }
         }
+        // If the source loading crashes while initializing, the stream is blocked
+        player.on(PlayerEvent.SourceRemoved::class.java) { event ->
+            if (state != BitmovinStreamState.DISPLAYING) {
+                error(usid, "Source removed")
+                Log.e(Tag.STREAM, "[$usid] Error : Source removed")
+            }
+        }
 
         return player
     }

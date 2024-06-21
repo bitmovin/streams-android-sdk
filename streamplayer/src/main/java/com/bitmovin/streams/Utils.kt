@@ -345,6 +345,7 @@ internal fun getCustomCss(
     }
     css.append("\n$userSupplCss")
 
+    @Suppress("DEPRECATION")
     return writeCssToFile(styleFileKey, StreamsProvider.appContext, css.toString())?.toURL()
         .toString()
 }
