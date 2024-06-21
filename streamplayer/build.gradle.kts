@@ -51,9 +51,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.google.gson)
-    implementation(libs.bitmovin.player)
-    implementation(libs.csscolor4j)
+    api(libs.google.gson)
+    api(libs.bitmovin.player)
+    api(libs.csscolor4j)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
