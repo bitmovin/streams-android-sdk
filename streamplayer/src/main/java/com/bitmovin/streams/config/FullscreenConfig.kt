@@ -10,7 +10,7 @@ package com.bitmovin.streams.config
  * @property minAspectRatioForLandScapeForce The minimum aspect ratio for forcing landscape orientation. Does not apply if autoOrientation is false.
  * @property maxAspectRatioForPortraitForce The maximum aspect ratio for forcing portrait orientation. Does not apply if autoOrientation is false.
  * @property screenDefaultOrientation The default orientation of the screen. Will be forced after fullscreen escape if non-null. If null, the screen orientation will automatically reset to the state after exiting fullscreen. Should correspond to one of the ActivityInfo.SCREEN_ORIENTATION_* constants.
- * @constructor Creates a new instance of FullscreenConfig.
+ * @property autoPiPOnBackground Whether the player should automatically enter picture-in-picture mode when the app goes to the background while a stream being in fullscreen.
  */
 data class FullscreenConfig(
     val enable: Boolean = true,
