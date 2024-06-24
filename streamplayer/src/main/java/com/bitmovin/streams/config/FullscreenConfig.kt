@@ -18,5 +18,6 @@ data class FullscreenConfig(
     val autoOrientation: Boolean = true,
     val minAspectRatioForLandScapeForce: Float = 1.2f,
     val maxAspectRatioForPortraitForce: Float = 0.8f,
-    val screenDefaultOrientation: Int? = null
+    val screenDefaultOrientation: Int? = null,
+    val autoPiPOnBackground: Boolean = true
 )
