@@ -14,10 +14,12 @@ import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
 import java.util.UUID
 
-
-private const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
-
-
+/**
+ * Bitmovin Streams Player Component.
+ *
+ * @param config The configuration for the player.
+ * @param modifier The modifier to be applied to the stream player.
+ */
 @Composable
 fun BitmovinStream(
     config: BitmovinStreamConfig,
@@ -45,7 +47,7 @@ fun BitmovinStream(
  *
  * @param streamId The id of the stream to be played.
  *
- * @param modifier The modifier to be applied to the player.
+ * @param modifier The modifier to be applied to the stream player.
  * @param jwToken The token to be used for authentication if the stream is protected.
  * @param autoPlay Whether the player should start playing automatically.
  * @param loop Whether the player should loop the stream.
