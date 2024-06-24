@@ -30,7 +30,6 @@ class StreamFullscreenHandler(
 
     override fun onFullscreenExitRequested() {
         if (fullscreen.value) {
-            Log.d(Tag.STREAM, "exitFullscreen")
             doOrientationChanges(false)
             fullscreen.value = false
         }
@@ -73,12 +72,10 @@ class StreamFullscreenHandler(
         }
     }
 
-    @SuppressLint("SourceLockedOrientationActivity")
     override fun onFullscreenRequested() {
         CoroutineScope(Dispatchers.IO).launch {
             // Store the user orientation to restore it when exiting fullscreen
             if (!fullscreen.value) {
-                Log.d(Tag.STREAM, "enterFullscreen")
                 doOrientationChanges(true)
                 fullscreen.value = true
             }

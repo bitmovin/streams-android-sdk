@@ -40,7 +40,6 @@ data class BitmovinStreamConfig(
     /**
      * Constructor for BitmovinStreamConfig
      * @param streamId The streamId of the stream to be played
-     * @param modifier The modifier to be applied to the player
      * @param jwToken The token to be used for authentication if the stream is protected
      * @param autoPlay Whether the player should start playing automatically
      * @param muted Whether the player should be muted

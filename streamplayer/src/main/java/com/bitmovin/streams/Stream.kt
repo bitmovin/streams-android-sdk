@@ -83,10 +83,10 @@ internal class Stream(private val usid: String) {
         }
     }
 
-    private fun error(streamId: String, msg: String? = null) {
+    private fun error(msg: String? = null) {
         Log.e(
             Tag.STREAM,
-            "[$streamId] $streamResponseError : ${msg ?: getErrorMessage(streamResponseError)}"
+            "[$usid] $streamResponseError : ${msg ?: getErrorMessage(streamResponseError)}"
         )
         streamEventListener?.onStreamError(
             streamResponseError,
@@ -172,7 +172,7 @@ internal class Stream(private val usid: String) {
         // If the source loading crashes while initializing, the stream is blocked
         player.on(PlayerEvent.SourceRemoved::class.java) {
             if (state != BitmovinStreamState.DISPLAYING) {
-                error(usid, "Source removed")
+                error("Source unable to load")
             }
         }
 

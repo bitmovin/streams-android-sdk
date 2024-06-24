@@ -14,7 +14,6 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
     private var previousUiVisibility = true
 
     override fun enterPictureInPicture() {
-        Log.d(Tag.STREAM, "enterPictureInPicture")
         super.enterPictureInPicture()
         isInPictureInPicture = true
 
@@ -32,7 +31,6 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
     }
 
     override fun exitPictureInPicture() {
-        Log.d(Tag.STREAM, "exitPictureInPicture")
         // Restore the previous values
         isInPictureInPicture = false
         playerView.isUiVisible = previousUiVisibility
