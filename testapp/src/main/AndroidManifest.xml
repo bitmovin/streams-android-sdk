@@ -44,10 +44,10 @@
             android:supportsPictureInPicture="true"
             android:theme="@style/Theme.Streamsandroidsdk" />
         <activity
-            android:name=".TestApp2"
+            android:name=".StreamLibraryApp"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="true"
-            android:label="@string/title_activity_test_app2"
+            android:label="@string/title_activity_library"
             android:resizeableActivity="true"
             android:supportsPictureInPicture="true"
             android:theme="@style/Theme.Streamsandroidsdk">

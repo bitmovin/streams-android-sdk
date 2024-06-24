@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">TestApp</string>
-    <string name="title_activity_test_app2">TestApp2</string>
+    <string name="title_activity_library">StreamLibraryApp</string>
     <string name="title_activity_player">PlayerActivity</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
