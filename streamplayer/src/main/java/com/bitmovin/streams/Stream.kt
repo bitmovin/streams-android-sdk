@@ -53,7 +53,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         styleConfigStream: StyleConfigStream,
         bitmovinStreamEventListener: BitmovinStreamEventListener?
     ) {
-        logger.i("Initializing")
+        logger.i("Initializing stream $streamId")
         state = BitmovinStreamState.FETCHING
         this.streamEventListener = bitmovinStreamEventListener
         CoroutineScope(Dispatchers.Main).launch {
@@ -85,6 +85,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
     }
 
     private fun castError(error: StreamError) {
+        streamError = error
         logger.e("$streamError")
         streamEventListener?.onStreamError(error)
         state = BitmovinStreamState.DISPLAYING_ERROR
@@ -333,17 +334,19 @@ enum class StreamError(val message: String) {
 internal class Logger(private val id: String, private val allLogs: Boolean) {
 
     fun i(message: String) {
+        i(Tag.STREAM, "[$id] $message")
+    }
+
+    fun i(tag: String, message: String) {
         if (allLogs)
-            Log.i(Tag.STREAM, "[$id] $message")
+            Log.i(tag, "[$id] $message")
     }
 
     fun e(message: String, throwable: Throwable? = null) {
-        if (allLogs) {
-            if (throwable == null)
-                Log.e(Tag.STREAM, "[$id] $message")
-            else
-                Log.e(Tag.STREAM, "[$id] $message", throwable)
-        }
+        if (throwable == null)
+            Log.e(Tag.STREAM, "[$id] $message")
+        else
+            Log.e(Tag.STREAM, "[$id] $message", throwable)
     }
 
     fun w(message: String) {
@@ -351,7 +354,8 @@ internal class Logger(private val id: String, private val allLogs: Boolean) {
     }
 
     fun d(message: String) {
-        Log.d(Tag.STREAM, "[$id] $message")
+        if (allLogs)
+            Log.d(Tag.STREAM, "[$id] $message")
     }
 
     fun <T> recordDuration(sectionName: String, block: () -> T): T {
@@ -363,7 +367,7 @@ internal class Logger(private val id: String, private val allLogs: Boolean) {
     }
 
     fun performance(sectionName: String, duration: Long) {
-        Log.i(Tag.PERF, "[$id] $sectionName took $duration ms")
+        i(Tag.PERF, "$sectionName took $duration ms")
     }
 
 }
