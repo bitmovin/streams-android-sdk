@@ -20,13 +20,15 @@ private const val MAX_FETCH_ATTEMPTS_STREAMS_CONFIG = 3
 
 @Composable
 fun BitmovinStream(
-    config: BitmovinStreamConfig
+    config: BitmovinStreamConfig,
+    modifier: Modifier = Modifier
 ) {
     BitmovinStream(
         streamId = config.streamId,
-        modifier = config.modifier,
+        modifier = modifier,
         jwToken = config.jwToken,
         autoPlay = config.autoPlay,
+        loop = config.loop,
         muted = config.muted,
         poster = config.poster,
         start = config.start,
