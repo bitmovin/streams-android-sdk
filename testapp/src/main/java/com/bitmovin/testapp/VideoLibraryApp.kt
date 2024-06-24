@@ -13,7 +13,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,7 +44,7 @@ import com.bitmovin.testapp.ui.theme.LightColorScheme
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import com.bitmovin.testapp.utils.PlayerActivity
 
-class TestApp2 : ComponentActivity() {
+class StreamLibraryApp : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -82,7 +81,7 @@ fun StreamsList() {
 fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<String?>, token: String? = null, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var playerHolder: Player? by remember { mutableStateOf(null) }
-    var isVisible = playerHolder != null
+    val isVisible = playerHolder != null
 
     val bgColor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         dynamicLightColorScheme(LocalContext.current).background
@@ -110,7 +109,6 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
                         switchToPlayerActivity(streamId, context, token)
                     }
             }
-            .alpha(if (isVisible) 1f else 0.5f)
             .padding(8.dp))
     {
 
