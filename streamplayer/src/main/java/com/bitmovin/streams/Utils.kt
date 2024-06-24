@@ -308,7 +308,7 @@ internal fun writeCssToFile(fileKey: String, context: Context, css: String): Fil
         FileOutputStream(cssFile).use { output ->
             output.write(css.toByteArray())
         }
-        Log.d(Tag.STREAM, "Writing CSS to file: $cssFile")
+        // Log.d(Tag.STREAM, "Writing CSS to file: $cssFile")
         cssFile
     } catch (e: IOException) {
         Log.e(
