@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
+import com.bitmovin.streams.StreamError
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.TestStreamsIds
@@ -140,8 +141,8 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
                         playerView.isUiVisible = false
                     }
 
-                    override fun onStreamError(errorCode: Int, errorMessage: String) {
-                        text = errorMessage
+                    override fun onStreamError(error: StreamError) {
+                        text = error.toString()
                     }
 
                 },
