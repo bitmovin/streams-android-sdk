@@ -104,7 +104,7 @@ fun BitmovinStream(
         }
 
         BitmovinStreamState.DISPLAYING_ERROR -> {
-            ErrorHandling(error = stream.streamResponseError, modifier)
+            ErrorHandling(streamError = stream.streamError, modifier)
         }
 
         else -> {

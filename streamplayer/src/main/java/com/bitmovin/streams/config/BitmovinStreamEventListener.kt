@@ -2,6 +2,7 @@ package com.bitmovin.streams.config
 
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
+import com.bitmovin.streams.StreamError
 
 interface BitmovinStreamEventListener {
     /**
@@ -12,5 +13,5 @@ interface BitmovinStreamEventListener {
     /**
      * Called when an error occurs during the stream setup.
      */
-    fun onStreamError(errorCode: Int, errorMessage: String)
+    fun onStreamError(error: StreamError)
 }
