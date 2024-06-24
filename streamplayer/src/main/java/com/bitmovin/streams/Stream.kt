@@ -22,7 +22,6 @@ import com.bitmovin.streams.streamsjson.StreamConfigData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.Thread.sleep
 
@@ -195,7 +194,7 @@ internal class Stream(private val usid: String) {
         playerView = createPlayerView(context, player, streamConfig, styleConfigStream, usid)
         val playerView = playerView!!
         // Adding the playerView to the lifecycle
-        lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView))
+        lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView, fullscreenConfig.autoPiPOnBackground))
         // Setting up the subtitles view
         val subtitlesView = SubtitleView(context)
         subtitlesView.setPlayer(player)

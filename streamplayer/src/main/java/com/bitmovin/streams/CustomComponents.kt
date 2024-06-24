@@ -104,7 +104,6 @@ internal fun FullScreen(
                     )
                 }
 
-                key(LocalConfiguration.current.orientation) {
                     SideEffect {
                         if (activityWindow != null && dialogWindow != null) {
                             val attributes = WindowManager.LayoutParams().apply {
@@ -135,7 +134,6 @@ internal fun FullScreen(
                                 }
                             }
                         }
-                    }
                 }
 
                 DisposableEffect(Unit) {

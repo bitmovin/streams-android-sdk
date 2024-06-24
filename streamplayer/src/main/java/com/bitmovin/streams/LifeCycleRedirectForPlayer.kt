@@ -8,6 +8,7 @@ import com.bitmovin.player.PlayerView
 
 internal class LifeCycleRedirectForPlayer(
     val playerView : PlayerView,
+    private val autoPiP : Boolean
 ) : LifecycleEventObserver {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
@@ -26,6 +27,10 @@ internal class LifeCycleRedirectForPlayer(
             }
             Lifecycle.Event.ON_PAUSE -> {
                 playerView.onPause()
+                if (autoPiP && playerView.isFullscreen && playerView.player?.isPlaying == true)
+                    playerView.enterPictureInPicture()
+                else
+                    playerView.player?.pause()
             }
             else -> {}
         }
