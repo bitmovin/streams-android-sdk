@@ -3,7 +3,6 @@ package com.bitmovin.streams
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.util.Log
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.FrameLayout
@@ -90,10 +89,11 @@ internal fun Context.getActivity(): Activity? {
 const val MAX_FETCHING_ATTEMPTS = 3
 internal suspend fun getStreamConfigData(
     streamId: String,
-    jwToken: String?
+    jwToken: String?,
+    logger: Logger
 ): StreamConfigDataResponse {
     return withContext(Dispatchers.IO) {
-        return@withContext recordDuration("Fetching stream config data") {
+        return@withContext logger.recordDuration("Fetching stream config data") {
             val client = StreamsProvider.okHttpClient
             var url = "https://streams.bitmovin.com/${streamId}/config"
             if (jwToken != null) {
@@ -103,7 +103,7 @@ internal suspend fun getStreamConfigData(
                 .url(url)
                 .build()
 
-            Log.d(Tag.STREAM, "Request: $request")
+            logger.d("Request: $request")
             var response : Response
             var trys = 0
             do {
@@ -131,7 +131,8 @@ internal fun addURLParam(url: String, attribute: String, value: String): String 
 internal fun createPlayer(
     streamConfigData: StreamConfigData,
     context: Context,
-    enableAds: Boolean
+    enableAds: Boolean,
+    logger: Logger
 ): Player {
     val analyticsConfig: AnalyticsConfig = createAnalyticsConfig(streamConfigData)
     val advertisingConfig: AdvertisingConfig? =
@@ -145,7 +146,7 @@ internal fun createPlayer(
         advertisingConfig = advertisingConfig ?: AdvertisingConfig(),
     )
 
-    return recordDuration("Creating player") {
+    return logger.recordDuration("Creating player") {
         // From the countTime function, we can see that the creation of the Player is the most expensive part of the process by really far.
         // I unfortunately can't do much about it since it's part of the Bitmovin SDK.
         // It also has to be done on the main thread.
@@ -227,7 +228,8 @@ internal suspend fun createPlayerView(
     player: Player,
     streamConfig: StreamConfigData,
     styleConfigStream: StyleConfigStream,
-    styleFileKey: String
+    styleFileKey: String,
+    logger: Logger
 ): PlayerView {
 
     // Should be done at the beginning or the attributes values will be ignored.
@@ -235,11 +237,14 @@ internal suspend fun createPlayerView(
 
 
     val suppCssLocation = withContext(Dispatchers.IO) {
-        return@withContext getCustomCss(
-            streamConfig,
-            userSupplCss = styleConfigStream.customCss,
-            styleFileKey
-        )
+        return@withContext logger.recordDuration("Writting Css rules") {
+            getCustomCss(
+                streamConfig,
+                userSupplCss = styleConfigStream.customCss,
+                styleFileKey,
+                logger
+            )
+        }
     }
     val playerViewConfig = PlayerViewConfig(
         UiConfig.WebUi(
@@ -255,8 +260,7 @@ internal suspend fun createPlayerView(
     However, since the perf anyway only really matters on launch on the fist time (because of cache)
     It is better and safer to keep it on the main thread for now.
      */
-    val playerView =
-        recordDuration("PlayerView Creation") {
+    val playerView = logger.recordDuration("PlayerView Creation") {
             PlayerView(context, player, config = playerViewConfig)
                 .apply {
                     layoutParams = ViewGroup.LayoutParams(
@@ -285,7 +289,7 @@ internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>)
  * @param css The CSS content to write to the file.
  * @return The file if the operation was successful, null otherwise.
  */
-internal fun writeCssToFile(fileKey: String, context: Context, css: String): File? {
+internal fun writeCssToFile(fileKey: String, context: Context, css: String, logger: Logger): File? {
     return try {
         // Create a file in the app's private storage
         val cssFile = File(context.filesDir, "custom_css_${fileKey}.css")
@@ -296,11 +300,10 @@ internal fun writeCssToFile(fileKey: String, context: Context, css: String): Fil
         FileOutputStream(cssFile).use { output ->
             output.write(css.toByteArray())
         }
-        // Log.d(Tag.STREAM, "Writing CSS to file: $cssFile")
+        logger.d("Writing CSS rules to file: $cssFile")
         cssFile
     } catch (e: IOException) {
-        Log.e(
-            Tag.STREAM,
+        logger.e(
             "Failed to write CSS rules to file. Stylization rules will be ignored.",
             e
         )
@@ -310,16 +313,16 @@ internal fun writeCssToFile(fileKey: String, context: Context, css: String): Fil
 
 /**
  * Get the URL of the CSS file.
- * @param context The context of the app.
  * @param streamConfig The stream configuration data.
  * @param userSupplCss The user-supplied CSS content.
- * @param styleFileKey The unique key to identify the file.
+ * @param usid The unique key to identify the file.
  *
  */
 internal fun getCustomCss(
     streamConfig: StreamConfigData,
     userSupplCss: String,
-    styleFileKey: String
+    usid: String,
+    logger: Logger
 ): String {
 
     val style = streamConfig.styleConfig
@@ -334,7 +337,7 @@ internal fun getCustomCss(
     css.append("\n$userSupplCss")
 
     @Suppress("DEPRECATION")
-    return writeCssToFile(styleFileKey, StreamsProvider.appContext, css.toString())?.toURL()
+    return writeCssToFile(usid, StreamsProvider.appContext, css.toString(), logger = logger)?.toURL()
         .toString()
 }
 
@@ -495,14 +498,5 @@ internal fun getLoadingScreenMessage(state: BitmovinStreamState): String {
         BitmovinStreamState.WAITING_FOR_VIEW -> "Waiting for player view"
         BitmovinStreamState.WAITING_FOR_PLAYER -> "Waiting for player"
         else -> "An error occurred while fetching the stream data."
-    }
-}
-
-internal fun <T> recordDuration(title: String, block: () -> T): T {
-    val start = System.currentTimeMillis()
-    return block().also {
-        val end = System.currentTimeMillis()
-        val thread = Thread.currentThread().name
-        Log.d(Tag.PERF, "$title took ${end - start}ms [$thread]")
     }
 }

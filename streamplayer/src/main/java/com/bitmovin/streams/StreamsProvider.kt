@@ -45,9 +45,9 @@ internal class StreamsProvider : ContentProvider() {
 
     private val streams = mutableMapOf<String, Stream>()
 
-    fun getStream(psid: String): Stream {
+    fun getStream(psid: String, allLogs: Boolean): Stream {
         return streams.getOrPut(psid) {
-            Stream(psid)
+            Stream(psid, allLogs)
         }
     }
 

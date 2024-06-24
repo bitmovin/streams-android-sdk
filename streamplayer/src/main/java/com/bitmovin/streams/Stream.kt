@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.Thread.sleep
 
-internal class Stream(private val usid: String) {
+internal class Stream(private val usid: String, allLogs: Boolean = false) {
+    val logger = Logger(usid, allLogs)
     var state by mutableStateOf(BitmovinStreamState.FETCHING)
     var streamError = StreamError.UNKNOWN_ERROR
     var playerView: PlayerView? = null
@@ -52,11 +53,12 @@ internal class Stream(private val usid: String) {
         styleConfigStream: StyleConfigStream,
         bitmovinStreamEventListener: BitmovinStreamEventListener?
     ) {
+        logger.i("Initializing")
         state = BitmovinStreamState.FETCHING
         this.streamEventListener = bitmovinStreamEventListener
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
+                val streamConfigDataResp = getStreamConfigData(streamId, jwToken, logger)
                 val streamResponseCode = streamConfigDataResp.responseHttpCode
                 if (streamResponseCode == 200 && streamConfigDataResp.streamConfigData != null) {
                     initializeStream(
@@ -83,10 +85,7 @@ internal class Stream(private val usid: String) {
     }
 
     private fun castError(error: StreamError) {
-        Log.e(
-            Tag.STREAM,
-            "[$usid] $streamError"
-        )
+        logger.e("$streamError")
         streamEventListener?.onStreamError(error)
         state = BitmovinStreamState.DISPLAYING_ERROR
     }
@@ -135,7 +134,7 @@ internal class Stream(private val usid: String) {
         // 3. Loading the source
         // Warning: Running this block in the IO dispatcher could results in a crash (RuntimeException) if the component disappears before the end (because of the disposal effects)
         // This is also a lot faster on the main thread. However, it's a huge tradeoff because it's blocking the UI thread. No choice since we can't handle a RuntimeException.
-        recordDuration("Loading Source") {
+        logger.recordDuration("Loading Source") {
             val streamSource =
                 createSource(
                     streamConfig,
@@ -147,7 +146,7 @@ internal class Stream(private val usid: String) {
         // 4. Handling properties
         // Warning: The stream source has to be loaded before setting the properties. This is why we do it here.
         // PlayerEvent.Ready event not be called before the source is loaded.
-            player.handleAttributes(autoPlay, muted, loop, start)
+        player.handleAttributes(autoPlay, muted, loop, start)
     }
 
     private fun initializePlayerRelated(
@@ -155,7 +154,7 @@ internal class Stream(private val usid: String) {
         streamConfig: StreamConfigData,
         enableAds: Boolean,
     ): Player {
-        val player = createPlayer(streamConfig, context, enableAds)
+        val player = createPlayer(streamConfig, context, enableAds, logger)
         this.player = player
         player.on(PlayerEvent.Ready::class.java) {
             if (state == BitmovinStreamState.INITIALIZING) {
@@ -187,10 +186,16 @@ internal class Stream(private val usid: String) {
         val activity = context.getActivity()
 
         // Setting up the player view
-        playerView = createPlayerView(context, player, streamConfig, styleConfigStream, usid)
+        playerView =
+            createPlayerView(context, player, streamConfig, styleConfigStream, usid, logger)
         val playerView = playerView!!
         // Adding the playerView to the lifecycle
-        lifecycleOwner.lifecycle.addObserver(LifeCycleRedirectForPlayer(playerView, fullscreenConfig.autoPiPOnBackground))
+        lifecycleOwner.lifecycle.addObserver(
+            LifeCycleRedirectForPlayer(
+                playerView,
+                fullscreenConfig.autoPiPOnBackground
+            )
+        )
         // Setting up the subtitles view
         val subtitlesView = SubtitleView(context)
         subtitlesView.setPlayer(player)
@@ -243,7 +248,7 @@ internal class Stream(private val usid: String) {
                 .takeIf { file -> file.exists() }?.delete()
         }
         StreamsProvider.getInstance().removeStream(usid)
-        Log.i(Tag.STREAM, "[$usid] Stream disposed")
+        logger.i("Disposed")
     }
 }
 
@@ -323,4 +328,42 @@ enum class StreamError(val message: String) {
             }
         }
     }
+}
+
+internal class Logger(private val id: String, private val allLogs: Boolean) {
+
+    fun i(message: String) {
+        if (allLogs)
+            Log.i(Tag.STREAM, "[$id] $message")
+    }
+
+    fun e(message: String, throwable: Throwable? = null) {
+        if (allLogs) {
+            if (throwable == null)
+                Log.e(Tag.STREAM, "[$id] $message")
+            else
+                Log.e(Tag.STREAM, "[$id] $message", throwable)
+        }
+    }
+
+    fun w(message: String) {
+        Log.w(Tag.STREAM, "[$id] $message")
+    }
+
+    fun d(message: String) {
+        Log.d(Tag.STREAM, "[$id] $message")
+    }
+
+    fun <T> recordDuration(sectionName: String, block: () -> T): T {
+        val startTime = System.currentTimeMillis()
+        return block().also {
+            val duration = System.currentTimeMillis() - startTime
+            performance(sectionName, duration)
+        }
+    }
+
+    fun performance(sectionName: String, duration: Long) {
+        Log.i(Tag.PERF, "[$id] $sectionName took $duration ms")
+    }
+
 }

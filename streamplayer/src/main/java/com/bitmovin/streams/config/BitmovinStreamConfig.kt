@@ -35,7 +35,8 @@ data class BitmovinStreamConfig(
     var subtitles: List<SubtitleTrack> = emptyList(),
     var streamEventListener: BitmovinStreamEventListener? = null,
     var enableAds: Boolean = true,
-    var styleConfig: StyleConfigStream = StyleConfigStream()
+    var styleConfig: StyleConfigStream = StyleConfigStream(),
+    var allLogs: Boolean = false
 ) {
 
     /**
@@ -69,7 +70,9 @@ data class BitmovinStreamConfig(
         onStreamReady: (Player, PlayerView) -> Unit = { _, _ -> },
         onStreamError: (StreamError) -> Unit = { _ -> },
         enableAds: Boolean = true,
-        styleConfig: StyleConfigStream = StyleConfigStream()
+        styleConfig: StyleConfigStream = StyleConfigStream(),
+        allLogs: Boolean = false
+
     ) : this(
         streamId = streamId,
         jwToken = jwToken,
@@ -91,6 +94,7 @@ data class BitmovinStreamConfig(
             }
         },
         enableAds = enableAds,
-        styleConfig = styleConfig
+        styleConfig = styleConfig,
+        allLogs = allLogs
     )
 }

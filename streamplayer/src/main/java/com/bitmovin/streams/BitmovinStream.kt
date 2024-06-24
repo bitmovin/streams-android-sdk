@@ -38,7 +38,8 @@ fun BitmovinStream(
         fullscreenConfig = config.fullscreenConfig,
         streamEventListener = config.streamEventListener,
         enableAds = config.enableAds,
-        styleConfig = config.styleConfig
+        styleConfig = config.styleConfig,
+        allLogs = config.allLogs
     )
 }
 
@@ -74,7 +75,8 @@ fun BitmovinStream(
     fullscreenConfig: FullscreenConfig = FullscreenConfig(),
     streamEventListener: BitmovinStreamEventListener? = null,
     enableAds: Boolean = true,
-    styleConfig: StyleConfigStream = StyleConfigStream()
+    styleConfig: StyleConfigStream = StyleConfigStream(),
+    allLogs : Boolean = false
 ) {
     val recompositionTimeStart = System.currentTimeMillis()
     val context = LocalContext.current
@@ -84,7 +86,7 @@ fun BitmovinStream(
     // We do not use the streamId to allow to user to have multiple players with the same streamId.
     val usid: String by rememberSaveable { UUID.randomUUID().toString() }
     // Make the StreamViewModel unique for each instance of the Streams Player (1:1 relationship)
-    val stream: Stream = StreamsProvider.getInstance().getStream(usid)
+    val stream: Stream = StreamsProvider.getInstance().getStream(usid, allLogs)
 
     when (stream.state) {
         BitmovinStreamState.DISPLAYING -> {
@@ -117,13 +119,12 @@ fun BitmovinStream(
             )
         }
     }
-    Log.i(
-        Tag.STREAM,
-        "[$usid] Stream recomposed in ${System.currentTimeMillis() - recompositionTimeStart}ms"
+    stream.logger.performance(
+        "Stream recomposition",
+        System.currentTimeMillis() - recompositionTimeStart,
     )
 
     DisposableEffect(Unit) {
-
         stream.initStream(
             context = context,
             lifecycleOwner = lifecycleOwner,
@@ -141,7 +142,6 @@ fun BitmovinStream(
             styleConfigStream = styleConfig
         )
         onDispose {
-
             stream.dispose()
         }
     }
