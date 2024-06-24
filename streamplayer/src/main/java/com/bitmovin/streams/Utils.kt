@@ -270,26 +270,6 @@ internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>)
     return this
 }
 
-
-/**
- * Get an error message based on the error code.
- * @param errorCode The error code.
- * @return The error message.
- */
-fun getErrorMessage(errorCode: Int): String {
-    val message =
-        when (errorCode) {
-            0 -> "No Internet Connection"
-            401 -> "Unauthorized access to stream.\nThis stream may require a token."
-            403 -> "Forbidden access to stream.\nThe domain may not be allowed to access the stream or the token you provided may be invalid."
-            404 -> "Stream not found.\nThe stream you are trying to access does not exist."
-            500 -> "Internal server error.\nThe server encountered an error while processing your request."
-            503 -> "Service unavailable.\nPlease try again in few minutes."
-            else -> "An error occurred while fetching the stream data."
-        }
-    return message
-}
-
 /**
  * Create a file in the app's private storage and write the CSS content to it.
  * @param fileKey The unique key to identify the file.
@@ -485,13 +465,13 @@ internal fun backgroundColor(color: String): String {
     """.trimIndent()
 }
 
-fun Color.toCSS(): String {
+internal fun Color.toCSS(): String {
     val s =
         "rgba(${(this.red * 255).toInt()}, ${(this.green * 255).toInt()}, ${(this.blue * 255).toInt()}, ${this.alpha})"
     return s
 }
 
-fun Color.Companion.parseColor(str: String): Color? {
+internal fun Color.Companion.parseColor(str: String): Color? {
     try {
         val c = org.silentsoft.csscolor4j.Color.valueOf(str)
         return Color(c.red, c.green, c.blue, (c.opacity*255).toInt())
@@ -500,7 +480,7 @@ fun Color.Companion.parseColor(str: String): Color? {
     }
 }
 
-fun getLoadingScreenMessage(state: BitmovinStreamState): String {
+internal fun getLoadingScreenMessage(state: BitmovinStreamState): String {
     return when (state) {
         BitmovinStreamState.FETCHING -> "Fetching stream config data"
         BitmovinStreamState.INITIALIZING -> "Initializing player"
@@ -510,7 +490,7 @@ fun getLoadingScreenMessage(state: BitmovinStreamState): String {
     }
 }
 
-fun <T> recordDuration(title: String, block: () -> T): T {
+internal fun <T> recordDuration(title: String, block: () -> T): T {
     val start = System.currentTimeMillis()
     return block().also {
         val end = System.currentTimeMillis()

@@ -27,8 +27,7 @@ import java.lang.Thread.sleep
 
 internal class Stream(private val usid: String) {
     var state by mutableStateOf(BitmovinStreamState.FETCHING)
-
-    var streamResponseError = 0
+    var streamError = StreamError.UNKNOWN_ERROR
     var playerView: PlayerView? = null
     var player: Player? = null
     private var streamEventListener: BitmovinStreamEventListener? = null
@@ -58,8 +57,8 @@ internal class Stream(private val usid: String) {
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val streamConfigDataResp = getStreamConfigData(streamId, jwToken)
-                this@Stream.streamResponseError = streamConfigDataResp.responseHttpCode
-                if (streamResponseError == 200 && streamConfigDataResp.streamConfigData != null) {
+                val streamResponseCode = streamConfigDataResp.responseHttpCode
+                if (streamResponseCode == 200 && streamConfigDataResp.streamConfigData != null) {
                     initializeStream(
                         context = context,
                         lifecycleOwner = lifecycleOwner,
@@ -75,23 +74,20 @@ internal class Stream(private val usid: String) {
                         styleConfigStream = styleConfigStream
                     )
                 } else {
-                    error(streamId)
+                    castError(StreamError.fromHttpCode(streamResponseCode))
                 }
             } catch (e: Exception) {
-                error(streamId)
+                castError(StreamError.NO_INTERNET)
             }
         }
     }
 
-    private fun error(msg: String? = null) {
+    private fun castError(error: StreamError) {
         Log.e(
             Tag.STREAM,
-            "[$usid] $streamResponseError : ${msg ?: getErrorMessage(streamResponseError)}"
+            "[$usid] $streamError"
         )
-        streamEventListener?.onStreamError(
-            streamResponseError,
-            getErrorMessage(streamResponseError)
-        )
+        streamEventListener?.onStreamError(error)
         state = BitmovinStreamState.DISPLAYING_ERROR
     }
 
@@ -172,7 +168,7 @@ internal class Stream(private val usid: String) {
         // If the source loading crashes while initializing, the stream is blocked
         player.on(PlayerEvent.SourceRemoved::class.java) {
             if (state != BitmovinStreamState.DISPLAYING) {
-                error("Source unable to load")
+                error(StreamError.SOURCE_ERROR)
             }
         }
 
@@ -233,7 +229,6 @@ internal class Stream(private val usid: String) {
             state = BitmovinStreamState.DISPLAYING
             streamEventListener?.onStreamReady(player, playerView)
         }
-
     }
 
     fun dispose() {
@@ -290,11 +285,42 @@ private fun Player.handleAttributes(
 }
 
 
-enum class BitmovinStreamState {
+internal enum class BitmovinStreamState {
     FETCHING,
     INITIALIZING,
     WAITING_FOR_VIEW,
     WAITING_FOR_PLAYER,
     DISPLAYING,
     DISPLAYING_ERROR,
+}
+
+enum class StreamError(val message: String) {
+    NO_INTERNET("No internet connection"),
+    UNAUTHORIZED("Unauthorized access to stream. This stream may require a token."),
+    FORBIDDEN_ACCESS("Forbidden access to stream. This stream may require a token."),
+    STREAM_NOT_FOUND("Stream not found. Please check that the streamId is correct."),
+    INTERNAL_SERVER_ERROR("Internal server error. Please try again later."),
+    SERVICE_UNAVAILABLE("Service unavailable. Please try again later."),
+    SOURCE_ERROR("Error while loading the source."),
+    UNKNOWN_FETCHING_ERROR("An unknown error occurred during FETCHING."),
+    UNKNOWN_ERROR("An unknown error occurred.");
+
+    @Override
+    override fun toString(): String {
+        return message
+    }
+
+    companion object {
+        fun fromHttpCode(httpCode: Int): StreamError {
+            return when (httpCode) {
+                0 -> NO_INTERNET
+                401 -> UNAUTHORIZED
+                403 -> FORBIDDEN_ACCESS
+                404 -> STREAM_NOT_FOUND
+                500 -> INTERNAL_SERVER_ERROR
+                503 -> SERVICE_UNAVAILABLE
+                else -> UNKNOWN_FETCHING_ERROR
+            }
+        }
+    }
 }

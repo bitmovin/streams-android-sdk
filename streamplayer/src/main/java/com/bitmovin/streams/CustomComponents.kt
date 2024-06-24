@@ -197,11 +197,8 @@ internal fun TextVideoPlayerFiller(
 }
 
 @Composable
-internal fun ErrorHandling(error: Int, modifier: Modifier = Modifier) {
-    var message = getErrorMessage(error)
-    if (error != 0)
-        message = "Error $error\n$message"
-    TextVideoPlayerFiller(message, modifier)
+internal fun ErrorHandling(streamError: StreamError, modifier: Modifier = Modifier) {
+    TextVideoPlayerFiller(streamError.toString(), modifier)
 }
 
 @Composable
