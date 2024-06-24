@@ -39,9 +39,11 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.Request
+import okhttp3.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.Thread.sleep
 import kotlin.reflect.KProperty
 
 /**
@@ -85,7 +87,7 @@ internal fun Context.getActivity(): Activity? {
     return null
 }
 
-
+const val MAX_FETCHING_ATTEMPTS = 3
 internal suspend fun getStreamConfigData(
     streamId: String,
     jwToken: String?
@@ -102,7 +104,13 @@ internal suspend fun getStreamConfigData(
                 .build()
 
             Log.d(Tag.STREAM, "Request: $request")
-            val response = client.newCall(request).execute()
+            var response : Response
+            var trys = 0
+            do {
+                sleep((200 * trys).toLong())
+                response = client.newCall(request).execute()
+                trys++
+            } while (!response.isSuccessful && trys <= MAX_FETCHING_ATTEMPTS)
             val code = response.code
             if (!response.isSuccessful) {
                 StreamConfigDataResponse(null, code)
