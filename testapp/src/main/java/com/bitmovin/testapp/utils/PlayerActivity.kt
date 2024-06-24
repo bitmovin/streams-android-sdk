@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
+import com.bitmovin.streams.StreamError
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.PlayerThemes
@@ -151,7 +152,7 @@ class PlayerActivity : ComponentActivity() {
                         }
                     }
 
-                    override fun onStreamError(errorCode: Int, errorMessage: String) {
+                    override fun onStreamError(error: StreamError) {
                         // Do nothing
                     }
                 },
