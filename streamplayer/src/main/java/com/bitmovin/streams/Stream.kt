@@ -62,18 +62,18 @@ internal class Stream(private val usid: String) {
                 this@Stream.streamResponseError = streamConfigDataResp.responseHttpCode
                 if (streamResponseError == 200 && streamConfigDataResp.streamConfigData != null) {
                     initializeStream(
-                        context,
-                        lifecycleOwner,
-                        streamConfigDataResp.streamConfigData,
-                        autoPlay,
-                        loop,
-                        muted,
-                        start,
-                        poster,
-                        subtitles,
-                        fullscreenConfig,
-                        enableAds,
-                        styleConfigStream
+                        context = context,
+                        lifecycleOwner = lifecycleOwner,
+                        streamConfig = streamConfigDataResp.streamConfigData,
+                        autoPlay = autoPlay,
+                        loop = loop,
+                        muted = muted,
+                        start = start,
+                        poster = poster,
+                        subtitles = subtitles,
+                        fullscreenConfig = fullscreenConfig,
+                        enableAds = enableAds,
+                        styleConfigStream = styleConfigStream
                     )
                 } else {
                     error(streamId)
@@ -152,7 +152,7 @@ internal class Stream(private val usid: String) {
         // 4. Handling properties
         // Warning: The stream source has to be loaded before setting the properties. This is why we do it here.
         // PlayerEvent.Ready event not be called before the source is loaded.
-        player.handleAttributes(autoPlay, muted, loop, start)
+            player.handleAttributes(autoPlay, muted, loop, start)
     }
 
     private fun initializePlayerRelated(
@@ -171,10 +171,9 @@ internal class Stream(private val usid: String) {
             }
         }
         // If the source loading crashes while initializing, the stream is blocked
-        player.on(PlayerEvent.SourceRemoved::class.java) { event ->
+        player.on(PlayerEvent.SourceRemoved::class.java) {
             if (state != BitmovinStreamState.DISPLAYING) {
                 error(usid, "Source removed")
-                Log.e(Tag.STREAM, "[$usid] Error : Source removed")
             }
         }
 
