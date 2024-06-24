@@ -93,7 +93,7 @@ fun BitmovinShowcase() {
 
             // Simplest way to use the Bitmovin Stream Player component
             BitmovinStream(
-                streamId = TestStreamsIds.TEAR_OF_STEEL,
+                streamId = TestStreamsIds.TEAR_OF_STEEL+"d",
             )
         }
 
