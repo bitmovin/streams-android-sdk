@@ -32,15 +32,18 @@ internal class PiPChangesObserver() : LifecycleEventObserver {
     fun addListener(listener: PiPExitListener) {
         listeners.add(listener)
     }
+
     fun removeListener(listener: PiPExitListener) {
         listeners.remove(listener)
     }
 
     private fun onPictureInPictureModeChanged(inPipMode: Boolean, newConfig: Configuration) {
         if (!inPipMode) {
-            listeners.forEach { if (it.isInPiPMode()) {
-                it.onPiPExit()
-            } }
+            listeners.forEach {
+                if (it.isInPiPMode()) {
+                    it.onPiPExit()
+                }
+            }
         }
     }
 }

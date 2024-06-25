@@ -6,9 +6,11 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.ui.DefaultPictureInPictureHandler
 import com.bitmovin.streams.Tag
 
-internal class PiPHandler(activity: Activity?, private val playerView: PlayerView) : DefaultPictureInPictureHandler(activity,
-    playerView.player
-) {
+internal class PiPHandler(activity: Activity?, private val playerView: PlayerView) :
+    DefaultPictureInPictureHandler(
+        activity,
+        playerView.player
+    ) {
 
     private var isInPictureInPicture = false
     private var previousUiVisibility = true
@@ -16,16 +18,8 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
     override fun enterPictureInPicture() {
         super.enterPictureInPicture()
         isInPictureInPicture = true
-
         previousUiVisibility = playerView.isUiVisible
         playerView.isUiVisible = false
-
-//         Being in immersive full screen mode cause the PiP to sometimes need another recomposition to be displayed correctly, so we just avoid it
-//         The full screen mode is needed to display the PiP nicely and borderless
-//         Wait depending of the SDK used (some devices need more time to enter PiP mode than others
-//        if (Build.VERSION.SDK_INT <= 29) {
-//            Thread.sleep(500)
-//        }
         playerView.enterFullscreen()
 
     }

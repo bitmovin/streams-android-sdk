@@ -20,4 +20,9 @@ data class FullscreenConfig(
     val maxAspectRatioForPortraitForce: Float = 0.8f,
     val screenDefaultOrientation: Int? = null,
     val autoPiPOnBackground: Boolean = true
-)
+) {
+    companion object {
+        val DEFAULT = FullscreenConfig()
+        val DISABLED = FullscreenConfig(enable = false)
+    }
+}

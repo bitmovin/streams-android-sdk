@@ -43,11 +43,7 @@ class ScrollingExampleActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             StreamsandroidsdkTheme {
-                Column {
-                    //Spacer(Modifier.windowInsetsTopHeight(WindowInsets.systemBars))
-                    BitmovinShowcase()
-                    //Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
-                }
+                BitmovinShowcase()
             }
         }
     }
@@ -93,7 +89,7 @@ fun BitmovinShowcase() {
 
             // Simplest way to use the Bitmovin Stream Player component
             BitmovinStream(
-                streamId = TestStreamsIds.TEAR_OF_STEEL+"d",
+                streamId = TestStreamsIds.TEAR_OF_STEEL,
             )
         }
 
@@ -240,7 +236,7 @@ fun BitmovinShowcase() {
                 styleConfig = StyleConfigStream(
                     customCss =
                     // Please refer to https://developer.bitmovin.com/playback/docs/player-ui-css-class-reference
-                        """
+                    """
                             .bmpui-ui-volumetogglebutton {
                                 display: none;
                             }
@@ -255,7 +251,7 @@ fun BitmovinShowcase() {
 }
 
 @Composable
-fun PropertyCard(prop : Property) {
+fun PropertyCard(prop: Property) {
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -270,9 +266,18 @@ fun PropertyCard(prop : Property) {
                 )
                 prop.defaultValue?.let {
 
-                    Row(horizontalArrangement = Arrangement.Absolute.Right, modifier = Modifier.fillMaxWidth().padding(4.dp)) {
+                    Row(
+                        horizontalArrangement = Arrangement.Absolute.Right,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp)
+                    ) {
                         Text(text = "Default :", style = MaterialTheme.typography.bodySmall)
-                        Text(text = it, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
@@ -283,12 +288,14 @@ fun PropertyCard(prop : Property) {
         }
     }
 }
-val cool_blue = Color(210,230,255)
+
+val cool_blue = Color(210, 230, 255)
+
 @Composable
 fun FlipCard(
     title: String,
     code: Int,
-    aspectRatio : Float = 16f / 9f,
+    aspectRatio: Float = 16f / 9f,
     player: @Composable () -> Unit
 
 ) {
@@ -308,30 +315,33 @@ fun FlipCard(
             verticalArrangement = Arrangement.Center
         ) {
 
-            Box(modifier = Modifier
-                .fillMaxWidth()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier
                         .padding(16.dp, 6.dp)
-                        .fillMaxWidth()
-                    ,
+                        .fillMaxWidth(),
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     textAlign = TextAlign.Center
                 )
             }
-            Box(modifier = Modifier
-                .aspectRatio(aspectRatio)
-                .padding(8.dp, 0.dp)) {
+            Box(
+                modifier = Modifier
+                    .aspectRatio(aspectRatio)
+                    .padding(8.dp, 0.dp)
+            ) {
                 val corners = 8.dp
                 if (isFront) {
                     Image(
                         painter = painterResource(id = code),
                         contentDescription = "Source Code",
-                        modifier = Modifier.clip(shape = RoundedCornerShape(corners))
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(corners))
                             .fillMaxWidth(),
                         contentScale = ContentScale.FillWidth,
                         // Does not center vertically
@@ -346,12 +356,13 @@ fun FlipCard(
             }
 
 
-            Button(onClick = { isFront = !isFront }, modifier = Modifier
-                .padding(8.dp, 0.dp, 8.dp, 8.dp)
-                .fillMaxWidth(),
+            Button(
+                onClick = { isFront = !isFront }, modifier = Modifier
+                    .padding(8.dp, 0.dp, 8.dp, 8.dp)
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(5.dp),
                 // make it colored cool blue
-                colors = ButtonDefaults.buttonColors(Color(100,200,255))
+                colors = ButtonDefaults.buttonColors(Color(100, 200, 255))
             ) {
                 Text(text = if (isFront) "Execute" else "Back to code preview", color = Color.Black)
             }
@@ -365,7 +376,7 @@ data class Property(
     val defaultValue: String? = null
 )
 
-val optProperties : List<Property> = listOf(
+val optProperties: List<Property> = listOf(
     Property(
         name = "modifier",
         description = """

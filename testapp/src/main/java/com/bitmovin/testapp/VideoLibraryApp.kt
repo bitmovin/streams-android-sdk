@@ -59,15 +59,20 @@ class StreamLibraryApp : ComponentActivity() {
 
 @Composable
 fun StreamsList() {
-    var unfoldedStreamId = remember { mutableStateOf<String?>(null) }
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .safeDrawingPadding()
+    val unfoldedStreamId = remember { mutableStateOf<String?>(null) }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()
     ) {
         StreamElem("Sintel", TestStreamsIds.SINTEL, unfoldedStreamId)
         StreamElem("Vertical Video", TestStreamsIds.VERTICAL_VIDEO, unfoldedStreamId)
         StreamElem(name = "Squared Video", streamId = TestStreamsIds.SQUARE_VIDEO, unfoldedStreamId)
-        StreamElem (name = "Tears of Steel", streamId = TestStreamsIds.TEAR_OF_STEEL, unfoldedStreamId)
+        StreamElem(
+            name = "Tears of Steel",
+            streamId = TestStreamsIds.TEAR_OF_STEEL,
+            unfoldedStreamId
+        )
         StreamElem(
             name = "Big Buck Bunny - token required",
             streamId = TestStreamsIds.BIG_BUCK_BUNNY,
@@ -77,8 +82,15 @@ fun StreamsList() {
         )
     }
 }
+
 @Composable
-fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<String?>, token: String? = null, modifier: Modifier = Modifier) {
+fun StreamElem(
+    name: String,
+    streamId: String,
+    unfoldedStreamId: MutableState<String?>,
+    token: String? = null,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
     var playerHolder: Player? by remember { mutableStateOf(null) }
     val isVisible = playerHolder != null
@@ -88,7 +100,10 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
     } else {
         LightColorScheme.background
     }
-    val streamHeight by animateDpAsState(targetValue = if (unfoldedStreamId.value == streamId) 200.dp else 0.dp, label = "Unfolding Anim")
+    val streamHeight by animateDpAsState(
+        targetValue = if (unfoldedStreamId.value == streamId) 200.dp else 0.dp,
+        label = "Unfolding Anim"
+    )
     // Rounded corner 8dp
     val buttonColor = when (unfoldedStreamId.value) {
         streamId -> Color(0, 106, 237)
@@ -113,9 +128,21 @@ fun StreamElem(name: String, streamId: String, unfoldedStreamId: MutableState<St
     {
 
         var text by remember { mutableStateOf("Loading...") }
-        Text(text = name, modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp), color = Color.Black, fontSize = 24.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+        Text(
+            text = name,
+            modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp),
+            color = Color.Black,
+            fontSize = 24.sp,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+        )
         if (!isVisible)
-            Text(text = text, modifier = Modifier.padding(16.dp, 0.dp, 0.dp, 0.dp), color = Color.DarkGray, fontSize = 24.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+            Text(
+                text = text,
+                modifier = Modifier.padding(16.dp, 0.dp, 0.dp, 0.dp),
+                color = Color.DarkGray,
+                fontSize = 24.sp,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+            )
 
         Box(
             modifier = Modifier
