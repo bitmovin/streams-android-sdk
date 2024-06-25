@@ -1,5 +1,6 @@
 package com.bitmovin.testapp.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -34,13 +35,14 @@ import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.StreamError
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
-import com.bitmovin.streams.config.PlayerThemes
+import com.bitmovin.streams.config.StreamThemes
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import kotlin.math.abs
 
 class PlayerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        @SuppressLint("SourceLockedOrientationActivity")
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
         val streamId = intent.getStringExtra("streamId") ?: ""
         val token = intent.getStringExtra("token")
@@ -156,7 +158,7 @@ class PlayerActivity : ComponentActivity() {
                         // Do nothing
                     }
                 },
-                styleConfig = PlayerThemes.RED_EXAMPLE_THEME
+                styleConfig = StreamThemes.RED_EXAMPLE_THEME
             )
             Text(
                 text = name, Modifier.padding(8.dp),

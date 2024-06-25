@@ -23,22 +23,9 @@ class StyleConfigStream(
     val textColor: Color? = null,
     val backgroundColor: Color? = null,
     val customCss: String = ""
-) {
-    companion object {
-        fun fromFile(file: File): StyleConfigStream {
-            if (!file.exists())
-                throw IllegalArgumentException("File does not exist")
-            if (!file.isFile)
-                throw IllegalArgumentException("File is not a file")
-            if (!file.canRead())
-                throw IllegalArgumentException("File cannot be read")
+)
 
-            return StyleConfigStream(customCss = file.readText())
-        }
-    }
-}
-
-class PlayerThemes {
+class StreamThemes {
     companion object {
 
         val BITMOVIN_DEFAULT_THEME = StyleConfigStream(
@@ -60,7 +47,6 @@ class PlayerThemes {
             textColor = getColor(217, 217, 217, 1f),
             backgroundColor = getColor(0, 0, 0, 1f)
         )
-
 
         val PINK_EXAMPLE_THEME = StyleConfigStream(
             playbackMarkerBgColor = getColor(240, 17, 199, 1f),

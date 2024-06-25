@@ -32,7 +32,6 @@ import com.bitmovin.streams.TestStreamsIds
 import com.bitmovin.streams.config.BitmovinStreamConfig
 import com.bitmovin.streams.config.BitmovinStreamEventListener
 import com.bitmovin.streams.config.FullscreenConfig
-import com.bitmovin.streams.config.PlayerThemes
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 
@@ -344,7 +343,6 @@ fun FlipCard(
                             .clip(shape = RoundedCornerShape(corners))
                             .fillMaxWidth(),
                         contentScale = ContentScale.FillWidth,
-                        // Does not center vertically
                         alignment = Alignment.TopEnd
 
                     )
@@ -361,7 +359,6 @@ fun FlipCard(
                     .padding(8.dp, 0.dp, 8.dp, 8.dp)
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(5.dp),
-                // make it colored cool blue
                 colors = ButtonDefaults.buttonColors(Color(100, 200, 255))
             ) {
                 Text(text = if (isFront) "Execute" else "Back to code preview", color = Color.Black)
