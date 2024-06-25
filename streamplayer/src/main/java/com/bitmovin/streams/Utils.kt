@@ -108,9 +108,13 @@ internal suspend fun getStreamConfigData(
             var trys = 0
             do {
                 sleep((200 * trys).toLong())
-                response = client.newCall(request).execute()
+                try {
+                    response = client.newCall(request).execute()
+                } catch (e: Exception) {
+                    return@recordDuration StreamConfigDataResponse(null, 0)
+                }
                 trys++
-            } while (!response.isSuccessful && trys <= MAX_FETCHING_ATTEMPTS)
+            } while (response.code != 200 && trys <= MAX_FETCHING_ATTEMPTS)
             val code = response.code
             if (!response.isSuccessful) {
                 StreamConfigDataResponse(null, code)

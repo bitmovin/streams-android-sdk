@@ -57,29 +57,25 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         state = BitmovinStreamState.FETCHING
         this.streamEventListener = bitmovinStreamEventListener
         CoroutineScope(Dispatchers.Main).launch {
-            try {
-                val streamConfigDataResp = getStreamConfigData(streamId, jwToken, logger)
-                val streamResponseCode = streamConfigDataResp.responseHttpCode
-                if (streamResponseCode == 200 && streamConfigDataResp.streamConfigData != null) {
-                    initializeStream(
-                        context = context,
-                        lifecycleOwner = lifecycleOwner,
-                        streamConfig = streamConfigDataResp.streamConfigData,
-                        autoPlay = autoPlay,
-                        loop = loop,
-                        muted = muted,
-                        start = start,
-                        poster = poster,
-                        subtitles = subtitles,
-                        fullscreenConfig = fullscreenConfig,
-                        enableAds = enableAds,
-                        styleConfigStream = styleConfigStream
-                    )
-                } else {
-                    castError(StreamError.fromHttpCode(streamResponseCode))
-                }
-            } catch (e: Exception) {
-                castError(StreamError.NO_INTERNET)
+            val streamConfigDataResp = getStreamConfigData(streamId, jwToken, logger)
+            val streamResponseCode = streamConfigDataResp.responseHttpCode
+            if (streamResponseCode == 200 && streamConfigDataResp.streamConfigData != null) {
+                initializeStream(
+                    context = context,
+                    lifecycleOwner = lifecycleOwner,
+                    streamConfig = streamConfigDataResp.streamConfigData,
+                    autoPlay = autoPlay,
+                    loop = loop,
+                    muted = muted,
+                    start = start,
+                    poster = poster,
+                    subtitles = subtitles,
+                    fullscreenConfig = fullscreenConfig,
+                    enableAds = enableAds,
+                    styleConfigStream = styleConfigStream
+                )
+            } else {
+                castError(StreamError.fromHttpCode(streamResponseCode))
             }
         }
     }
@@ -300,7 +296,7 @@ internal enum class BitmovinStreamState {
     DISPLAYING_ERROR,
 }
 
-enum class StreamError(val message: String) {
+enum class StreamError(private var message: String) {
     NO_INTERNET("No internet connection"),
     UNAUTHORIZED("Unauthorized access to stream. This stream may require a token."),
     FORBIDDEN_ACCESS("Forbidden access to stream. This stream may require a token."),
@@ -325,7 +321,7 @@ enum class StreamError(val message: String) {
                 404 -> STREAM_NOT_FOUND
                 500 -> INTERNAL_SERVER_ERROR
                 503 -> SERVICE_UNAVAILABLE
-                else -> UNKNOWN_FETCHING_ERROR
+                else -> UNKNOWN_FETCHING_ERROR.apply { message = "Error $httpCode : $message" }
             }
         }
     }
