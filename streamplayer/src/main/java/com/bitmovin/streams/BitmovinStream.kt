@@ -1,6 +1,7 @@
 package com.bitmovin.streams
 
 import android.util.Log
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,7 +24,7 @@ import java.util.UUID
 @Composable
 fun BitmovinStream(
     config: BitmovinStreamConfig,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.aspectRatio(16f / 9f)
 ) {
     BitmovinStream(
         streamId = config.streamId,
@@ -64,7 +65,7 @@ fun BitmovinStream(
 @Composable
 fun BitmovinStream(
     streamId: String,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.aspectRatio(16f / 9f),
     jwToken: String? = null,
     autoPlay: Boolean = false,
     loop: Boolean = false,
