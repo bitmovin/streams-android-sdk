@@ -164,7 +164,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         // If the source loading crashes while initializing, the stream is blocked
         player.on(PlayerEvent.SourceRemoved::class.java) {
             if (state != BitmovinStreamState.DISPLAYING) {
-                error(StreamError.SOURCE_ERROR)
+                castError(StreamError.SOURCE_ERROR)
             }
         }
 
