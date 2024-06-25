@@ -125,21 +125,7 @@ fun BitmovinStream(
         System.currentTimeMillis() - recompositionTimeStart,
     )
 
-        DisposableEffect(
-            usid,
-            streamId,
-            jwToken,
-            autoPlay,
-            loop,
-            muted,
-            poster,
-            start,
-            subtitles,
-            fullscreenConfig,
-            streamEventListener,
-            enableAds,
-            styleConfig) {
-            Log.d("BitmovinStream", "Init Stream")
+        DisposableEffect(Unit) {
             stream.initStream(
                 context = context,
                 lifecycleOwner = lifecycleOwner,
@@ -160,9 +146,4 @@ fun BitmovinStream(
                 stream.dispose()
             }
         }
-    DisposableEffect(Unit) {
-        onDispose {
-            StreamsProvider.getInstance().removeStream(usid)
-        }
-    }
 }
