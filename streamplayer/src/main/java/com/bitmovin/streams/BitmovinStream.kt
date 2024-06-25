@@ -77,7 +77,7 @@ fun BitmovinStream(
     streamEventListener: BitmovinStreamEventListener? = null,
     enableAds: Boolean = true,
     styleConfig: StyleConfigStream = StyleConfigStream(),
-    allLogs: Boolean = false
+    allLogs: Boolean = true
 ) {
     val recompositionTimeStart = System.currentTimeMillis()
     val context = LocalContext.current
@@ -125,25 +125,44 @@ fun BitmovinStream(
         System.currentTimeMillis() - recompositionTimeStart,
     )
 
+        DisposableEffect(
+            usid,
+            streamId,
+            jwToken,
+            autoPlay,
+            loop,
+            muted,
+            poster,
+            start,
+            subtitles,
+            fullscreenConfig,
+            streamEventListener,
+            enableAds,
+            styleConfig) {
+            Log.d("BitmovinStream", "Init Stream")
+            stream.initStream(
+                context = context,
+                lifecycleOwner = lifecycleOwner,
+                streamId = streamId,
+                jwToken = jwToken,
+                autoPlay = autoPlay,
+                loop = loop,
+                muted = muted,
+                poster = poster,
+                start = start,
+                subtitles = subtitles,
+                fullscreenConfig = fullscreenConfig,
+                bitmovinStreamEventListener = streamEventListener,
+                enableAds = enableAds,
+                styleConfigStream = styleConfig
+            )
+            onDispose {
+                stream.dispose()
+            }
+        }
     DisposableEffect(Unit) {
-        stream.initStream(
-            context = context,
-            lifecycleOwner = lifecycleOwner,
-            streamId = streamId,
-            jwToken = jwToken,
-            autoPlay = autoPlay,
-            loop = loop,
-            muted = muted,
-            poster = poster,
-            start = start,
-            subtitles = subtitles,
-            fullscreenConfig = fullscreenConfig,
-            bitmovinStreamEventListener = streamEventListener,
-            enableAds = enableAds,
-            styleConfigStream = styleConfig
-        )
         onDispose {
-            stream.dispose()
+            StreamsProvider.getInstance().removeStream(usid)
         }
     }
 }

@@ -244,7 +244,6 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
             File(it.filesDir, "custom_css_${usid}.css")
                 .takeIf { file -> file.exists() }?.delete()
         }
-        StreamsProvider.getInstance().removeStream(usid)
         logger.i("Disposed")
     }
 }
@@ -330,7 +329,7 @@ enum class StreamError(private var message: String) {
 internal class Logger(private val id: String, private val allLogs: Boolean) {
 
     fun i(message: String) {
-        i(Tag.STREAM, "[$id] $message")
+        i(Tag.STREAM, message)
     }
 
     fun i(tag: String, message: String) {

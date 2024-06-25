@@ -36,7 +36,7 @@ data class BitmovinStreamConfig(
     var streamEventListener: BitmovinStreamEventListener? = null,
     var enableAds: Boolean = true,
     var styleConfig: StyleConfigStream = StyleConfigStream(),
-    var allLogs: Boolean = false
+    var allLogs: Boolean = true
 ) {
 
     /**
@@ -71,7 +71,7 @@ data class BitmovinStreamConfig(
         onStreamError: (StreamError) -> Unit = { _ -> },
         enableAds: Boolean = true,
         styleConfig: StyleConfigStream = StyleConfigStream(),
-        allLogs: Boolean = false
+        allLogs: Boolean = true
 
     ) : this(
         streamId = streamId,
