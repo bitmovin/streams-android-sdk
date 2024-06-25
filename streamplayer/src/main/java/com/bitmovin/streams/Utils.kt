@@ -241,7 +241,7 @@ internal suspend fun createPlayerView(
 
 
     val suppCssLocation = withContext(Dispatchers.IO) {
-        return@withContext logger.recordDuration("Writting Css rules") {
+        return@withContext logger.recordDuration("Writing Css rules") {
             getCustomCss(
                 streamConfig,
                 userSupplCss = styleConfigStream.customCss,
