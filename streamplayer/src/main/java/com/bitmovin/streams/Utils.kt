@@ -104,7 +104,7 @@ internal suspend fun getStreamConfigData(
                 .build()
 
             logger.d("Request: $request")
-            var response : Response
+            var response: Response
             var trys = 0
             do {
                 sleep((200 * trys).toLong())
@@ -265,15 +265,15 @@ internal suspend fun createPlayerView(
     It is better and safer to keep it on the main thread for now.
      */
     val playerView = logger.recordDuration("PlayerView Creation") {
-            PlayerView(context, player, config = playerViewConfig)
-                .apply {
-                    layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                    keepScreenOn = true
-                }
-        }
+        PlayerView(context, player, config = playerViewConfig)
+            .apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                keepScreenOn = true
+            }
+    }
     // Should be done at the end
     //TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
     streamConfig.styleConfig.playerStyle.backgroundColor?.let {
@@ -341,7 +341,12 @@ internal fun getCustomCss(
     css.append("\n$userSupplCss")
 
     @Suppress("DEPRECATION")
-    return writeCssToFile(usid, StreamsProvider.appContext, css.toString(), logger = logger)?.toURL()
+    return writeCssToFile(
+        usid,
+        StreamsProvider.appContext,
+        css.toString(),
+        logger = logger
+    )?.toURL()
         .toString()
 }
 
@@ -489,8 +494,8 @@ internal fun Color.toCSS(): String {
 internal fun Color.Companion.parseColor(str: String): Color? {
     try {
         val c = org.silentsoft.csscolor4j.Color.valueOf(str)
-        return Color(c.red, c.green, c.blue, (c.opacity*255).toInt())
-    } catch(e: IllegalArgumentException) {
+        return Color(c.red, c.green, c.blue, (c.opacity * 255).toInt())
+    } catch (e: IllegalArgumentException) {
         return null
     }
 }

@@ -7,17 +7,19 @@ import androidx.lifecycle.LifecycleOwner
 import com.bitmovin.player.PlayerView
 
 internal class LifeCycleRedirectForPlayer(
-    val playerView : PlayerView,
-    private val autoPiP : Boolean
+    val playerView: PlayerView,
+    private val autoPiP: Boolean
 ) : LifecycleEventObserver {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_START -> {
                 playerView.onResume()
             }
+
             Lifecycle.Event.ON_STOP -> {
                 playerView.onPause()
             }
+
             Lifecycle.Event.ON_DESTROY -> {
                 playerView.onDestroy()
             }
@@ -25,6 +27,7 @@ internal class LifeCycleRedirectForPlayer(
             Lifecycle.Event.ON_RESUME -> {
                 playerView.onResume()
             }
+
             Lifecycle.Event.ON_PAUSE -> {
                 playerView.onPause()
                 if (autoPiP && playerView.isFullscreen && playerView.player?.isPlaying == true)
@@ -32,6 +35,7 @@ internal class LifeCycleRedirectForPlayer(
                 else
                     playerView.player?.pause()
             }
+
             else -> {}
         }
     }

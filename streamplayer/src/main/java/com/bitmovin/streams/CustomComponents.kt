@@ -61,7 +61,6 @@ internal fun StreamVideoPlayer(playerView: PlayerView, modifier: Modifier = Modi
  * @param isImmersive: true to make the content immersive by hiding the Android UI and being Borderless
  * @param content: The content to display
  *
- * TODO: More flexible parameters to allow for more use-cases, but it's doing the job well for the video player
  */
 @Suppress("DEPRECATION")
 @Composable
@@ -96,36 +95,36 @@ internal fun FullScreen(
                     )
                 }
 
-                    SideEffect {
-                        if (activityWindow != null && dialogWindow != null) {
-                            val attributes = WindowManager.LayoutParams().apply {
-                                copyFrom(activityWindow.attributes)
-                                type = dialogWindow.attributes.type
-                            }
-                            dialogWindow.attributes = attributes
-                            parentView.layoutParams = FrameLayout.LayoutParams(
-                                width,
-                                height
-                            )
+                SideEffect {
+                    if (activityWindow != null && dialogWindow != null) {
+                        val attributes = WindowManager.LayoutParams().apply {
+                            copyFrom(activityWindow.attributes)
+                            type = dialogWindow.attributes.type
+                        }
+                        dialogWindow.attributes = attributes
+                        parentView.layoutParams = FrameLayout.LayoutParams(
+                            width,
+                            height
+                        )
 
-                            /*
-                             There is some unpredictable delay depending of the device that led to having the wrong width and height, especially while escaping from PiP mode and entering.
-                             This is a workaround to get the right width and height during a 0.5 seconds period which restart itself whenever there's a change (which should be reasonable for most devices).
-                             This method is not perfect and cause some short visual glitches, but it's better than having the wrong width and height.
-                             NB : This issue is not present when the dialog is not immersive.
-                            */
-                            CoroutineScope(Dispatchers.IO).launch {
-                                for (i in 0..10) {
-                                    Thread.sleep(50)
-                                    if (activityWindow.decorView.width != width || activityWindow.decorView.height != height) {
-                                        width = activityWindow.decorView.width
-                                        height = activityWindow.decorView.height
-                                        // Break it since the SideEffect will be called again anyway
-                                        break
-                                    }
+                        /*
+                         There is some unpredictable delay depending of the device that led to having the wrong width and height, especially while escaping from PiP mode and entering.
+                         This is a workaround to get the right width and height during a 0.5 seconds period which restart itself whenever there's a change (which should be reasonable for most devices).
+                         This method is not perfect and cause some short visual glitches, but it's better than having the wrong width and height.
+                         NB : This issue is not present when the dialog is not immersive.
+                        */
+                        CoroutineScope(Dispatchers.IO).launch {
+                            for (i in 0..10) {
+                                Thread.sleep(50)
+                                if (activityWindow.decorView.width != width || activityWindow.decorView.height != height) {
+                                    width = activityWindow.decorView.width
+                                    height = activityWindow.decorView.height
+                                    // Break it since the SideEffect will be called again anyway
+                                    break
                                 }
                             }
                         }
+                    }
                 }
 
                 DisposableEffect(Unit) {

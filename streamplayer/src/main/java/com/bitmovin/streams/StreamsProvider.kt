@@ -14,6 +14,7 @@ import java.io.File
 internal class StreamsProvider : ContentProvider() {
 
     val pipChangesObserver = PiPChangesObserver()
+
     companion object {
         private val instance = StreamsProvider()
         private lateinit var applicationContext: Context
@@ -34,6 +35,7 @@ internal class StreamsProvider : ContentProvider() {
         fun getInstance(): StreamsProvider {
             return instance
         }
+
         val appContext: Context
             get() = try {
                 applicationContext

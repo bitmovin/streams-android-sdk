@@ -76,7 +76,7 @@ fun BitmovinStream(
     streamEventListener: BitmovinStreamEventListener? = null,
     enableAds: Boolean = true,
     styleConfig: StyleConfigStream = StyleConfigStream(),
-    allLogs : Boolean = false
+    allLogs: Boolean = false
 ) {
     val recompositionTimeStart = System.currentTimeMillis()
     val context = LocalContext.current
@@ -85,7 +85,7 @@ fun BitmovinStream(
     // Warning : The USID is not the same as the streamId. The streamId is the id of the stream to be played.
     // We do not use the streamId to allow to user to have multiple players with the same streamId.
     val usid: String by rememberSaveable { UUID.randomUUID().toString() }
-    // Make the StreamViewModel unique for each instance of the Streams Player (1:1 relationship)
+    // Make the Stream unique for each instance of the Streams Player (1:1 relationship)
     val stream: Stream = StreamsProvider.getInstance().getStream(usid, allLogs)
 
     when (stream.state) {
