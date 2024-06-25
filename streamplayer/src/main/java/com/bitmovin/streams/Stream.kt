@@ -244,6 +244,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
             File(it.filesDir, "custom_css_${usid}.css")
                 .takeIf { file -> file.exists() }?.delete()
         }
+        StreamsProvider.getInstance().removeStream(usid)
         logger.i("Disposed")
     }
 }

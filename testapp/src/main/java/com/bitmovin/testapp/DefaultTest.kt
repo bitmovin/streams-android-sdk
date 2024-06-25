@@ -43,7 +43,9 @@ class DefaultTest : ComponentActivity() {
             var selectedTest by remember { mutableStateOf(fullscreenTests.first()) }
             Column(Modifier.safeDrawingPadding()) {
                 Text(text = selectedTest.title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(4.dp))
-                BitmovinStream(config = selectedTest.config)
+                key(selectedTest){
+                    BitmovinStream(config = selectedTest.config)
+                }
                 Text(text = selectedTest.expectedResult, fontSize = 16.sp, modifier = Modifier.padding(4.dp), maxLines = 2, minLines = 2)
                 Column(Modifier.verticalScroll(scrollState)) {
                     TestRow("Error handling", fetchingTests) { test -> selectedTest = test }
