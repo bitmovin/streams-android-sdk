@@ -6,11 +6,13 @@ The component is built on top of the [Bitmovin Player Android SDK](https://bitmo
 
 It's properties are highly customizable and can be used in a variety of ways, from simple video playback to more complex use cases.
 
-__Note:__ If you are planning really advanced/deep use cases, we recommend using the Bitmovin Player Android SDK directly and building your own `StreamPlayer` on top of it to have full control over the player and suite your needs better. This project still can be a reference on how to build for Compose and Streams.  
+> *__Note:__ If you are planning really advanced/deep use cases, we recommend using the Bitmovin Player Android SDK directly and building your own `StreamPlayer` on top of it to have full control over the player and suite your needs better. This project still can be a reference on how to build for Compose and Streams.*
 
 ## Getting Started
 
-TODO WHEN PUBLISHED /!\
+__/!\ *TODO WHEN PUBLISHED* /!\\__
+
+...
 
 Each activity that uses the BitmovinStream component must be declared in the AndroidManifest.xml file with the following configuration:
 
@@ -50,7 +52,7 @@ It has the following parameters:
 | enableAds        | true                       | If true, ads will be enabled.                                                                                                                    |
 | fullscreenConfig | true                       | The configuration for the fullscreen mode.                                                                                                       |
 | styleConfig      | None                       | The style configuration for the player.                                                                                                          |
-| allLogs          | false                      | If true, all logs will be printed.                                                                                                               |
+| allLogs          | false                      | If true, all logs will be printed. Otherwise, only the warnings and errors will be printed.                                                      |
 
 There is an alternative way to setup the component using Configuration object:
 
@@ -60,7 +62,7 @@ There is an alternative way to setup the component using Configuration object:
 | modifier  | Modifier.aspectRatio(16/9) | The modifier to be applied to the Stream component.                                                                          |
 
 
-__Note:__ The parameters only have effect when the component is first loaded. Changing the properties after the component is created will not have any effect. If you want to change the properties on the fly, we recommend using the `key` compose keyword on the top of your component to get controls over the loading. However, it will force everything to be reloaded (a lot quicker because of the cache).
+> *__Note:__ The parameters only have effect when the component is first loaded. Changing the properties after the component is created will not have any effect. If you want to change the properties on the fly, we recommend using the `key` compose keyword on the top of your component to get controls over the loading. However, it will force everything to be reloaded (a lot quicker because of the cache).*
 
 ## Configurations classes
 
