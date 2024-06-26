@@ -1,6 +1,12 @@
-# Bitmovin Streams Android 
+# Bitmovin Streams on Android 
 
-This library provides a Compose component to play [Bitmovin Streams](https://bitmovin.com/streams) natively on Android.
+This library provides BitmovinStream, which is a Compose component to play [Bitmovin Streams](https://bitmovin.com/streams) natively on Android.
+
+The component is built on top of the [Bitmovin Player Android SDK](https://bitmovin.com/docs/player/android-sdk/).
+
+It's properties are highly customizable and can be used in a variety of ways, from simple video playback to more complex use cases.
+
+__Note:__ If you are planning really advanced/deep use cases, we recommend using the Bitmovin Player Android SDK directly and building your own `StreamPlayer` on top of it to have full control over the player and suite your needs better. This project still can be a reference on how to build for Compose and Streams.  
 
 ## Getting Started
 
@@ -25,10 +31,9 @@ Each activity that uses the BitmovinStream component must be declared in the And
 >
 ```
 
+## Properties
 
-## Bitmovin Stream
-
-The BitmovinStream component has the following parameters:  
+It has the following parameters:  
 
 | Parameter        | Default Value              | Description                                                                                                                                      |
 |------------------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -53,6 +58,9 @@ There is an alternative way to setup the component using Configuration object:
 |-----------|----------------------------|------------------------------------------------------------------------------------------------------------------------------|
 | config    | None                       | The configuration object you want to pass. Configuration object own all the properties written above aside from the modifier |
 | modifier  | Modifier.aspectRatio(16/9) | The modifier to be applied to the Stream component.                                                                          |
+
+
+__Note:__ The parameters only have effect when the component is first loaded. Changing the properties after the component is created will not have any effect. If you want to change the properties on the fly, we recommend using the `key` compose keyword on the top of your component to get controls over the loading. However, it will force everything to be reloaded (a lot quicker because of the cache).
 
 ## Configurations classes
 
