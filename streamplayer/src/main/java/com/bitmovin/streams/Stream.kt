@@ -12,7 +12,7 @@ import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.player.api.ui.FullscreenHandler
-import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.fullscreenmode.StreamFullscreenHandler
@@ -31,7 +31,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
     var streamError = StreamError.UNKNOWN_ERROR
     var playerView: PlayerView? = null
     var player: Player? = null
-    private var streamEventListener: BitmovinStreamEventListener? = null
+    private var streamEventListener: StreamListener? = null
     private var pipExitHandler: PiPExitListener? = null
 
     /**
@@ -51,11 +51,11 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         fullscreenConfig: FullscreenConfig,
         enableAds: Boolean,
         styleConfigStream: StyleConfigStream,
-        bitmovinStreamEventListener: BitmovinStreamEventListener?
+        streamListener: StreamListener?
     ) {
         logger.i("Initializing stream $streamId")
         state = BitmovinStreamState.FETCHING
-        this.streamEventListener = bitmovinStreamEventListener
+        this.streamEventListener = streamListener
         CoroutineScope(Dispatchers.Main).launch {
             val streamConfigDataResp = getStreamConfigData(streamId, jwToken, logger)
             val streamResponseCode = streamConfigDataResp.responseHttpCode

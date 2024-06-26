@@ -29,8 +29,8 @@ import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.StreamError
 import com.bitmovin.streams.TestStreamsIds
-import com.bitmovin.streams.config.BitmovinStreamConfig
-import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.StreamConfig
+import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
@@ -157,7 +157,7 @@ fun BitmovinShowcase() {
             "Example 1 - Gif-like player",
             R.drawable.carbon_1
         ) {
-            val reusableGifVidConfig = BitmovinStreamConfig(
+            val reusableGifVidConfig = StreamConfig(
                 streamId = TestStreamsIds.SQUARE_VIDEO,
                 autoPlay = true,
                 muted = true,
@@ -205,7 +205,7 @@ fun BitmovinShowcase() {
         ) {
             BitmovinStream(
                 streamId = TestStreamsIds.SINTEL,
-                streamEventListener = object : BitmovinStreamEventListener {
+                streamListener = object : StreamListener {
                     override fun onStreamReady(player: Player, playerView: PlayerView) {
                         player.on(PlayerEvent.Play::class.java) {
                             playerView.enterFullscreen()
@@ -435,13 +435,6 @@ val optProperties: List<Property> = listOf(
         defaultValue = "Empty list"
     ),
     Property(
-        name = "fullscreenConfig",
-        description = """
-                    The configuration for the fullscreen mode.
-                """.trimIndent(),
-        defaultValue = "None"
-    ),
-    Property(
         name = "streamEventListener",
         description = """
                     The listener for the player events.
@@ -466,6 +459,13 @@ val optProperties: List<Property> = listOf(
                     Ads are retrieved from the stream's dashboard configuration.
                 """.trimIndent(),
         defaultValue = "true"
+    ),
+    Property(
+        name = "fullscreenConfig",
+        description = """
+                    The configuration for the fullscreen mode.
+                """.trimIndent(),
+        defaultValue = "None"
     ),
     Property(
         name = "styleConfig",

@@ -1,6 +1,6 @@
 package com.bitmovin.streams
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
-import com.bitmovin.streams.config.BitmovinStreamConfig
-import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.StreamConfig
+import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
 import java.util.UUID
@@ -23,8 +23,8 @@ import java.util.UUID
  */
 @Composable
 fun BitmovinStream(
-    config: BitmovinStreamConfig,
-    modifier: Modifier = Modifier.aspectRatio(16f / 9f)
+    config: StreamConfig,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier.aspectRatio(16f / 9f)
 ) {
     BitmovinStream(
         streamId = config.streamId,
@@ -37,7 +37,7 @@ fun BitmovinStream(
         start = config.start,
         subtitles = config.subtitles,
         fullscreenConfig = config.fullscreenConfig,
-        streamEventListener = config.streamEventListener,
+        streamListener = config.streamListener,
         enableAds = config.enableAds,
         styleConfig = config.styleConfig,
         allLogs = config.allLogs
@@ -58,14 +58,15 @@ fun BitmovinStream(
  * @param start The time in seconds at which the player should start playing.
  * @param subtitles The list of subtitle tracks available for the stream.
  * @param fullscreenConfig The configuration for the fullscreen mode.
- * @param streamEventListener The listener for the player events.
+ * @param streamListener The listener for the player events.
  * @param enableAds Whether ads should be enabled.
  * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
+ * @param allLogs Whether all logs should be displayed.
  */
 @Composable
 fun BitmovinStream(
     streamId: String,
-    modifier: Modifier = Modifier.aspectRatio(16f / 9f),
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier.aspectRatio(16f / 9f),
     jwToken: String? = null,
     autoPlay: Boolean = false,
     loop: Boolean = false,
@@ -74,10 +75,10 @@ fun BitmovinStream(
     start: Double = 0.0,
     subtitles: List<SubtitleTrack> = emptyList(),
     fullscreenConfig: FullscreenConfig = FullscreenConfig(),
-    streamEventListener: BitmovinStreamEventListener? = null,
+    streamListener: StreamListener? = null,
     enableAds: Boolean = true,
     styleConfig: StyleConfigStream = StyleConfigStream(),
-    allLogs: Boolean = true
+    allLogs: Boolean = false
 ) {
     val recompositionTimeStart = System.currentTimeMillis()
     val context = LocalContext.current
@@ -138,7 +139,7 @@ fun BitmovinStream(
                 start = start,
                 subtitles = subtitles,
                 fullscreenConfig = fullscreenConfig,
-                bitmovinStreamEventListener = streamEventListener,
+                streamListener = streamListener,
                 enableAds = enableAds,
                 styleConfigStream = styleConfig
             )

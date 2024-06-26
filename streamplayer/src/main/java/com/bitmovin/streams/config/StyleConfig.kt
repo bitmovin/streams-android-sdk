@@ -1,7 +1,6 @@
 package com.bitmovin.streams.config
 
 import androidx.compose.ui.graphics.Color
-import java.io.File
 
 /**
  * This class is used to store the configuration data of a stream.

@@ -3,12 +3,10 @@ package com.bitmovin.streams.fullscreenmode
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.ui.FullscreenHandler
-import com.bitmovin.streams.Tag
 import com.bitmovin.streams.config.FullscreenConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +38,7 @@ class StreamFullscreenHandler(
         when (fullscreen) {
             true -> {
                 var ratio: Float? = null
-                if (config.autoOrientation) {
+                if (config.autoRotate) {
                     previousOrientation = activity?.requestedOrientation
                         ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                     try {

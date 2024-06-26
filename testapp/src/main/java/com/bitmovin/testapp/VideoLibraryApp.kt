@@ -27,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,7 +36,7 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.StreamError
-import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.TestStreamsIds
 import com.bitmovin.testapp.ui.theme.LightColorScheme
@@ -160,7 +159,7 @@ fun StreamElem(
                 start = 5.0,
                 muted = true,
                 jwToken = token,
-                streamEventListener = object : BitmovinStreamEventListener {
+                streamListener = object : StreamListener {
                     override fun onStreamReady(player: Player, playerView: PlayerView) {
                         playerHolder = player
                         playerView.isUiVisible = false
