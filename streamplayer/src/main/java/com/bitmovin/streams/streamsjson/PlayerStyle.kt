@@ -5,7 +5,7 @@ import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.toCSS
 
 // This class might not be useful if we create a custom endpoint for the css.
-class PlayerStyle {
+internal class PlayerStyle {
     var playbackMarkerBgColor: String? = null
     var playbackMarkerBorderColor: String? = null
     var playbackTrackPlayedColor: String? = null

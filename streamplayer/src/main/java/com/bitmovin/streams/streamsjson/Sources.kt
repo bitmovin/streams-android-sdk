@@ -1,6 +1,6 @@
 package com.bitmovin.streams.streamsjson
 
-class Sources {
+internal class Sources {
     lateinit var title: String
     lateinit var hls: String
     var poster: String? = null
