@@ -1,6 +1,5 @@
 package com.bitmovin.streams.config
 
-import androidx.compose.ui.Modifier
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
@@ -18,12 +17,12 @@ import com.bitmovin.streams.StreamError
  * @property loop Whether the player should loop the stream.
  * @property fullscreenConfig The configuration for the fullscreen mode.
  * @property subtitles The list of subtitle tracks available for the stream.
- * @property streamEventListener The listener for the player events.
+ * @property streamListener The listener for the player events.
  * @property enableAds Whether ads should be enabled.
  * @property styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
  */
 
-data class BitmovinStreamConfig(
+data class StreamConfig(
     var streamId: String,
     var jwToken: String? = null,
     var autoPlay: Boolean = false,
@@ -33,10 +32,10 @@ data class BitmovinStreamConfig(
     var loop: Boolean = false,
     var fullscreenConfig: FullscreenConfig,
     var subtitles: List<SubtitleTrack> = emptyList(),
-    var streamEventListener: BitmovinStreamEventListener? = null,
+    var streamListener: StreamListener? = null,
     var enableAds: Boolean = true,
     var styleConfig: StyleConfigStream = StyleConfigStream(),
-    var allLogs: Boolean = true
+    var allLogs: Boolean = false
 ) {
 
     /**
@@ -56,6 +55,7 @@ data class BitmovinStreamConfig(
      * @param onStreamError Called when an error occurs during the stream setup.
      * @param enableAds Whether ads should be enabled.
      * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
+     * @param allLogs Whether all logs should be displayed.
      */
     constructor(
         streamId: String,
@@ -71,7 +71,7 @@ data class BitmovinStreamConfig(
         onStreamError: (StreamError) -> Unit = { _ -> },
         enableAds: Boolean = true,
         styleConfig: StyleConfigStream = StyleConfigStream(),
-        allLogs: Boolean = true
+        allLogs: Boolean = false
 
     ) : this(
         streamId = streamId,
@@ -83,8 +83,8 @@ data class BitmovinStreamConfig(
         loop = loop,
         fullscreenConfig = fullscreenConfig,
         subtitles = subtitles,
-        streamEventListener = object :
-            BitmovinStreamEventListener {
+        streamListener = object :
+            StreamListener {
             override fun onStreamReady(player: Player, playerView: PlayerView) {
                 onStreamReady(player, playerView)
             }

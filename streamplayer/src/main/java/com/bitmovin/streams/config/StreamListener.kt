@@ -4,7 +4,7 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.StreamError
 
-interface BitmovinStreamEventListener {
+interface StreamListener {
     /**
      * Called when the stream is ready to be played.
      */

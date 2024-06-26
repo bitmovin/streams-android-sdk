@@ -33,7 +33,7 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.StreamError
-import com.bitmovin.streams.config.BitmovinStreamEventListener
+import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StreamThemes
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
@@ -132,7 +132,7 @@ class PlayerActivity : ComponentActivity() {
                 fullscreenConfig = FullscreenConfig(
                     screenDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                 ),
-                streamEventListener = object : BitmovinStreamEventListener {
+                streamListener = object : StreamListener {
                     override fun onStreamReady(player: Player, playerView: PlayerView) {
                         playerViewHolder = playerView
 
