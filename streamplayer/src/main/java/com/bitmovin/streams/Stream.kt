@@ -143,7 +143,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         // 4. Handling properties
         // Warning: The stream source has to be loaded before setting the properties. This is why we do it here.
         // PlayerEvent.Ready event not be called before the source is loaded.
-        player.handleAttributes(autoPlay, muted, loop, start)
+        player.handleAttributes(autoPlay, muted, loop && !streamConfig.isLive(), start)
     }
 
     private fun initializePlayerRelated(
