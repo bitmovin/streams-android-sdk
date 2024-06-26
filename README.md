@@ -37,29 +37,29 @@ Each activity that uses the BitmovinStream component must be declared in the And
 
 It has the following parameters:  
 
-| Parameter        | Default Value              | Description                                                                                                                                      |
-|------------------|----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| streamId         | None                       | The stream id that you want to play. This is the only required property.                                                                         |
-| modifier         | Modifier.aspectRatio(16/9) | The modifier to be applied to the Stream component.                                                                                              |
-| jwToken          | null                       | The auth. token to be used for the stream.                                                                                                       |
-| autoPlay         | false                      | If true, the stream will start playing as soon as the component is loaded. Default is true.                                                      |
-| muted            | false                      | If true, the stream will be muted. Default is false.                                                                                             |
-| loop             | false                      | If true, the video will repeat itself when the end is reached. It's not recommended on long format videos. Always false when the stream is Live. |
-| poster           | null                       | The URL to a preview image displayed until the video starts. The property have the priority over the stream preview image if it is set.          |
-| start            | 0.0                        | The starting playback of the Stream in seconds.                                                                                                  |
-| subtitles        | Empty List                 | Specifies an list of external subtitles to be used in the player. The values have to be of the type SubtitleTrack                                |
-| streamListener   | null                       | The listener for the player events.                                                                                                              |
-| enableAds        | true                       | If true, ads will be enabled.                                                                                                                    |
-| fullscreenConfig | true                       | The configuration for the fullscreen mode.                                                                                                       |
-| styleConfig      | None                       | The style configuration for the player.                                                                                                          |
-| allLogs          | false                      | If true, all logs will be printed. Otherwise, only the warnings and errors will be printed.                                                      |
+| Parameter        | Default Value | Description                                                                                                                                      |
+|------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| streamId         | None          | The stream id that you want to play. This is the only required property.                                                                         |
+| modifier         | Modifier      | The modifier to be applied to the Stream component.                                                                                              |
+| jwToken          | null          | The auth. token to be used for the stream.                                                                                                       |
+| autoPlay         | false         | If true, the stream will start playing as soon as the component is loaded. Default is true.                                                      |
+| muted            | false         | If true, the stream will be muted. Default is false.                                                                                             |
+| loop             | false         | If true, the video will repeat itself when the end is reached. It's not recommended on long format videos. Always false when the stream is Live. |
+| poster           | null          | The URL to a preview image displayed until the video starts. The property have the priority over the stream preview image if it is set.          |
+| start            | 0.0           | The starting playback of the Stream in seconds.                                                                                                  |
+| subtitles        | Empty List    | Specifies an list of external subtitles to be used in the player. The values have to be of the type SubtitleTrack                                |
+| streamListener   | null          | The listener for the player events.                                                                                                              |
+| enableAds        | true          | If true, ads will be enabled.                                                                                                                    |
+| fullscreenConfig | true          | The configuration for the fullscreen mode.                                                                                                       |
+| styleConfig      | None          | The style configuration for the player.                                                                                                          |
+| allLogs          | false         | If true, all logs will be printed. Otherwise, only the warnings and errors will be printed.                                                      |
 
 There is an alternative way to setup the component using Configuration object:
 
-| Parameter | Default Value              | Description                                                                                                                  |
-|-----------|----------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| config    | None                       | The configuration object you want to pass. Configuration object own all the properties written above aside from the modifier |
-| modifier  | Modifier.aspectRatio(16/9) | The modifier to be applied to the Stream component.                                                                          |
+| Parameter | Default Value | Description                                                                                                                  |
+|-----------|---------------|------------------------------------------------------------------------------------------------------------------------------|
+| config    | None          | The configuration object you want to pass. Configuration object own all the properties written above aside from the modifier |
+| modifier  | Modifier      | The modifier to be applied to the Stream component.                                                                          |
 
 
 > *__Note:__ The parameters only have effect when the component is first loaded. Changing the properties after the component is created will not have any effect. If you want to change the properties on the fly, we recommend using the `key` compose keyword on the top of your component to get controls over the loading. However, it will force everything to be reloaded (a lot quicker because of the cache).*
@@ -142,7 +142,8 @@ val myStyleConfig = StyleConfigStream(
 BitmovinStream(
     streamId = "<YOUR-STREAM-ID>",
     poster = "really_cool_img.jpg",
-    styleConfig = myStyleConfig
+    styleConfig = myStyleConfig,
+    modifier = Modifier.aspectRatio(16f/9f)
 )
 ```
 
