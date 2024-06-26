@@ -24,7 +24,7 @@ import java.util.UUID
 @Composable
 fun BitmovinStream(
     config: StreamConfig,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier.aspectRatio(16f / 9f)
+    modifier: Modifier = Modifier
 ) {
     BitmovinStream(
         streamId = config.streamId,
@@ -66,11 +66,11 @@ fun BitmovinStream(
 @Composable
 fun BitmovinStream(
     streamId: String,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier.aspectRatio(16f / 9f),
+    modifier: Modifier = Modifier,
     jwToken: String? = null,
     autoPlay: Boolean = false,
     loop: Boolean = false,
-    muted: Boolean = true, // temporary true to avoid loud noises in the office when I forget to turn off the sound
+    muted: Boolean = false,
     poster: String? = null,
     start: Double = 0.0,
     subtitles: List<SubtitleTrack> = emptyList(),
