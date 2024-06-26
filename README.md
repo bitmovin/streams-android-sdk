@@ -62,7 +62,7 @@ There is an alternative way to setup the component using Configuration object:
 | modifier  | Modifier      | The modifier to be applied to the Stream component.                                                                          |
 
 
-> *__Note:__ The parameters only have effect when the component is first loaded. Changing the properties after the component is created will not have any effect. If you want to change the properties on the fly, we recommend using the `key` compose keyword on the top of your component to get controls over the loading. However, it will force everything to be reloaded (a lot quicker because of the cache).*
+> *__Note:__ The parameters only have effect on composition (first load). Changing the properties after the component is created will not have any effect. If you want to change the properties on the fly, we recommend encapsulating the BitmovinStream in the `key` compose keyword to get controls over the loading. However, it will force everything to be reloaded (a lot quicker thanks to the built-in cache).
 
 ## Configurations classes
 
