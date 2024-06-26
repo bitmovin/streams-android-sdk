@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IndexOutOfBoundsException
 
-class StreamFullscreenHandler(
+internal class StreamFullscreenHandler(
     val playerView: PlayerView,
     val activity: Activity?,
     val config: FullscreenConfig

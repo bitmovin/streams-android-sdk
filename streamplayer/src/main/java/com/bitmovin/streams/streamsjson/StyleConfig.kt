@@ -3,7 +3,7 @@ package com.bitmovin.streams.streamsjson
 import com.bitmovin.streams.config.StyleConfigStream
 
 
-class StyleConfig {
+internal class StyleConfig {
     var playerStyle: PlayerStyle = PlayerStyle()
     var watermarkUrl: String? = null
     // Unused property since the watermark should not be clickable in a native environment.

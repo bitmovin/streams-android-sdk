@@ -1,5 +1,5 @@
 package com.bitmovin.streams.streamsjson
 
-class ThumbnailTrackConfig {
+internal class ThumbnailTrackConfig {
     var url: String? = null
 }
