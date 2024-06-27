@@ -33,7 +33,7 @@ class DefaultTest : ComponentActivity() {
     private lateinit var formatTests: List<Test>
     private lateinit var fullscreenTests: List<Test>
     private lateinit var styleTests: List<Test>
-    private lateinit var propertyTests : List<Test>
+    private lateinit var propertyTests: List<Test>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         initTests()
@@ -47,17 +47,38 @@ class DefaultTest : ComponentActivity() {
             val scrollState = rememberScrollState()
             var selectedTest by remember { mutableStateOf(fetchingTests.first()) }
             Column(Modifier.safeDrawingPadding()) {
-                Text(text = selectedTest.title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(4.dp))
-                key(selectedTest){
-                    BitmovinStream(config = selectedTest.config, modifier = Modifier.aspectRatio(16f/9f))
+                Text(
+                    text = selectedTest.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(4.dp)
+                )
+                key(selectedTest) {
+                    BitmovinStream(
+                        config = selectedTest.config,
+                        modifier = Modifier
+                            .aspectRatio(16f / 9f)
+                    )
                 }
-                Text(text = selectedTest.expectedResult, fontSize = 16.sp, modifier = Modifier.padding(4.dp), maxLines = 3, minLines = 3)
+                Text(
+                    text = selectedTest.expectedResult,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(4.dp),
+                    maxLines = 3,
+                    minLines = 3
+                )
                 Column(Modifier.verticalScroll(scrollState)) {
                     TestRow("Fetching Tests", fetchingTests) { test -> selectedTest = test }
-                    TestRow("Aspect Ratio Tests", tests = formatTests) { test -> selectedTest = test }
-                    TestRow("Fullscreen Behaviour Tests", tests = fullscreenTests) { test -> selectedTest = test }
+                    TestRow("Aspect Ratio Tests", tests = formatTests) { test ->
+                        selectedTest = test
+                    }
+                    TestRow(
+                        "Fullscreen Behaviour Tests",
+                        tests = fullscreenTests
+                    ) { test -> selectedTest = test }
                     TestRow("Styling Tests", tests = styleTests) { test -> selectedTest = test }
-                    TestRow("Properties Tests", tests = propertyTests) { test -> selectedTest = test }
+                    TestRow("Properties Tests", tests = propertyTests) { test ->
+                        selectedTest = test
+                    }
                 }
             }
         }
@@ -73,18 +94,21 @@ class DefaultTest : ComponentActivity() {
             ),
             Test(
                 title = "404 (Stream not found)",
-                expectedResult = "Stream not found",
-                config = StreamConfig(streamId = TestStreamsIds.SQUARE_VIDEO + "d")
+                expectedResult = "Stream not found error message should be displayed",
+                config = StreamConfig(streamId = "__NON_EXISTENT_STREAM__")
             ),
             Test(
                 title = "401 (Unauthorized)",
-                expectedResult = "Unauthorized",
+                expectedResult = "Unauthorized error message should be displayed",
                 config = StreamConfig(streamId = TestStreamsIds.BIG_BUCK_BUNNY)
             ),
             Test(
                 title = "403 (Forbidden)",
-                expectedResult = "Forbidden",
-                config = StreamConfig(streamId = TestStreamsIds.BIG_BUCK_BUNNY, jwToken = "nonvalid")
+                expectedResult = "Forbidden error message should be displayed",
+                config = StreamConfig(
+                    streamId = TestStreamsIds.BIG_BUCK_BUNNY,
+                    jwToken = "__INVALID_TOKEN__"
+                )
             )
         )
 
@@ -115,29 +139,43 @@ class DefaultTest : ComponentActivity() {
             Test(
                 title = "Disabled",
                 expectedResult = "Fullscreen and Picture-in-Picture should not be available",
-                config = StreamConfig(streamId = TestStreamsIds.SINTEL, fullscreenConfig = FullscreenConfig(enable = false))
+                config = StreamConfig(
+                    streamId = TestStreamsIds.SINTEL,
+                    fullscreenConfig = FullscreenConfig(enable = false)
+                )
             ),
             Test(
                 title = "Auto Orientation Disabled",
                 expectedResult = "The screen should not rotate by itself when the Video is in Fullscreen mode",
-                config = StreamConfig(streamId = TestStreamsIds.SINTEL, fullscreenConfig = FullscreenConfig(autoRotate = false))
+                config = StreamConfig(
+                    streamId = TestStreamsIds.SINTEL,
+                    fullscreenConfig = FullscreenConfig(autoRotate = false)
+                )
             )
         )
         styleTests = listOf(
             Test(
                 title = "Red theme",
                 expectedResult = "A red theme should be applied to the player",
-                config = StreamConfig(streamId = TestStreamsIds.SINTEL, styleConfig = StreamThemes.RED_EXAMPLE_THEME)
+                config = StreamConfig(
+                    streamId = TestStreamsIds.SINTEL,
+                    styleConfig = StreamThemes.RED_EXAMPLE_THEME
+                )
             ),
             Test(
                 title = "Default Theme",
                 expectedResult = "The default theme should be applied to the player",
-                config = StreamConfig(streamId = TestStreamsIds.SINTEL, styleConfig = StreamThemes.BITMOVIN_DEFAULT_THEME)
+                config = StreamConfig(
+                    streamId = TestStreamsIds.SINTEL,
+                    styleConfig = StreamThemes.BITMOVIN_DEFAULT_THEME
+                )
             ),
             Test(
                 title = "Plain CSS",
                 expectedResult = "The player should show without it's settings button and volume button",
-                config = StreamConfig(streamId = TestStreamsIds.SINTEL, styleConfig = StyleConfigStream(customCss = """
+                config = StreamConfig(
+                    streamId = TestStreamsIds.SINTEL, styleConfig = StyleConfigStream(
+                        customCss = """
                     .bmpui-ui-volumetogglebutton {
                         display: none;
                     }
@@ -145,7 +183,8 @@ class DefaultTest : ComponentActivity() {
                         display: none;
                     }
                 """.trimIndent()
-                ))
+                    )
+                )
             )
         )
         propertyTests = listOf(
@@ -172,10 +211,18 @@ class DefaultTest : ComponentActivity() {
             Test(
                 "Subtitles",
                 "The video should have subtitles",
-                StreamConfig(streamId = TestStreamsIds.SINTEL, subtitles = listOf(
-                    SubtitleTrack(language = "English", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_en.vtt"),
-                    SubtitleTrack(language = "German", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt")
-                ))
+                StreamConfig(
+                    streamId = TestStreamsIds.SINTEL, subtitles = listOf(
+                        SubtitleTrack(
+                            language = "English",
+                            url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_en.vtt"
+                        ),
+                        SubtitleTrack(
+                            language = "German",
+                            url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt"
+                        )
+                    )
+                )
             )
         )
     }
@@ -183,7 +230,11 @@ class DefaultTest : ComponentActivity() {
 
 @Composable
 fun TestRow(testCategory: String, tests: List<Test>, onTestSelected: (Test) -> Unit) {
-    Text(text = testCategory, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(4.dp))
+    Text(
+        text = testCategory,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(4.dp)
+    )
     Row(Modifier.horizontalScroll(rememberScrollState())) {
         tests.forEach { test ->
             Button(
@@ -201,6 +252,7 @@ fun TestRow(testCategory: String, tests: List<Test>, onTestSelected: (Test) -> U
         }
     }
 }
+
 class Test(
     val title: String,
     val expectedResult: String,
