@@ -1,5 +1,6 @@
 package com.bitmovin.testapp
 
+import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import androidx.activity.ComponentActivity
 import android.os.Bundle
@@ -8,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.TestStreamsIds
 import com.bitmovin.streams.config.StreamConfig
@@ -26,44 +29,46 @@ import com.bitmovin.streams.config.StreamThemes
 import com.bitmovin.streams.config.StyleConfigStream
 
 class DefaultTest : ComponentActivity() {
-    lateinit var fetchingTests: List<Test>
-    lateinit var formatTests: List<Test>
-    lateinit var fullscreenTests: List<Test>
-    lateinit var styleTests: List<Test>
-    lateinit var propertyTests : List<Test>
+    private lateinit var fetchingTests: List<Test>
+    private lateinit var formatTests: List<Test>
+    private lateinit var fullscreenTests: List<Test>
+    private lateinit var styleTests: List<Test>
+    private lateinit var propertyTests : List<Test>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         initTests()
 
+        @SuppressLint("SourceLockedOrientationActivity")
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             val scrollState = rememberScrollState()
-            var selectedTest by remember { mutableStateOf(fullscreenTests.first()) }
+            var selectedTest by remember { mutableStateOf(fetchingTests.first()) }
             Column(Modifier.safeDrawingPadding()) {
                 Text(text = selectedTest.title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(4.dp))
                 key(selectedTest){
-                    BitmovinStream(config = selectedTest.config)
+                    BitmovinStream(config = selectedTest.config, modifier = Modifier.aspectRatio(16f/9f))
                 }
-                Text(text = selectedTest.expectedResult, fontSize = 16.sp, modifier = Modifier.padding(4.dp), maxLines = 2, minLines = 2)
+                Text(text = selectedTest.expectedResult, fontSize = 16.sp, modifier = Modifier.padding(4.dp), maxLines = 3, minLines = 3)
                 Column(Modifier.verticalScroll(scrollState)) {
-                    TestRow("Error handling", fetchingTests) { test -> selectedTest = test }
-                    TestRow("Aspect Ratio ", tests = formatTests) { test -> selectedTest = test }
-                    TestRow("Fullscreen Behaviour", tests = fullscreenTests) { test -> selectedTest = test }
-                    TestRow("Styling", tests = styleTests) { test -> selectedTest = test }
-                    TestRow("Properties", tests = propertyTests) { test -> selectedTest = test }
+                    TestRow("Fetching Tests", fetchingTests) { test -> selectedTest = test }
+                    TestRow("Aspect Ratio Tests", tests = formatTests) { test -> selectedTest = test }
+                    TestRow("Fullscreen Behaviour Tests", tests = fullscreenTests) { test -> selectedTest = test }
+                    TestRow("Styling Tests", tests = styleTests) { test -> selectedTest = test }
+                    TestRow("Properties Tests", tests = propertyTests) { test -> selectedTest = test }
                 }
             }
         }
     }
 
 
-    fun initTests() {
+    private fun initTests() {
         fetchingTests = listOf(
             Test(
-                title = "Stream",
-                expectedResult = "The stream should be displayed with all of the dashboard settings",
+                title = "Dashboard settings",
+                expectedResult = "This stream should have 3 ads, a poster and watermark image w/ rick and morty and an awful color palette",
                 config = StreamConfig(streamId = TestStreamsIds.TEAR_OF_STEEL)
             ),
             Test(
@@ -164,6 +169,14 @@ class DefaultTest : ComponentActivity() {
                 "The video should start at 10 seconds",
                 StreamConfig(streamId = TestStreamsIds.SINTEL, start = 10.0)
             ),
+            Test(
+                "Subtitles",
+                "The video should have subtitles",
+                StreamConfig(streamId = TestStreamsIds.SINTEL, subtitles = listOf(
+                    SubtitleTrack(language = "English", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_en.vtt"),
+                    SubtitleTrack(language = "German", url = "https://cdn.bitmovin.com/content/assets/sintel/subtitles/subtitles_de.vtt")
+                ))
+            )
         )
     }
 }
