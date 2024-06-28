@@ -59,24 +59,24 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         CoroutineScope(Dispatchers.Main).launch {
             val streamConfigDataResp = getStreamConfigData(streamId, jwToken, logger)
             val streamResponseCode = streamConfigDataResp.responseHttpCode
-            if (streamResponseCode == 200 && streamConfigDataResp.streamConfigData != null) {
-                initializeStream(
-                    context = context,
-                    lifecycleOwner = lifecycleOwner,
-                    streamConfig = streamConfigDataResp.streamConfigData,
-                    autoPlay = autoPlay,
-                    loop = loop,
-                    muted = muted,
-                    start = start,
-                    poster = poster,
-                    subtitles = subtitles,
-                    fullscreenConfig = fullscreenConfig,
-                    enableAds = enableAds,
-                    styleConfigStream = styleConfigStream
-                )
-            } else {
+            if (streamResponseCode != 200 || streamConfigDataResp.streamConfigData == null) {
                 castError(StreamError.fromHttpCode(streamResponseCode))
+                return@launch
             }
+            initializeStream(
+                context = context,
+                lifecycleOwner = lifecycleOwner,
+                streamConfig = streamConfigDataResp.streamConfigData,
+                autoPlay = autoPlay,
+                loop = loop,
+                muted = muted,
+                start = start,
+                poster = poster,
+                subtitles = subtitles,
+                fullscreenConfig = fullscreenConfig,
+                enableAds = enableAds,
+                styleConfigStream = styleConfigStream
+            )
         }
     }
 
