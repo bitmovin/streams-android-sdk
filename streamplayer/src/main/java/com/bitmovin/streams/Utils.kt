@@ -96,9 +96,9 @@ internal suspend fun getStreamConfigData(
         return@withContext logger.recordDuration("Fetching stream config data") {
             val client = StreamsProvider.okHttpClient
             var url = "https://streams.bitmovin.com/${streamId}/config"
-            if (jwToken != null) {
-                url = addURLParam(url, "token", jwToken)
-            }
+
+            // Add the token to the URL if it's not null
+            jwToken?.let { url = addURLParam(url, "token", it) }
             val request: Request = Request.Builder()
                 .url(url)
                 .build()
@@ -110,7 +110,8 @@ internal suspend fun getStreamConfigData(
                 sleep((200 * trys).toLong())
                 try {
                     response = client.newCall(request).execute()
-                } catch (e: Exception) {
+                } catch (e: IOException) {
+                    // If the request fails, we return a null StreamConfigDataResponse with the "0" error code which is associated with a network issue.
                     return@recordDuration StreamConfigDataResponse(null, 0)
                 }
                 trys++
@@ -133,21 +134,21 @@ internal fun addURLParam(url: String, attribute: String, value: String): String 
 }
 
 internal fun createPlayer(
-    streamConfigData: StreamConfigData,
+    streamConfig: StreamConfigData,
     context: Context,
     enableAds: Boolean,
     logger: Logger
 ): Player {
-    val analyticsConfig: AnalyticsConfig = createAnalyticsConfig(streamConfigData)
-    val advertisingConfig: AdvertisingConfig? =
+    val analyticsConfig = AnalyticsConfig(streamConfig.analytics.key)
+    val advertisingConfig: AdvertisingConfig =
         when (enableAds) {
-            true -> createAdvertisingConfig(streamConfigData)
-            false -> null
+            true -> createAdvertisingConfig(streamConfig)
+            false -> AdvertisingConfig() // Empty advertising config if ads are disabled
         }
 
     val playerConfig = PlayerConfig(
-        key = streamConfigData.key,
-        advertisingConfig = advertisingConfig ?: AdvertisingConfig(),
+        key = streamConfig.key,
+        advertisingConfig = advertisingConfig,
     )
 
     return logger.recordDuration("Creating player") {
@@ -170,7 +171,6 @@ internal fun createAdvertisingConfig(streamConfig: StreamConfigData): Advertisin
             // From testing, it seems mp4 is the only supported format for Progressive ads.
             // I didn't find any documentation about how to automatically detect the type of ad source.
             "mp4" -> AdSource(AdSourceType.Progressive, ad.url)
-            "xml" -> AdSource(AdSourceType.Bitmovin, ad.url)
             // "..." -> AdSource(AdSourceType.Ima, ad.url) ignoring this case for now
             // Does not support IMAs.
             // If nothing is detected, let's try as a Bitmovin ad. It's common and should not affect negatively the player if it fails.
@@ -179,12 +179,6 @@ internal fun createAdvertisingConfig(streamConfig: StreamConfigData): Advertisin
         AdItem(ad.position, adSource)
     }
     return AdvertisingConfig(ads)
-}
-
-internal fun createAnalyticsConfig(streamConfig: StreamConfigData): AnalyticsConfig {
-    return AnalyticsConfig(
-        streamConfig.analytics.key,
-    )
 }
 
 internal fun createSourceConfig(
