@@ -326,9 +326,8 @@ internal fun getCustomCss(
     val style = streamConfig.styleConfig
     val css = StringBuilder()
 
-    style.playerStyle.let {
-        css.append(playerStyle(it))
-    }
+    css.append(playerStyle(style.playerStyle))
+
     style.watermarkUrl?.let {
         css.append(watermarkCss(it))
     }

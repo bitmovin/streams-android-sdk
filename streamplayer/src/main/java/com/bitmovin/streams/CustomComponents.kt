@@ -44,6 +44,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -119,7 +120,7 @@ internal fun FullScreen(
                         */
                             CoroutineScope(Dispatchers.IO).launch {
                                 for (i in 0..12) {
-                                    Thread.sleep(50)
+                                    delay(50)
                                     if (activityWindow.decorView.width != width || activityWindow.decorView.height != height) {
                                         width = activityWindow.decorView.width
                                         height = activityWindow.decorView.height
