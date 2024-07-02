@@ -115,7 +115,9 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         val player = initializePlayerRelated(
             context,
             streamConfig,
-            enableAds
+            enableAds,
+            autoPlay,
+            muted
         )
 
         // 2. Initializing the views
@@ -143,15 +145,17 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         // 4. Handling properties
         // Warning: The stream source has to be loaded before setting the properties. This is why we do it here.
         // PlayerEvent.Ready event not be called before the source is loaded.
-        player.handleAttributes(autoPlay, muted, loop && !streamConfig.isLive(), start)
+        player.handleAttributes(loop && !streamConfig.isLive(), start)
     }
 
     private fun initializePlayerRelated(
         context: Context,
         streamConfig: StreamConfigData,
         enableAds: Boolean,
+        autoPlay: Boolean,
+        muted: Boolean
     ): Player {
-        val player = createPlayer(streamConfig, context, enableAds, logger)
+        val player = createPlayer(streamConfig, context, enableAds, autoPlay, muted, logger)
         this.player = player
         player.on(PlayerEvent.Ready::class.java) {
             if (state == BitmovinStreamState.INITIALIZING) {
@@ -250,16 +254,9 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
 }
 
 private fun Player.handleAttributes(
-    autoPlay: Boolean,
-    muted: Boolean,
     loop: Boolean,
     start: Double,
 ) {
-    if (autoPlay)
-        this.play()
-    if (muted)
-        this.mute()
-
     if (start > 0)
         this.seek(start)
 
