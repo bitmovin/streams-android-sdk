@@ -15,6 +15,7 @@ import com.bitmovin.analytics.api.AnalyticsConfig
 import com.bitmovin.analytics.api.CustomData
 import com.bitmovin.analytics.api.SourceMetadata
 import com.bitmovin.player.PlayerView
+import com.bitmovin.player.api.PlaybackConfig
 import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.PlayerConfig
 import com.bitmovin.player.api.advertising.AdItem
@@ -137,8 +138,14 @@ internal fun createPlayer(
     streamConfig: StreamConfigData,
     context: Context,
     enableAds: Boolean,
+    autoPlay: Boolean,
+    muted: Boolean,
     logger: Logger
 ): Player {
+    val playbackConfig = PlaybackConfig(
+        isAutoplayEnabled = autoPlay,
+        isMuted = muted,
+    )
     val analyticsConfig = AnalyticsConfig(streamConfig.analytics.key)
     val advertisingConfig: AdvertisingConfig =
         when (enableAds) {
@@ -149,6 +156,7 @@ internal fun createPlayer(
     val playerConfig = PlayerConfig(
         key = streamConfig.key,
         advertisingConfig = advertisingConfig,
+        playbackConfig = playbackConfig
     )
 
     return logger.recordDuration("Creating player") {
