@@ -5,11 +5,21 @@ on:
       - main
       - master-candidate
       - github-actions-dev
+    paths:
+      - 'streamplayer/**'
+      - '.github/**'
+      - 'gradle/**'
+
   pull_request:
     branches:
       - main
+    paths:
+      - 'streamplayer/**'
+      - '.github/**'
+      - 'gradle/**'
+
 jobs:
-  build:
+  verifications:
     runs-on:
       - ubuntu-latest
     steps:
