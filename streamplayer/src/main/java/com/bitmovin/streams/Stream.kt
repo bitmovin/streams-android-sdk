@@ -37,7 +37,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
     /**
      * Will do both the fetching and the initialization of the stream
      */
-    fun initStream(
+    suspend fun initStream(
         context: Context,
         lifecycleOwner: LifecycleOwner,
         streamId: String,
@@ -56,12 +56,11 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         logger.i("Initializing stream $streamId")
         state = BitmovinStreamState.FETCHING
         this.streamEventListener = streamListener
-        CoroutineScope(Dispatchers.Main).launch {
             val streamConfigDataResp = getStreamConfigData(streamId, jwToken, logger)
             val streamResponseCode = streamConfigDataResp.responseHttpCode
             if (streamResponseCode != 200 || streamConfigDataResp.streamConfigData == null) {
                 castError(StreamError.fromHttpCode(streamResponseCode))
-                return@launch
+                return
             }
             initializeStream(
                 context = context,
@@ -77,7 +76,6 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
                 enableAds = enableAds,
                 styleConfigStream = styleConfigStream
             )
-        }
     }
 
     private fun castError(error: StreamError) {
@@ -261,6 +259,7 @@ private fun Player.handleAttributes(
         this.seek(start)
 
     if (loop) {
+        val coroutineScope = CoroutineScope(Dispatchers.IO)
         // Impl detail : we do not use the PlayerEvent.PlaybackFinished event because it triggers the ui visibility which seems undesirable
         this.on(PlayerEvent.TimeChanged::class.java) {
             // Delay action
@@ -268,7 +267,7 @@ private fun Player.handleAttributes(
             var scheduledSeek = false
             if (player.currentTime > player.duration - 0.4 && !scheduledSeek) {
                 scheduledSeek = true
-                CoroutineScope(Dispatchers.IO).launch {
+                coroutineScope.launch {
                     // Limit : If the video is paused at the end, it will be restarted anyway, but that is not a big deal since it's a really short window anyway
                     // 0.1 seems to be sufficient to never ever trigger the ui while not being noticeable by the user
                     val waitingTime =

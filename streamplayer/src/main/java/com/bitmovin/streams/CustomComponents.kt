@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -53,9 +54,17 @@ import kotlinx.coroutines.launch
  */
 @Composable
 internal fun StreamVideoPlayer(playerView: PlayerView, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        AndroidView(factory = { _ -> playerView.apply { this.removeFromParent() } })
-    }
+    AndroidView(
+
+        factory =
+        { _ ->
+            playerView.apply {
+                // Guarantee that the playerView is only displayed in it's current holder. this line is executed on each factory generation.
+                this.removeFromParent()
+            }
+        },
+        modifier = modifier
+    )
 }
 
 /**
@@ -99,39 +108,37 @@ internal fun FullScreen(
                     )
                 }
                 // Configuration is updated when pip mode is entered/exited
-                key(LocalConfiguration.current, width) {
-                    SideEffect {
-                        if (activityWindow != null && dialogWindow != null) {
-                            val attributes = WindowManager.LayoutParams().apply {
-                                copyFrom(activityWindow.attributes)
-                                type = dialogWindow.attributes.type
-                            }
-                            dialogWindow.attributes = attributes
-                            parentView.layoutParams = FrameLayout.LayoutParams(
-                                width,
-                                height
-                            )
-
-                            /*
-                         There is some unpredictable delay depending of the device that led to having the wrong width and height, especially while escaping from PiP mode and entering.
-                         This is a workaround to get the right width and height during a 0.5 seconds period which restart itself whenever there's a change (which should be reasonable for most devices).
-                         This method is not perfect and cause some short visual glitches, but it's better than having the wrong width and height.
-                         NB : This issue is not present when the dialog is not immersive.
-                        */
-                            CoroutineScope(Dispatchers.IO).launch {
-                                for (i in 0..12) {
-                                    delay(50)
-                                    if (activityWindow.decorView.width != width || activityWindow.decorView.height != height) {
-                                        width = activityWindow.decorView.width
-                                        height = activityWindow.decorView.height
-                                        // Break it since the SideEffect will be called again anyway
-                                        break
-                                    }
-                                }
-                            }
+                SideEffect {
+                    if (activityWindow != null && dialogWindow != null) {
+                        val attributes = WindowManager.LayoutParams().apply {
+                            copyFrom(activityWindow.attributes)
+                            type = dialogWindow.attributes.type
+                        }
+                        dialogWindow.attributes = attributes
+                        parentView.layoutParams = FrameLayout.LayoutParams(
+                            width,
+                            height
+                        )
+                    }
+                }
+                /*
+                There is some unpredictable delay depending of the device that led to having the wrong width and height, especially while escaping from PiP mode and entering.
+                This is a workaround to get the right width and height during a 0.5 seconds period which restart itself whenever there's a change (which should be reasonable for most devices).
+                This method is not perfect and cause some short visual glitches, but it's better than having the wrong width and height.
+                NB : This issue is not present when the dialog is not immersive.
+                */
+                LaunchedEffect(LocalConfiguration.current, width) {
+                    for (i in 0..12) {
+                        delay(50)
+                        if (activityWindow != null && (activityWindow.decorView.width != width || activityWindow.decorView.height != height)) {
+                            width = activityWindow.decorView.width
+                            height = activityWindow.decorView.height
+                            // Break it since the SideEffect will be called again anyway
+                            break
                         }
                     }
                 }
+
 
                 DisposableEffect(Unit) {
                     dialogWindow?.decorView?.systemUiVisibility =
