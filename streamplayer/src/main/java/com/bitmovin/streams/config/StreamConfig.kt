@@ -7,70 +7,149 @@ import com.bitmovin.streams.StreamError
 
 /**
  * Configuration for the BitmovinStream
- *
- * @property streamId The streamId of the stream to be played.
- * @property jwToken The token to be used for authentication if the stream is protected.
- * @property autoPlay Whether the player should start playing automatically.
- * @property muted Whether the player should be muted.
- * @property poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
- * @property start The time in seconds at which the player should start playing.
- * @property loop Whether the player should loop the stream.
- * @property fullscreenConfig The configuration for the fullscreen mode.
- * @property subtitles The list of subtitle tracks available for the stream.
- * @property streamListener The listener for the player events.
- * @property enableAds Whether ads should be enabled.
- * @property styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
  */
 
 data class StreamConfig(
+
+    /**
+     * The streamId of the stream to be played.
+     */
     var streamId: String,
+
+    /**
+     * The token to be used for authentication if the stream is protected.
+     */
     var jwToken: String? = null,
+
+    /**
+     * Whether the player should start playing automatically.
+     */
     var autoPlay: Boolean = false,
+
+    /**
+     * Whether the player should be muted.
+     */
     var muted: Boolean = false,
+
+    /**
+     * The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
+     */
     var poster: String? = null,
+
+    /**
+     * The time in seconds at which the player should start playing.
+     */
     var start: Double = 0.0,
+
+    /**
+     * Whether the player should loop the stream.
+     */
     var loop: Boolean = false,
+
+    /**
+     * The configuration for the fullscreen mode.
+     */
     var fullscreenConfig: FullscreenConfig,
+
+    /**
+     * The list of subtitle tracks available for the stream.
+     */
     var subtitles: List<SubtitleTrack> = emptyList(),
+
+    /**
+     * The listener for the player events.
+     */
     var streamListener: StreamListener? = null,
+
+    /**
+     * Whether ads should be enabled.
+     */
     var enableAds: Boolean = true,
+
+    /**
+     * The style configuration for the player. This property has priority over the style configuration from the dashboard.
+     */
     var styleConfig: StyleConfigStream = StyleConfigStream(),
+
+    /**
+     * Whether all logs should be displayed.
+     */
     var allLogs: Boolean = false
 ) {
 
     /**
      * Configuration for the BitmovinStream
-     *
-     * @param streamId The streamId of the stream to be played.
-     * @param jwToken The token to be used for authentication if the stream is protected.
-     * @param autoPlay Whether the player should start playing automatically.
-     * @param muted Whether the player should be muted.
-     * @param poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
-     * @param start The time in seconds at which the player should start playing.
-     * @param loop Whether the player should loop the stream.
-     * @param fullscreenConfig The configuration for the fullscreen mode.
-     * @param subtitles The list of subtitle tracks available for the stream.
-     * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
-     * @param onStreamReady Called when the stream is ready to be played.
-     * @param onStreamError Called when an error occurs during the stream setup.
-     * @param enableAds Whether ads should be enabled.
-     * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
-     * @param allLogs Whether all logs should be displayed.
      */
     constructor(
+
+        /**
+         * The streamId of the stream to be played.
+         */
         streamId: String,
+
+        /**
+         * The token to be used for authentication if the stream is protected.
+         */
         jwToken: String? = null,
+
+        /**
+         * Whether the player should start playing automatically.
+         */
         autoPlay: Boolean = false,
+
+        /**
+         * Whether the player should be muted.
+         */
         muted: Boolean = false,
+
+        /**
+         * The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
+         */
         poster: String? = null,
+
+        /**
+         * The time in seconds at which the player should start playing.
+         */
         start: Double = 0.0,
+
+        /**
+         * Whether the player should loop the stream.
+         */
         loop: Boolean = false,
+
+        /**
+         * The configuration for the fullscreen mode.
+         */
         fullscreenConfig: FullscreenConfig = FullscreenConfig(),
+
+        /**
+         * The list of subtitle tracks available for the stream.
+         */
         subtitles: List<SubtitleTrack> = emptyList(),
+
+        /**
+         * Called when the player is ready to play the stream.
+         */
         onStreamReady: (Player, PlayerView) -> Unit = { _, _ -> },
+
+        /**
+         * Called when an error occurs while loading the stream.
+         */
         onStreamError: (StreamError) -> Unit = { _ -> },
+
+        /**
+         * Whether ads should be enabled.
+         */
         enableAds: Boolean = true,
+
+        /**
+         * The style configuration for the player. This property has priority over the style configuration from the dashboard.
+         */
         styleConfig: StyleConfigStream = StyleConfigStream(),
+
+        /**
+         * Whether all logs should be displayed.
+         */
         allLogs: Boolean = false
 
     ) : this(
