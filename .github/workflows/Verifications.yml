@@ -32,10 +32,10 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
-      - name: KtLintCheck
+      - name: KtLint checks
         run: ./gradlew --no-daemon ktlintCheck
 
-      - name: Tests
+      - name: Unit Tests
         run: ./gradlew --no-daemon :streamplayer:test
 
       - name: Build with Gradle
