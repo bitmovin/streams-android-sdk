@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -126,25 +127,29 @@ fun BitmovinStream(
         System.currentTimeMillis() - recompositionTimeStart,
     )
 
-        DisposableEffect(Unit) {
-            stream.initStream(
-                context = context,
-                lifecycleOwner = lifecycleOwner,
-                streamId = streamId,
-                jwToken = jwToken,
-                autoPlay = autoPlay,
-                loop = loop,
-                muted = muted,
-                poster = poster,
-                start = start,
-                subtitles = subtitles,
-                fullscreenConfig = fullscreenConfig,
-                streamListener = streamListener,
-                enableAds = enableAds,
-                styleConfigStream = styleConfig
-            )
-            onDispose {
-                stream.dispose()
-            }
+    // Launched on Composition
+    LaunchedEffect(Unit) {
+        stream.initStream(
+            context = context,
+            lifecycleOwner = lifecycleOwner,
+            streamId = streamId,
+            jwToken = jwToken,
+            autoPlay = autoPlay,
+            loop = loop,
+            muted = muted,
+            poster = poster,
+            start = start,
+            subtitles = subtitles,
+            fullscreenConfig = fullscreenConfig,
+            streamListener = streamListener,
+            enableAds = enableAds,
+            styleConfigStream = styleConfig
+        )
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            stream.dispose()
         }
+    }
 }

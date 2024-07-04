@@ -72,12 +72,10 @@ internal class StreamFullscreenHandler(
     }
 
     override fun onFullscreenRequested() {
-        CoroutineScope(Dispatchers.IO).launch {
-            // Store the user orientation to restore it when exiting fullscreen
-            if (!fullscreen.value) {
-                doOrientationChanges(true)
-                fullscreen.value = true
-            }
+        // Store the user orientation to restore it when exiting fullscreen
+        if (!fullscreen.value) {
+            doOrientationChanges(true)
+            fullscreen.value = true
         }
     }
 
