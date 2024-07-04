@@ -3,30 +3,55 @@ package com.bitmovin.streams.config
 import androidx.compose.ui.graphics.Color
 
 /**
- * This class is used to store the configuration data of a stream.
- * @param playbackMarkerBgColor The color of the playback marker background.
- * @param playbackMarkerBorderColor The color of the playback marker border.
- * @param playbackTrackPlayedColor The color of the playback track played.
- * @param playbackTrackBufferedColor The color of the playback track buffered.
- * @param playbackTrackBgColor The color of the playback track background.
- * @param textColor The color of the text.
- * @param backgroundColor The color of the background.
- * @param customCss CSS rules that you can add to make the player look as you expect. Does not support URL or URI, has to be plain text. Please refer to the the Player UI documentation for more information : https://developer.bitmovin.com/playback/docs/player-ui-css-class-reference.
- */
+ * Configuration for the style of the player.
+*/
 class StyleConfigStream(
-    val playbackMarkerBgColor: Color? = null,
-    val playbackMarkerBorderColor: Color? = null,
-    val playbackTrackPlayedColor: Color? = null,
-    val playbackTrackBufferedColor: Color? = null,
-    val playbackTrackBgColor: Color? = null,
-    val textColor: Color? = null,
-    val backgroundColor: Color? = null,
-    val customCss: String = ""
-)
 
-class StreamThemes {
+    /**
+     * The color of the playback marker background.
+     */
+    var playbackMarkerBgColor: Color? = null,
+
+    /**
+     * The color of the playback marker border.
+     */
+    var playbackMarkerBorderColor: Color? = null,
+
+    /**
+     * The color of the playback track played.
+     */
+    var playbackTrackPlayedColor: Color? = null,
+
+    /**
+     * The color of the playback track buffered.
+     */
+    var playbackTrackBufferedColor: Color? = null,
+
+    /**
+     * The color of the playback track background.
+     */
+    var playbackTrackBgColor: Color? = null,
+
+    /**
+     * The color of the text.
+     */
+    var textColor: Color? = null,
+
+    /**
+     * The color of the background.
+     */
+    var backgroundColor: Color? = null,
+
+    /**
+     * CSS rules that you can add to make the player look as you expect. Does not support URL or URI, has to be plain text.
+     * @see <a href="https://developer.bitmovin.com/playback/docs/player-ui-css-class-reference">Bitmovin Player UI CSS Class Reference</a>
+     */
+    var customCss: String = ""
+) {
     companion object {
-
+        /**
+         * The default theme of the player.
+         */
         val BITMOVIN_DEFAULT_THEME = StyleConfigStream(
             playbackMarkerBgColor = getColor(32, 172, 227, 0.5f),
             playbackMarkerBorderColor = getColor(32, 172, 227, 1f),
@@ -37,6 +62,9 @@ class StreamThemes {
             backgroundColor = getColor(0, 0, 0, 1f)
         )
 
+        /**
+         * An example theme with red colors.
+         */
         val RED_EXAMPLE_THEME = StyleConfigStream(
             playbackMarkerBgColor = getColor(255, 0, 0, 0f),
             playbackMarkerBorderColor = getColor(255, 0, 0, 0f),
@@ -46,20 +74,10 @@ class StreamThemes {
             textColor = getColor(217, 217, 217, 1f),
             backgroundColor = getColor(0, 0, 0, 1f)
         )
-
-        val PINK_EXAMPLE_THEME = StyleConfigStream(
-            playbackMarkerBgColor = getColor(240, 17, 199, 1f),
-            playbackMarkerBorderColor = getColor(255, 102, 229, 1f),
-            playbackTrackPlayedColor = getColor(240, 17, 199, 1f),
-            playbackTrackBufferedColor = getColor(252, 61, 235, 0.4f),
-            playbackTrackBgColor = getColor(166, 0, 123, 0.35f),
-            textColor = getColor(253, 125, 255, 1f),
-            backgroundColor = getColor(0, 0, 0, 1f)
-        )
     }
 }
 
-fun getColor(
+internal fun getColor(
     red: Int, green: Int, blue: Int, alpha: Float
 ): Color {
     return Color(red, green, blue, (alpha * 255).toInt())
