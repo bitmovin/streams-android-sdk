@@ -35,7 +35,7 @@ import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.StreamError
 import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.FullscreenConfig
-import com.bitmovin.streams.config.StreamThemes
+import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import kotlin.math.abs
 
@@ -158,7 +158,7 @@ class PlayerActivity : ComponentActivity() {
                         // Do nothing
                     }
                 },
-                styleConfig = StreamThemes.RED_EXAMPLE_THEME
+                styleConfig = StyleConfigStream.RED_EXAMPLE_THEME
             )
             Text(
                 text = name, Modifier.padding(8.dp),
