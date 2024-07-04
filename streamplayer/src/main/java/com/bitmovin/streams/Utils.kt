@@ -55,11 +55,9 @@ internal fun FrameLayout.removeFromParent() {
     }
 }
 
-
 // Window getter utils for Composable, credits goes to the stackoverflow-guy
 @Composable
-internal fun getDialogWindow(): Window? =
-    (LocalView.current.parent as? DialogWindowProvider)?.window
+internal fun getDialogWindow(): Window? = (LocalView.current.parent as? DialogWindowProvider)?.window
 
 @Composable
 internal fun getActivityWindow(): Window? = LocalView.current.context.getActivityWindow()
@@ -88,21 +86,23 @@ internal fun Context.getActivity(): Activity? {
 }
 
 const val MAX_FETCHING_ATTEMPTS = 3
+
 internal suspend fun getStreamConfigData(
     streamId: String,
     jwToken: String?,
-    logger: Logger
+    logger: Logger,
 ): StreamConfigDataResponse {
     return withContext(Dispatchers.IO) {
         return@withContext logger.recordDuration("Fetching stream config data") {
             val client = StreamsProvider.okHttpClient
-            var url = "https://streams.bitmovin.com/${streamId}/config"
+            var url = "https://streams.bitmovin.com/$streamId/config"
 
             // Add the token to the URL if it's not null
             jwToken?.let { url = addURLParam(url, "token", it) }
-            val request: Request = Request.Builder()
-                .url(url)
-                .build()
+            val request: Request =
+                Request.Builder()
+                    .url(url)
+                    .build()
 
             logger.d("Request: $request")
             var response: Response
@@ -129,7 +129,11 @@ internal suspend fun getStreamConfigData(
     }
 }
 
-internal fun addURLParam(url: String, attribute: String, value: String): String {
+internal fun addURLParam(
+    url: String,
+    attribute: String,
+    value: String,
+): String {
     val separator = if (url.contains("?")) "&" else "?"
     return "$url$separator$attribute=$value"
 }
@@ -140,12 +144,13 @@ internal fun createPlayer(
     enableAds: Boolean,
     autoPlay: Boolean,
     muted: Boolean,
-    logger: Logger
+    logger: Logger,
 ): Player {
-    val playbackConfig = PlaybackConfig(
-        isAutoplayEnabled = autoPlay,
-        isMuted = muted,
-    )
+    val playbackConfig =
+        PlaybackConfig(
+            isAutoplayEnabled = autoPlay,
+            isMuted = muted,
+        )
     val analyticsConfig = AnalyticsConfig(streamConfig.analytics.key)
     val advertisingConfig: AdvertisingConfig =
         when (enableAds) {
@@ -153,11 +158,12 @@ internal fun createPlayer(
             false -> AdvertisingConfig() // Empty advertising config if ads are disabled
         }
 
-    val playerConfig = PlayerConfig(
-        key = streamConfig.key,
-        advertisingConfig = advertisingConfig,
-        playbackConfig = playbackConfig
-    )
+    val playerConfig =
+        PlayerConfig(
+            key = streamConfig.key,
+            advertisingConfig = advertisingConfig,
+            playbackConfig = playbackConfig,
+        )
 
     return logger.recordDuration("Creating player") {
         // From the countTime function, we can see that the creation of the Player is the most expensive part of the process by really far.
@@ -166,47 +172,47 @@ internal fun createPlayer(
         Player(
             context,
             playerConfig = playerConfig,
-            analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig)
+            analyticsConfig = AnalyticsPlayerConfig.Enabled(analyticsConfig),
         )
     }
 }
 
 internal fun createAdvertisingConfig(streamConfig: StreamConfigData): AdvertisingConfig {
     // Bitmovin and Progressive ads only for now
-    val ads = streamConfig.adConfig.ads.map { ad ->
-        val fileExt = ad.url.split(".").last()
-        val adSource = when (fileExt) {
-            // From testing, it seems mp4 is the only supported format for Progressive ads.
-            // I didn't find any documentation about how to automatically detect the type of ad source.
-            "mp4" -> AdSource(AdSourceType.Progressive, ad.url)
-            // "..." -> AdSource(AdSourceType.Ima, ad.url) ignoring this case for now
-            // Does not support IMAs.
-            // If nothing is detected, let's try as a Bitmovin ad. It's common and should not affect negatively the player if it fails.
-            else -> AdSource(AdSourceType.Bitmovin, ad.url)
+    val ads =
+        streamConfig.adConfig.ads.map { ad ->
+            val fileExt = ad.url.split(".").last()
+            val adSource =
+                when (fileExt) {
+                    // From testing, it seems mp4 is the only supported format for Progressive ads.
+                    // I didn't find any documentation about how to automatically detect the type of ad source.
+                    "mp4" -> AdSource(AdSourceType.Progressive, ad.url)
+                    // "..." -> AdSource(AdSourceType.Ima, ad.url) ignoring this case for now
+                    // Does not support IMAs.
+                    // If nothing is detected, let's try as a Bitmovin ad. It's common and should not affect negatively the player if it fails.
+                    else -> AdSource(AdSourceType.Bitmovin, ad.url)
+                }
+            AdItem(ad.position, adSource)
         }
-        AdItem(ad.position, adSource)
-    }
     return AdvertisingConfig(ads)
 }
 
 internal fun createSourceConfig(
     streamConfigData: StreamConfigData,
     customPosterSource: String?,
-    subtitlesSources: List<SubtitleTrack> = emptyList()
+    subtitlesSources: List<SubtitleTrack> = emptyList(),
 ): SourceConfig {
     return SourceConfig(
         url = streamConfigData.sources.hls,
-        type = SourceType.Hls, // Always HLS since Streams only supports HLS for now
+        type = SourceType.Hls,
         title = streamConfigData.sources.title,
         posterSource = customPosterSource ?: streamConfigData.sources.poster,
         subtitleTracks = subtitlesSources,
-        thumbnailTrack = streamConfigData.sources.thumbnailTrack.url?.let { ThumbnailTrack(it) }
+        thumbnailTrack = streamConfigData.sources.thumbnailTrack.url?.let { ThumbnailTrack(it) },
     )
 }
 
-internal fun createMetadata(
-    streamConfigData: StreamConfigData
-): SourceMetadata {
+internal fun createMetadata(streamConfigData: StreamConfigData): SourceMetadata {
     return SourceMetadata(
         videoId = streamConfigData.analytics.videoId,
         title = streamConfigData.analytics.videoTitle,
@@ -218,14 +224,14 @@ internal fun createMetadata(
 internal fun createSource(
     streamConfigData: StreamConfigData,
     customPosterSource: String?,
-    subtitlesSources: List<SubtitleTrack> = emptyList()
+    subtitlesSources: List<SubtitleTrack> = emptyList(),
 ): Source {
     val sourceConfig = createSourceConfig(streamConfigData, customPosterSource, subtitlesSources)
     val sourceMetadata = createMetadata(streamConfigData)
 
     return Source(
         sourceConfig,
-        AnalyticsSourceConfig.Enabled(sourceMetadata)
+        AnalyticsSourceConfig.Enabled(sourceMetadata),
     )
 }
 
@@ -235,29 +241,29 @@ internal suspend fun createPlayerView(
     streamConfig: StreamConfigData,
     styleConfigStream: StyleConfigStream,
     styleFileKey: String,
-    logger: Logger
+    logger: Logger,
 ): PlayerView {
-
     // Should be done at the beginning or the attributes values will be ignored.
     streamConfig.styleConfig.affectConfig(styleConfigStream)
 
-
-    val suppCssLocation = withContext(Dispatchers.IO) {
-        return@withContext logger.recordDuration("Writing Css rules") {
-            getCustomCss(
-                streamConfig,
-                userSupplCss = styleConfigStream.customCss,
-                styleFileKey,
-                logger
-            )
+    val suppCssLocation =
+        withContext(Dispatchers.IO) {
+            return@withContext logger.recordDuration("Writing Css rules") {
+                getCustomCss(
+                    streamConfig,
+                    userSupplCss = styleConfigStream.customCss,
+                    styleFileKey,
+                    logger,
+                )
+            }
         }
-    }
-    val playerViewConfig = PlayerViewConfig(
-        UiConfig.WebUi(
-            supplementalCssLocation = suppCssLocation,
-            forceSubtitlesIntoViewContainer = true,
+    val playerViewConfig =
+        PlayerViewConfig(
+            UiConfig.WebUi(
+                supplementalCssLocation = suppCssLocation,
+                forceSubtitlesIntoViewContainer = true,
+            ),
         )
-    )
     /*
     Ideally, the creation of the PlayerView should be done on an IO thread since it's quicker and
     doesn't require the main thread (that's what I thought at least)
@@ -266,25 +272,30 @@ internal suspend fun createPlayerView(
     However, since the perf anyway only really matters on launch on the fist time (because of cache)
     It is better and safer to keep it on the main thread for now.
      */
-    val playerView = logger.recordDuration("PlayerView Creation") {
-        PlayerView(context, player, config = playerViewConfig)
-            .apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-                keepScreenOn = true
-            }
-    }
+    val playerView =
+        logger.recordDuration("PlayerView Creation") {
+            PlayerView(context, player, config = playerViewConfig)
+                .apply {
+                    layoutParams =
+                        ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                        )
+                    keepScreenOn = true
+                }
+        }
     // Should be done at the end
-    //TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
+    // TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
     streamConfig.styleConfig.playerStyle.backgroundColor?.let {
         Color.parseColor(it)?.toArgb()?.let { colorInt -> playerView.setBackgroundColor(colorInt) }
     }
     return playerView
 }
 
-internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>): String {
+internal operator fun String.getValue(
+    nothing: Nothing?,
+    property: KProperty<*>,
+): String {
     return this
 }
 
@@ -295,10 +306,15 @@ internal operator fun String.getValue(nothing: Nothing?, property: KProperty<*>)
  * @param css The CSS content to write to the file.
  * @return The file if the operation was successful, null otherwise.
  */
-internal fun writeCssToFile(fileKey: String, context: Context, css: String, logger: Logger): File? {
+internal fun writeCssToFile(
+    fileKey: String,
+    context: Context,
+    css: String,
+    logger: Logger,
+): File? {
     return try {
         // Create a file in the app's private storage
-        val cssFile = File(context.filesDir, "custom_css_${fileKey}.css")
+        val cssFile = File(context.filesDir, "custom_css_$fileKey.css")
         if (cssFile.exists()) {
             cssFile.delete()
         }
@@ -311,7 +327,7 @@ internal fun writeCssToFile(fileKey: String, context: Context, css: String, logg
     } catch (e: IOException) {
         logger.e(
             "Failed to write CSS rules to file. Stylization rules will be ignored.",
-            e
+            e,
         )
         null
     }
@@ -328,9 +344,8 @@ internal fun getCustomCss(
     streamConfig: StreamConfigData,
     userSupplCss: String,
     usid: String,
-    logger: Logger
+    logger: Logger,
 ): String {
-
     val style = streamConfig.styleConfig
     val css = StringBuilder()
 
@@ -346,7 +361,7 @@ internal fun getCustomCss(
         usid,
         StreamsProvider.appContext,
         css.toString(),
-        logger = logger
+        logger = logger,
     )?.toURL()
         .toString()
 }
@@ -404,7 +419,7 @@ internal fun watermarkCss(watermarkImg: String): String {
         :has(.bmpui-ui-settingstogglebutton.bmpui-on) .bmpui-ui-watermark {
             opacity: 0.0 !important;
         }
-    """.trimIndent()
+        """.trimIndent()
 }
 
 internal fun stylePlaybackMarkerBgColor(color: String): String {
@@ -415,7 +430,7 @@ internal fun stylePlaybackMarkerBgColor(color: String): String {
            background-color: $color !important;
         }
         
-    """.trimIndent()
+        """.trimIndent()
 }
 
 internal fun stylePlaybackMarkerBorderColor(color: String): String {
@@ -426,7 +441,7 @@ internal fun stylePlaybackMarkerBorderColor(color: String): String {
            border-color: $color !important;
         }
         
-    """.trimIndent()
+        """.trimIndent()
 }
 
 internal fun stylePlaybackTrackPlayedColor(color: String): String {
@@ -435,7 +450,7 @@ internal fun stylePlaybackTrackPlayedColor(color: String): String {
            background-color: $color !important;
         }
         
-    """.trimIndent()
+        """.trimIndent()
 }
 
 internal fun stylePlaybackTrackBufferedColor(color: String): String {
@@ -444,9 +459,8 @@ internal fun stylePlaybackTrackBufferedColor(color: String): String {
            background-color: $color !important;
         }
         
-    """.trimIndent()
+        """.trimIndent()
 }
-
 
 internal fun stylePlaybackTrackBgColor(color: String): String {
     return """
@@ -454,7 +468,7 @@ internal fun stylePlaybackTrackBgColor(color: String): String {
            background-color: $color !important;
         }
         
-    """.trimIndent()
+        """.trimIndent()
 }
 
 internal fun styleTextColor(color: String): String {
@@ -464,7 +478,7 @@ internal fun styleTextColor(color: String): String {
            color: $color !important;
         }
         
-    """.trimIndent()
+        """.trimIndent()
 }
 
 internal fun backgroundColor(color: String): String {
@@ -474,16 +488,11 @@ internal fun backgroundColor(color: String): String {
          .bitmovinplayer-poster {
            background-color: $color !important;
         }
-        /*  
-        Make the gradiant when pause  accord to the background color but I'm not sure if it's really a bahavior we want.
-                .bmpui-ui-titlebar {
-                    background: -webkit-gradient(linear, left bottom, left top, from(transparent), to($color));
-                }
-        */
+
         .bitmovin-player {
             background-color: $color !important;
         }
-    """.trimIndent()
+        """.trimIndent()
 }
 
 internal fun Color.toCSS(): String {

@@ -33,8 +33,8 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.StreamError
-import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.FullscreenConfig
+import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import kotlin.math.abs
@@ -55,7 +55,10 @@ class PlayerActivity : ComponentActivity() {
     }
 
     @Composable
-    fun Player(streamId: String, token: String?) {
+    fun Player(
+        streamId: String,
+        token: String?,
+    ) {
         var name by remember { mutableStateOf("Loading...") }
         var description by remember { mutableStateOf("Loading...") }
         val config = LocalConfiguration.current
@@ -74,14 +77,16 @@ class PlayerActivity : ComponentActivity() {
             mutableStateOf<OrientationEventListener?>(
                 object : OrientationEventListener(activity) {
                     var AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
-                    override fun onOrientationChanged(orientation: Int) {
 
+                    override fun onOrientationChanged(orientation: Int) {
                         if (aspectRatio <= 0.8f) return
                         when (AUTO_ROTATE_STATE) {
                             AutoRotateState.WaitingForEnter -> {
-                                if (playerViewHolder?.isFullscreen == false && (abs(orientation - 90) < FS_TREESHOLD || abs(
-                                        orientation - 270
-                                    ) < FS_TREESHOLD)
+                                if (playerViewHolder?.isFullscreen == false && (
+                                        abs(orientation - 90) < FS_TREESHOLD || abs(
+                                            orientation - 270,
+                                        ) < FS_TREESHOLD
+                                    )
                                 ) {
                                     AUTO_ROTATE_STATE = AutoRotateState.WaitingForExit
                                     playerViewHolder?.enterFullscreen()
@@ -93,19 +98,18 @@ class PlayerActivity : ComponentActivity() {
                                     AUTO_ROTATE_STATE = AutoRotateState.WaitingForReset
                                 } else {
                                     if (abs(orientation - 0) < FS_TREESHOLD || abs(orientation - 360) < FS_TREESHOLD || abs(
-                                            orientation - 180
+                                            orientation - 180,
                                         ) < FS_TREESHOLD
                                     ) {
                                         playerViewHolder?.exitFullscreen()
                                         AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
                                     }
                                 }
-
                             }
 
                             AutoRotateState.WaitingForReset -> {
                                 if (abs(orientation - 0) < FS_TREESHOLD || abs(orientation - 360) < FS_TREESHOLD || abs(
-                                        orientation - 180
+                                        orientation - 180,
                                     ) < FS_TREESHOLD
                                 ) {
                                     AUTO_ROTATE_STATE = AutoRotateState.WaitingForEnter
@@ -114,56 +118,63 @@ class PlayerActivity : ComponentActivity() {
                         }
                         Log.d(
                             "PlayerActivity",
-                            "Orientation: $orientation, State $AUTO_ROTATE_STATE"
+                            "Orientation: $orientation, State $AUTO_ROTATE_STATE",
                         )
                     }
-
-                }.apply { enable() }
+                }.apply { enable() },
             )
         }
 
         Column(Modifier.safeDrawingPadding()) {
             BitmovinStream(
                 streamId = streamId,
-                modifier = Modifier
-                    .aspectRatio(aspectRatioAnim)
-                    .fillMaxHeight(0.7f),
+                modifier =
+                    Modifier
+                        .aspectRatio(aspectRatioAnim)
+                        .fillMaxHeight(0.7f),
                 authenticationToken = token,
-                fullscreenConfig = FullscreenConfig(
-                    screenDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                ),
-                streamListener = object : StreamListener {
-                    override fun onStreamReady(player: Player, playerView: PlayerView) {
-                        playerViewHolder = playerView
+                fullscreenConfig =
+                    FullscreenConfig(
+                        screenDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT,
+                    ),
+                streamListener =
+                    object : StreamListener {
+                        override fun onStreamReady(
+                            player: Player,
+                            playerView: PlayerView,
+                        ) {
+                            playerViewHolder = playerView
 
-                        // Affect the aspect ratio of the source to the player
-                        name = player.source?.config?.title ?: "Unknown"
-                        description = player.source?.config?.description ?: "None"
-                        val videoQualities = player.source?.availableVideoQualities
-                        if (!videoQualities.isNullOrEmpty()) {
-                            aspectRatio =
-                                videoQualities[0].width.toFloat() / videoQualities[0].height.toFloat()
-                        } else {
-                            Log.e("PlayerActivity", "No video qualities found")
+                            // Affect the aspect ratio of the source to the player
+                            name = player.source?.config?.title ?: "Unknown"
+                            description = player.source?.config?.description ?: "None"
+                            val videoQualities = player.source?.availableVideoQualities
+                            if (!videoQualities.isNullOrEmpty()) {
+                                aspectRatio =
+                                    videoQualities[0].width.toFloat() / videoQualities[0].height.toFloat()
+                            } else {
+                                Log.e("PlayerActivity", "No video qualities found")
+                            }
+
+                            // Force fullscreen if the user is in landscape mode
+                            if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                                if (!playerView.isFullscreen) {
+                                    playerView.enterFullscreen()
+                                }
+                            }
                         }
 
-                        // Force fullscreen if the user is in landscape mode
-                        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                            if (!playerView.isFullscreen)
-                                playerView.enterFullscreen()
+                        override fun onStreamError(error: StreamError) {
+                            // Do nothing
                         }
-                    }
-
-                    override fun onStreamError(error: StreamError) {
-                        // Do nothing
-                    }
-                },
-                styleConfig = StyleConfigStream.RED_EXAMPLE_THEME
+                    },
+                styleConfig = StyleConfigStream.RED_EXAMPLE_THEME,
             )
             Text(
-                text = name, Modifier.padding(8.dp),
+                text = name,
+                Modifier.padding(8.dp),
                 fontWeight = FontWeight.Bold,
-                fontSize = 26.sp
+                fontSize = 26.sp,
             )
             Text(text = description, Modifier.padding(8.dp))
         }
@@ -177,5 +188,5 @@ class PlayerActivity : ComponentActivity() {
 enum class AutoRotateState {
     WaitingForExit,
     WaitingForEnter,
-    WaitingForReset
+    WaitingForReset,
 }

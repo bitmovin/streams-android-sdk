@@ -8,7 +8,10 @@ interface StreamListener {
     /**
      * Called when the stream is ready to be played.
      */
-    fun onStreamReady(player: Player, playerView: PlayerView)
+    fun onStreamReady(
+        player: Player,
+        playerView: PlayerView,
+    )
 
     /**
      * Called when an error occurs during the stream setup.

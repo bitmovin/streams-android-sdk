@@ -13,12 +13,11 @@ import java.lang.IndexOutOfBoundsException
 internal class StreamFullscreenHandler(
     val playerView: PlayerView,
     val activity: Activity?,
-    val config: FullscreenConfig
+    val config: FullscreenConfig,
 ) : FullscreenHandler {
-
-
     private var fullscreen: MutableState<Boolean> = mutableStateOf(false)
     private var previousOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+
     override fun onDestroy() {
         fullscreen.value = false
     }
@@ -39,8 +38,9 @@ internal class StreamFullscreenHandler(
                     previousOrientation = activity?.requestedOrientation
                         ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
                     try {
-                        ratio = playerView.player?.source?.availableVideoQualities?.get(0)
-                            .let { it?.width?.toFloat()?.div(it.height) }
+                        ratio =
+                            playerView.player?.source?.availableVideoQualities?.get(0)
+                                .let { it?.width?.toFloat()?.div(it.height) }
                     } catch (e: IndexOutOfBoundsException) {
                         // Do nothing, it is not a big deal if the ratio is null
                     }

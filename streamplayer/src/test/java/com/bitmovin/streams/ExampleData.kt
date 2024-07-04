@@ -1,6 +1,7 @@
 package com.bitmovin.streams
 
-val tear_of_steel = """
+internal val tearOfSteel =
+    """
     {
       "key": "_________________________",
       "sources": {
@@ -50,4 +51,4 @@ val tear_of_steel = """
         ]
       }
     }
-""".trimIndent()
+    """.trimIndent()

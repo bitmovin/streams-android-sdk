@@ -4,19 +4,18 @@ import androidx.compose.ui.graphics.Color
 import com.bitmovin.player.api.advertising.AdSourceType
 import com.bitmovin.streams.streamsjson.StreamConfigData
 import com.google.gson.Gson
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import org.junit.Assert.*
-
 class CorrectnessTest {
-
     @Test
     fun createAdsFromStreamData() {
-        val streamData = Gson().fromJson(tear_of_steel, StreamConfigData::class.java)
+        val streamData = Gson().fromJson(tearOfSteel, StreamConfigData::class.java)
 
-        val adConfig = createAdvertisingConfig(
-            streamData
-        )
+        val adConfig =
+            createAdvertisingConfig(
+                streamData,
+            )
         assert(adConfig.schedule.size == 3)
         adConfig.schedule.forEachIndexed { index, ad ->
             assertEquals(ad.position, streamData.adConfig.ads[index].position)
@@ -42,12 +41,13 @@ class CorrectnessTest {
 
     @Test
     fun createSourceConfigFromStreamData() {
-        val streamData = Gson().fromJson(tear_of_steel, StreamConfigData::class.java)
+        val streamData = Gson().fromJson(tearOfSteel, StreamConfigData::class.java)
 
-        val source = createSourceConfig(
-            streamData,
-            null
-        )
+        val source =
+            createSourceConfig(
+                streamData,
+                null,
+            )
         assertEquals(source.url, streamData.sources.hls)
         assertEquals(source.posterSource, streamData.sources.poster)
         assertEquals(source.thumbnailTrack?.url, streamData.sources.thumbnailTrack.url)
@@ -56,11 +56,12 @@ class CorrectnessTest {
 
     @Test
     fun createSourceMetaDataFromStreamData() {
-        val streamData = Gson().fromJson(tear_of_steel, StreamConfigData::class.java)
+        val streamData = Gson().fromJson(tearOfSteel, StreamConfigData::class.java)
 
-        val meta = createMetadata(
-            streamData
-        )
+        val meta =
+            createMetadata(
+                streamData,
+            )
 
         assertEquals(meta.videoId, streamData.analytics.videoId)
         assertEquals(meta.title, streamData.analytics.videoTitle)

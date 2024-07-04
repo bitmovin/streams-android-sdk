@@ -36,9 +36,9 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.StreamError
+import com.bitmovin.streams.TestStreamsIds
 import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
-import com.bitmovin.streams.TestStreamsIds
 import com.bitmovin.testapp.ui.theme.LightColorScheme
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import com.bitmovin.testapp.utils.PlayerActivity
@@ -62,7 +62,7 @@ fun StreamsList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .safeDrawingPadding()
+            .safeDrawingPadding(),
     ) {
         StreamElem("Sintel", TestStreamsIds.SINTEL, unfoldedStreamId)
         StreamElem("Vertical Video", TestStreamsIds.VERTICAL_VIDEO, unfoldedStreamId)
@@ -70,13 +70,12 @@ fun StreamsList() {
         StreamElem(
             name = "Tears of Steel",
             streamId = TestStreamsIds.TEAR_OF_STEEL,
-            unfoldedStreamId
+            unfoldedStreamId,
         )
         StreamElem(
             name = "Big Buck Bunny - token required",
             streamId = TestStreamsIds.BIG_BUCK_BUNNY,
             unfoldedStreamId,
-
             // token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTg2OTY0NDB9.J7ysnY4jc6cHHSTbfoqz3PApo2WlO36pi94mU92MAAp77iDYQuMDtqcuGwdE7OBMSwkFvvpmLEJNgFh02Q3bcpiQWtQZaH43uObsQpJnpnoDSwghq3BWXo0_F478lPk51L1-F7UBpYjctNJ9usmJD-c9hCOmd-gTLmvjBx0Ytveh4PY6kWbNjahZT1sHu-SGDwxJJEgqrf18PXDb1tO9GHU6xIgLrXa956m9yaz9XMFPvN55C7SMmvGZxkSFDa_0WQssikZo4Xa4z14ZuNGv5JpiE4pP7zBj6Ll0ri9Ofypof_aw1DJiR5O6MP7sK7nYRgZR0MrlJ2OrOcBxYCqbnA"
         )
     }
@@ -88,32 +87,34 @@ fun StreamElem(
     streamId: String,
     unfoldedStreamId: MutableState<String?>,
     token: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     var playerHolder: Player? by remember { mutableStateOf(null) }
     val isVisible = playerHolder != null
 
-    val bgColor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        dynamicLightColorScheme(LocalContext.current).background
-    } else {
-        LightColorScheme.background
-    }
+    val bgColor =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            dynamicLightColorScheme(LocalContext.current).background
+        } else {
+            LightColorScheme.background
+        }
     val streamHeight by animateDpAsState(
         targetValue = if (unfoldedStreamId.value == streamId) 200.dp else 0.dp,
-        label = "Unfolding Anim"
+        label = "Unfolding Anim",
     )
     // Rounded corner 8dp
-    val buttonColor = when (unfoldedStreamId.value) {
-        streamId -> Color(0, 106, 237)
-        null -> Color.Gray
-        else -> bgColor
-    }
+    val buttonColor =
+        when (unfoldedStreamId.value) {
+            streamId -> Color(0, 106, 237)
+            null -> Color.Gray
+            else -> bgColor
+        }
     Column(
         Modifier
             .background(color = buttonColor)
             .clickable {
-                if (isVisible)
+                if (isVisible) {
                     if (unfoldedStreamId.value != streamId) {
                         // Show the stream preview
                         playerHolder?.play()
@@ -122,66 +123,72 @@ fun StreamElem(
                         // Trigger the action
                         switchToPlayerActivity(streamId, context, token)
                     }
+                }
             }
-            .padding(8.dp))
-    {
-
+            .padding(8.dp),
+    ) {
         var text by remember { mutableStateOf("Loading...") }
         Text(
             text = name,
             modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 0.dp),
             color = Color.Black,
             fontSize = 24.sp,
-            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
         )
-        if (!isVisible)
+        if (!isVisible) {
             Text(
                 text = text,
                 modifier = Modifier.padding(16.dp, 0.dp, 0.dp, 0.dp),
                 color = Color.DarkGray,
                 fontSize = 24.sp,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
             )
+        }
 
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(streamHeight)
-
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(streamHeight),
         ) {
             BitmovinStream(
                 streamId = streamId,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0, 106, 237)),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color(0, 106, 237)),
                 subtitles = emptyList(),
                 enableAds = false,
                 startTime = 5.0,
                 muted = true,
                 authenticationToken = token,
-                streamListener = object : StreamListener {
-                    override fun onStreamReady(player: Player, playerView: PlayerView) {
-                        playerHolder = player
-                        playerView.isUiVisible = false
-                    }
+                streamListener =
+                    object : StreamListener {
+                        override fun onStreamReady(
+                            player: Player,
+                            playerView: PlayerView,
+                        ) {
+                            playerHolder = player
+                            playerView.isUiVisible = false
+                        }
 
-                    override fun onStreamError(error: StreamError) {
-                        text = error.toString()
-                    }
-
-                },
-                styleConfig = StyleConfigStream(
-                    backgroundColor = Color(0, 106, 237)
-                )
+                        override fun onStreamError(error: StreamError) {
+                            text = error.toString()
+                        }
+                    },
+                styleConfig =
+                    StyleConfigStream(
+                        backgroundColor = Color(0, 106, 237),
+                    ),
             )
         }
     }
-    if (unfoldedStreamId.value != streamId)
+    if (unfoldedStreamId.value != streamId) {
         playerHolder?.pause()
-    else
+    } else {
         playerHolder?.play()
+    }
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -191,7 +198,11 @@ fun GreetingPreview() {
     }
 }
 
-fun switchToPlayerActivity(streamId: String, packageContext: Context, token: String?) {
+fun switchToPlayerActivity(
+    streamId: String,
+    packageContext: Context,
+    token: String?,
+) {
     // Go to Activity PlayerActivity
     val intent = Intent(packageContext, PlayerActivity::class.java)
     intent.putExtra("streamId", streamId)
