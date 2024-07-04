@@ -1,7 +1,5 @@
 package com.bitmovin.streams
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -18,24 +16,28 @@ import java.util.UUID
 
 /**
  * Bitmovin Streams Player Component.
- *
- * @param config The configuration for the player.
- * @param modifier The modifier to be applied to the stream player.
  */
 @Composable
 fun BitmovinStream(
+    /**
+     * The configuration for the player.
+     */
     config: StreamConfig,
+
+    /**
+     * The modifier to be applied to the stream player.
+     */
     modifier: Modifier = Modifier
 ) {
     BitmovinStream(
         streamId = config.streamId,
         modifier = modifier,
-        jwToken = config.jwToken,
+        authenticationToken = config.authenticationToken,
         autoPlay = config.autoPlay,
         loop = config.loop,
         muted = config.muted,
         poster = config.poster,
-        start = config.start,
+        startTime = config.startTime,
         subtitles = config.subtitles,
         fullscreenConfig = config.fullscreenConfig,
         streamListener = config.streamListener,
@@ -47,38 +49,78 @@ fun BitmovinStream(
 
 /**
  * Bitmovin Streams Player Component.
- *
- * @param streamId The id of the stream to be played.
- *
- * @param modifier The modifier to be applied to the stream player.
- * @param jwToken The token to be used for authentication if the stream is protected.
- * @param autoPlay Whether the player should start playing automatically.
- * @param loop Whether the player should loop the stream.
- * @param muted Whether the player should be muted.
- * @param poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
- * @param start The time in seconds at which the player should start playing.
- * @param subtitles The list of subtitle tracks available for the stream.
- * @param fullscreenConfig The configuration for the fullscreen mode.
- * @param streamListener The listener for the player events.
- * @param enableAds Whether ads should be enabled.
- * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
- * @param allLogs Whether all logs should be displayed.
  */
 @Composable
 fun BitmovinStream(
+    /**
+     * The streamId of the stream to be played.
+     */
     streamId: String,
+
+    /**
+     * The modifier to be applied to the stream player.
+     */
     modifier: Modifier = Modifier,
-    jwToken: String? = null,
+
+    /**
+     * The token to be used for authentication if the stream is protected.
+     * @see <a href="https://developer.bitmovin.com/streams/docs/secure-your-streams-with-signed-urls">Secure your Streams</a>
+     */
+    authenticationToken: String? = null,
+
+    /**
+     * Whether the player should start playing automatically.
+     */
     autoPlay: Boolean = false,
+
+    /**
+     * Whether the player should loop the stream.
+     */
     loop: Boolean = false,
+
+    /**
+     * Whether the player should be muted.
+     */
     muted: Boolean = false,
+
+    /**
+     * The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
+     */
     poster: String? = null,
-    start: Double = 0.0,
+
+    /**
+     * The time in seconds at which the player should start playing.
+     */
+    startTime: Double = 0.0,
+
+    /**
+     * The list of subtitle tracks available for the stream.
+     */
     subtitles: List<SubtitleTrack> = emptyList(),
+
+    /**
+     * The configuration for the fullscreen mode.
+     */
     fullscreenConfig: FullscreenConfig = FullscreenConfig(),
+
+    /**
+     * The listener for the player events.
+     */
     streamListener: StreamListener? = null,
+
+    /**
+     * Whether ads should be enabled.
+     */
     enableAds: Boolean = true,
+
+    /**
+     * The style configuration for the player. This property has priority over the style configuration from the dashboard.
+     */
     styleConfig: StyleConfigStream = StyleConfigStream(),
+
+    /**
+     * Whether all logs should be displayed.
+     */
     allLogs: Boolean = false
 ) {
     val recompositionTimeStart = System.currentTimeMillis()
@@ -133,12 +175,12 @@ fun BitmovinStream(
             context = context,
             lifecycleOwner = lifecycleOwner,
             streamId = streamId,
-            jwToken = jwToken,
+            jwToken = authenticationToken,
             autoPlay = autoPlay,
             loop = loop,
             muted = muted,
             poster = poster,
-            start = start,
+            start = startTime,
             subtitles = subtitles,
             fullscreenConfig = fullscreenConfig,
             streamListener = streamListener,

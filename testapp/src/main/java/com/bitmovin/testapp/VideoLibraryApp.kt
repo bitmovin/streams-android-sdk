@@ -156,9 +156,9 @@ fun StreamElem(
                     .background(Color(0, 106, 237)),
                 subtitles = emptyList(),
                 enableAds = false,
-                start = 5.0,
+                startTime = 5.0,
                 muted = true,
-                jwToken = token,
+                authenticationToken = token,
                 streamListener = object : StreamListener {
                     override fun onStreamReady(player: Player, playerView: PlayerView) {
                         playerHolder = player

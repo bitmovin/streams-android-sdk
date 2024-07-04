@@ -19,7 +19,7 @@ data class StreamConfig(
     /**
      * The token to be used for authentication if the stream is protected.
      */
-    var jwToken: String? = null,
+    var authenticationToken: String? = null,
 
     /**
      * Whether the player should start playing automatically.
@@ -39,7 +39,7 @@ data class StreamConfig(
     /**
      * The time in seconds at which the player should start playing.
      */
-    var start: Double = 0.0,
+    var startTime: Double = 0.0,
 
     /**
      * Whether the player should loop the stream.
@@ -89,8 +89,9 @@ data class StreamConfig(
 
         /**
          * The token to be used for authentication if the stream is protected.
+         * @see <a href="https://developer.bitmovin.com/streams/docs/secure-your-streams-with-signed-urls">Bitmovin Player UI CSS Class Reference</a>
          */
-        jwToken: String? = null,
+        authenticationToken: String? = null,
 
         /**
          * Whether the player should start playing automatically.
@@ -110,7 +111,7 @@ data class StreamConfig(
         /**
          * The time in seconds at which the player should start playing.
          */
-        start: Double = 0.0,
+        startTime: Double = 0.0,
 
         /**
          * Whether the player should loop the stream.
@@ -154,11 +155,11 @@ data class StreamConfig(
 
     ) : this(
         streamId = streamId,
-        jwToken = jwToken,
+        authenticationToken = authenticationToken,
         autoPlay = autoPlay,
         muted = muted,
         poster = poster,
-        start = start,
+        startTime = startTime,
         loop = loop,
         fullscreenConfig = fullscreenConfig,
         subtitles = subtitles,
