@@ -1,0 +1,46 @@
+name: Verifications
+on:
+  push:
+    branches:
+      - main
+      - master-candidate
+      - github-actions-dev
+    paths:
+      - 'streamplayer/**'
+      - '.github/**'
+      - 'gradle/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'streamplayer/**'
+      - '.github/**'
+      - 'gradle/**'
+jobs:
+  build:
+    runs-on:
+      - ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.7
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4.2.1
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: KtLintCheck
+        run: ./gradlew --no-daemon ktlintCheck
+
+      - name: Tests
+        run: ./gradlew --no-daemon :streamplayer:test
+
+      - name: Build with Gradle
+        run: ./gradlew --no-daemon :streamplayer:assembleDebug
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: bitmovin-streams.aar
+          path: streamplayer/build/outputs/aar/streamplayer-debug.aar
