@@ -12,7 +12,6 @@ import okhttp3.OkHttpClient
 import java.io.File
 
 internal class StreamsProvider : ContentProvider() {
-
     val pipChangesObserver = PiPChangesObserver()
 
     companion object {
@@ -20,16 +19,16 @@ internal class StreamsProvider : ContentProvider() {
         private lateinit var applicationContext: Context
         lateinit var okHttpClient: OkHttpClient
 
-
         fun init(application: Context) {
             applicationContext = application
-            okHttpClient = OkHttpClient.Builder()
-                .cache(
-                    Cache(
-                        directory = File(applicationContext.cacheDir, "http_cache_streams"),
-                        maxSize = 1L * 1024L * 1024L // 1 MiB (we don't expect to cache much data here)
-                    )
-                ).build()
+            okHttpClient =
+                OkHttpClient.Builder()
+                    .cache(
+                        Cache(
+                            directory = File(applicationContext.cacheDir, "http_cache_streams"),
+                            maxSize = 1L * 1024L * 1024L,
+                        ),
+                    ).build()
         }
 
         fun getInstance(): StreamsProvider {
@@ -37,17 +36,25 @@ internal class StreamsProvider : ContentProvider() {
         }
 
         val appContext: Context
-            get() = try {
-                applicationContext
-            } catch (e: UninitializedPropertyAccessException) {
-                throw IllegalStateException("StreamsProvider not initialized. THAT SHOULD NOT HAPPEN. However, you can initialize it manually by calling StreamsProvider.init(<ApplicationContext>) in your Application class.")
-            }
-
+            get() =
+                try {
+                    applicationContext
+                } catch (e: UninitializedPropertyAccessException) {
+                    throw IllegalStateException(
+                        """
+                        StreamsProvider not initialized. THAT SHOULD NOT HAPPEN. 
+                        However, you can initialize it manually by calling StreamsProvider.init(<ApplicationContext>) in your Application class.
+                        """.trimIndent(),
+                    )
+                }
     }
 
     private val streams = mutableMapOf<String, Stream>()
 
-    fun getStream(psid: String, allLogs: Boolean): Stream {
+    fun getStream(
+        psid: String,
+        allLogs: Boolean,
+    ): Stream {
         return streams.getOrPut(psid) {
             Stream(psid, allLogs)
         }
@@ -66,14 +73,13 @@ internal class StreamsProvider : ContentProvider() {
         return false
     }
 
-
     // IGNORE THE FOLLOWING METHODS, NO NEED TO IMPLEMENT THEM
     override fun query(
         uri: Uri,
         projection: Array<out String>?,
         selection: String?,
         selectionArgs: Array<out String>?,
-        sortOrder: String?
+        sortOrder: String?,
     ): Cursor? {
         return null
     }
@@ -82,11 +88,18 @@ internal class StreamsProvider : ContentProvider() {
         return null
     }
 
-    override fun insert(uri: Uri, values: ContentValues?): Uri? {
+    override fun insert(
+        uri: Uri,
+        values: ContentValues?,
+    ): Uri? {
         return null
     }
 
-    override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun delete(
+        uri: Uri,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+    ): Int {
         return 0
     }
 
@@ -94,7 +107,7 @@ internal class StreamsProvider : ContentProvider() {
         uri: Uri,
         values: ContentValues?,
         selection: String?,
-        selectionArgs: Array<out String>?
+        selectionArgs: Array<out String>?,
     ): Int {
         return 0
     }

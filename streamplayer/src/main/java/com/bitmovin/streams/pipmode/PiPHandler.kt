@@ -1,17 +1,14 @@
 package com.bitmovin.streams.pipmode
 
 import android.app.Activity
-import android.util.Log
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.ui.DefaultPictureInPictureHandler
-import com.bitmovin.streams.Tag
 
 internal class PiPHandler(activity: Activity?, private val playerView: PlayerView) :
     DefaultPictureInPictureHandler(
         activity,
-        playerView.player
+        playerView.player,
     ) {
-
     private var isInPictureInPicture = false
     private var previousUiVisibility = true
 
@@ -21,7 +18,6 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
         previousUiVisibility = playerView.isUiVisible
         playerView.isUiVisible = false
         playerView.enterFullscreen()
-
     }
 
     override fun exitPictureInPicture() {
@@ -33,6 +29,4 @@ internal class PiPHandler(activity: Activity?, private val playerView: PlayerVie
 
     override val isPictureInPicture: Boolean
         get() = isInPictureInPicture
-
-
 }

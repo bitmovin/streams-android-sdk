@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
+import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StreamConfig
 import com.bitmovin.streams.config.StreamListener
-import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StyleConfigStream
 import java.util.UUID
 
@@ -23,11 +23,10 @@ fun BitmovinStream(
      * The configuration for the player.
      */
     config: StreamConfig,
-
     /**
      * The modifier to be applied to the stream player.
      */
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     BitmovinStream(
         streamId = config.streamId,
@@ -43,7 +42,7 @@ fun BitmovinStream(
         streamListener = config.streamListener,
         enableAds = config.enableAds,
         styleConfig = config.styleConfig,
-        allLogs = config.allLogs
+        allLogs = config.allLogs,
     )
 }
 
@@ -56,72 +55,59 @@ fun BitmovinStream(
      * The streamId of the stream to be played.
      */
     streamId: String,
-
     /**
      * The modifier to be applied to the stream player.
      */
     modifier: Modifier = Modifier,
-
     /**
      * The token to be used for authentication if the stream is protected.
      * @see <a href="https://developer.bitmovin.com/streams/docs/secure-your-streams-with-signed-urls">Secure your Streams</a>
      */
     authenticationToken: String? = null,
-
     /**
      * Whether the player should start playing automatically.
      */
     autoPlay: Boolean = false,
-
     /**
      * Whether the player should loop the stream.
      */
     loop: Boolean = false,
-
     /**
      * Whether the player should be muted.
      */
     muted: Boolean = false,
-
     /**
      * The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
      */
     poster: String? = null,
-
     /**
      * The time in seconds at which the player should start playing.
      */
     startTime: Double = 0.0,
-
     /**
      * The list of subtitle tracks available for the stream.
      */
     subtitles: List<SubtitleTrack> = emptyList(),
-
     /**
      * The configuration for the fullscreen mode.
      */
     fullscreenConfig: FullscreenConfig = FullscreenConfig(),
-
     /**
      * The listener for the player events.
      */
     streamListener: StreamListener? = null,
-
     /**
      * Whether ads should be enabled.
      */
     enableAds: Boolean = true,
-
     /**
      * The style configuration for the player. This property has priority over the style configuration from the dashboard.
      */
     styleConfig: StyleConfigStream = StyleConfigStream(),
-
     /**
      * Whether all logs should be displayed.
      */
-    allLogs: Boolean = false
+    allLogs: Boolean = false,
 ) {
     val recompositionTimeStart = System.currentTimeMillis()
     val context = LocalContext.current
@@ -141,13 +127,13 @@ fun BitmovinStream(
             if (playerView.isFullscreen) {
                 FullScreen(
                     onDismissRequest = { stream.playerView?.exitFullscreen() },
-                    isImmersive = fullscreenConfig.immersive
+                    isImmersive = fullscreenConfig.immersive,
                 ) { StreamVideoPlayer(playerView = playerView) }
                 TextVideoPlayerFiller(text = "In Fullscreen", modifier)
             } else {
                 StreamVideoPlayer(
                     playerView = playerView,
-                    modifier = modifier
+                    modifier = modifier,
                 )
             }
         }
@@ -160,7 +146,7 @@ fun BitmovinStream(
             TextVideoPlayerFiller(
                 getLoadingScreenMessage(stream.state),
                 modifier,
-                loadingEffect = true
+                loadingEffect = true,
             )
         }
     }
@@ -185,7 +171,7 @@ fun BitmovinStream(
             fullscreenConfig = fullscreenConfig,
             streamListener = streamListener,
             enableAds = enableAds,
-            styleConfigStream = styleConfig
+            styleConfigStream = styleConfig,
         )
     }
 

@@ -1,6 +1,5 @@
 package com.bitmovin.streams.streamsjson
 
-import android.util.Log
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.toCSS
 
@@ -14,7 +13,7 @@ internal class PlayerStyle {
     var textColor: String? = null
     var backgroundColor: String? = null
 
-    internal fun affectConfig(style : StyleConfigStream) {
+    internal fun affectConfig(style: StyleConfigStream) {
         style.playbackMarkerBgColor?.let {
             playbackMarkerBgColor = it.toCSS()
         }

@@ -12,8 +12,8 @@ import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.player.api.ui.FullscreenHandler
-import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.FullscreenConfig
+import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.fullscreenmode.StreamFullscreenHandler
 import com.bitmovin.streams.pipmode.PiPExitListener
@@ -51,31 +51,31 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         fullscreenConfig: FullscreenConfig,
         enableAds: Boolean,
         styleConfigStream: StyleConfigStream,
-        streamListener: StreamListener?
+        streamListener: StreamListener?,
     ) {
         logger.i("Initializing stream $streamId")
         state = BitmovinStreamState.FETCHING
         this.streamEventListener = streamListener
-            val streamConfigDataResp = getStreamConfigData(streamId, jwToken, logger)
-            val streamResponseCode = streamConfigDataResp.responseHttpCode
-            if (streamResponseCode != 200 || streamConfigDataResp.streamConfigData == null) {
-                castError(StreamError.fromHttpCode(streamResponseCode))
-                return
-            }
-            initializeStream(
-                context = context,
-                lifecycleOwner = lifecycleOwner,
-                streamConfig = streamConfigDataResp.streamConfigData,
-                autoPlay = autoPlay,
-                loop = loop,
-                muted = muted,
-                start = start,
-                poster = poster,
-                subtitles = subtitles,
-                fullscreenConfig = fullscreenConfig,
-                enableAds = enableAds,
-                styleConfigStream = styleConfigStream
-            )
+        val streamConfigDataResp = getStreamConfigData(streamId, jwToken, logger)
+        val streamResponseCode = streamConfigDataResp.responseHttpCode
+        if (streamResponseCode != 200 || streamConfigDataResp.streamConfigData == null) {
+            castError(StreamError.fromHttpCode(streamResponseCode))
+            return
+        }
+        initializeStream(
+            context = context,
+            lifecycleOwner = lifecycleOwner,
+            streamConfig = streamConfigDataResp.streamConfigData,
+            autoPlay = autoPlay,
+            loop = loop,
+            muted = muted,
+            start = start,
+            poster = poster,
+            subtitles = subtitles,
+            fullscreenConfig = fullscreenConfig,
+            enableAds = enableAds,
+            styleConfigStream = styleConfigStream,
+        )
     }
 
     private fun castError(error: StreamError) {
@@ -101,7 +101,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         subtitles: List<SubtitleTrack>,
         fullscreenConfig: FullscreenConfig,
         enableAds: Boolean,
-        styleConfigStream: StyleConfigStream
+        styleConfigStream: StyleConfigStream,
     ) {
         state = BitmovinStreamState.INITIALIZING
         StreamsProvider.getInstance().pipChangesObserver.let {
@@ -110,13 +110,14 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         }
 
         // 1. Initializing the player
-        val player = initializePlayerRelated(
-            context,
-            streamConfig,
-            enableAds,
-            autoPlay,
-            muted
-        )
+        val player =
+            initializePlayerRelated(
+                context,
+                streamConfig,
+                enableAds,
+                autoPlay,
+                muted,
+            )
 
         // 2. Initializing the views
         initializeViewRelated(
@@ -125,7 +126,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
             lifecycleOwner,
             streamConfig,
             styleConfigStream,
-            fullscreenConfig
+            fullscreenConfig,
         )
 
         // 3. Loading the source
@@ -136,7 +137,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
                 createSource(
                     streamConfig,
                     customPosterSource = poster,
-                    subtitlesSources = subtitles
+                    subtitlesSources = subtitles,
                 )
             player.load(streamSource)
         }
@@ -151,7 +152,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         streamConfig: StreamConfigData,
         enableAds: Boolean,
         autoPlay: Boolean,
-        muted: Boolean
+        muted: Boolean,
     ): Player {
         val player = createPlayer(streamConfig, context, enableAds, autoPlay, muted, logger)
         this.player = player
@@ -173,14 +174,13 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         return player
     }
 
-
     private suspend fun initializeViewRelated(
         context: Context,
         player: Player,
         lifecycleOwner: LifecycleOwner,
         streamConfig: StreamConfigData,
         styleConfigStream: StyleConfigStream,
-        fullscreenConfig: FullscreenConfig
+        fullscreenConfig: FullscreenConfig,
     ) {
         val activity = context.getActivity()
 
@@ -192,8 +192,8 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         lifecycleOwner.lifecycle.addObserver(
             LifeCycleRedirectForPlayer(
                 playerView,
-                fullscreenConfig.autoPiPOnBackground
-            )
+                fullscreenConfig.autoPiPOnBackground,
+            ),
         )
         // Setting up the subtitles view
         val subtitlesView = SubtitleView(context)
@@ -202,11 +202,12 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         val fullscreenHandler: FullscreenHandler
         if (fullscreenConfig.enable) {
             // Setting up the fullscreen feature
-            fullscreenHandler = StreamFullscreenHandler(
-                playerView,
-                activity,
-                fullscreenConfig
-            )
+            fullscreenHandler =
+                StreamFullscreenHandler(
+                    playerView,
+                    activity,
+                    fullscreenConfig,
+                )
             playerView.setFullscreenHandler(fullscreenHandler)
         }
         // Setting up the PiP feature
@@ -214,22 +215,23 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
             val pipHandler = PiPHandler(context.getActivity()!!, playerView)
             playerView.setPictureInPictureHandler(pipHandler)
 
-            val pipExitHandler = object : PiPExitListener {
-                override fun onPiPExit() {
-                    pipHandler.exitPictureInPicture()
-                }
+            val pipExitHandler =
+                object : PiPExitListener {
+                    override fun onPiPExit() {
+                        pipHandler.exitPictureInPicture()
+                    }
 
-                override fun isInPiPMode(): Boolean {
-                    return pipHandler.isPictureInPicture
+                    override fun isInPiPMode(): Boolean {
+                        return pipHandler.isPictureInPicture
+                    }
                 }
-            }
             this.pipExitHandler = pipExitHandler
             StreamsProvider.getInstance().pipChangesObserver.addListener(pipExitHandler)
         }
 
-        if (state == BitmovinStreamState.INITIALIZING)
+        if (state == BitmovinStreamState.INITIALIZING) {
             state = BitmovinStreamState.WAITING_FOR_PLAYER
-        else if (state == BitmovinStreamState.WAITING_FOR_VIEW) {
+        } else if (state == BitmovinStreamState.WAITING_FOR_VIEW) {
             state = BitmovinStreamState.DISPLAYING
             streamEventListener?.onStreamReady(player, playerView)
         }
@@ -243,7 +245,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
             it.setPictureInPictureHandler(null)
         }
         StreamsProvider.appContext.let {
-            File(it.filesDir, "custom_css_${usid}.css")
+            File(it.filesDir, "custom_css_$usid.css")
                 .takeIf { file -> file.exists() }?.delete()
         }
         StreamsProvider.getInstance().removeStream(usid)
@@ -255,8 +257,9 @@ private fun Player.handleAttributes(
     loop: Boolean,
     start: Double,
 ) {
-    if (start > 0)
+    if (start > 0) {
         this.seek(start)
+    }
 
     if (loop) {
         val coroutineScope = CoroutineScope(Dispatchers.IO)
@@ -272,8 +275,9 @@ private fun Player.handleAttributes(
                     // 0.1 seems to be sufficient to never ever trigger the ui while not being noticeable by the user
                     val waitingTime =
                         ((player.duration - player.currentTime - 0.1) * 1000).toLong()
-                    if (waitingTime > 0)
+                    if (waitingTime > 0) {
                         sleep(waitingTime)
+                    }
                     scheduledSeek = false
                     player.seek(0.00)
                 }
@@ -281,7 +285,6 @@ private fun Player.handleAttributes(
         }
     }
 }
-
 
 internal enum class BitmovinStreamState {
     FETCHING,
@@ -301,7 +304,8 @@ enum class StreamError(private var message: String) {
     SERVICE_UNAVAILABLE("Service unavailable. Please try again later."),
     SOURCE_ERROR("Error while loading the source."),
     UNKNOWN_FETCHING_ERROR("An unknown error occurred during FETCHING."),
-    UNKNOWN_ERROR("An unknown error occurred.");
+    UNKNOWN_ERROR("An unknown error occurred."),
+    ;
 
     @Override
     override fun toString(): String {
@@ -324,21 +328,28 @@ enum class StreamError(private var message: String) {
 }
 
 internal class Logger(private val id: String, private val allLogs: Boolean) {
-
     fun i(message: String) {
         i(Tag.STREAM, message)
     }
 
-    fun i(tag: String, message: String) {
-        if (allLogs)
+    fun i(
+        tag: String,
+        message: String,
+    ) {
+        if (allLogs) {
             Log.i(tag, "[$id] $message")
+        }
     }
 
-    fun e(message: String, throwable: Throwable? = null) {
-        if (throwable == null)
+    fun e(
+        message: String,
+        throwable: Throwable? = null,
+    ) {
+        if (throwable == null) {
             Log.e(Tag.STREAM, "[$id] $message")
-        else
+        } else {
             Log.e(Tag.STREAM, "[$id] $message", throwable)
+        }
     }
 
     fun w(message: String) {
@@ -346,11 +357,15 @@ internal class Logger(private val id: String, private val allLogs: Boolean) {
     }
 
     fun d(message: String) {
-        if (allLogs)
+        if (allLogs) {
             Log.d(Tag.STREAM, "[$id] $message")
+        }
     }
 
-    fun <T> recordDuration(sectionName: String, block: () -> T): T {
+    fun <T> recordDuration(
+        sectionName: String,
+        block: () -> T,
+    ): T {
         val startTime = System.currentTimeMillis()
         return block().also {
             val duration = System.currentTimeMillis() - startTime
@@ -358,8 +373,10 @@ internal class Logger(private val id: String, private val allLogs: Boolean) {
         }
     }
 
-    fun performance(sectionName: String, duration: Long) {
+    fun performance(
+        sectionName: String,
+        duration: Long,
+    ) {
         i(Tag.PERF, "$sectionName took $duration ms")
     }
-
 }
