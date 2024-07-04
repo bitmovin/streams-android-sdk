@@ -106,7 +106,7 @@ class DefaultTest : ComponentActivity() {
                 expectedResult = "Forbidden error message should be displayed",
                 config = StreamConfig(
                     streamId = TestStreamsIds.BIG_BUCK_BUNNY,
-                    jwToken = "__INVALID_TOKEN__"
+                    authenticationToken = "__INVALID_TOKEN__"
                 )
             )
         )
@@ -205,7 +205,7 @@ class DefaultTest : ComponentActivity() {
             Test(
                 "Start Time",
                 "The video should start at 10 seconds",
-                StreamConfig(streamId = TestStreamsIds.SINTEL, start = 10.0)
+                StreamConfig(streamId = TestStreamsIds.SINTEL, startTime = 10.0)
             ),
             Test(
                 "Subtitles",

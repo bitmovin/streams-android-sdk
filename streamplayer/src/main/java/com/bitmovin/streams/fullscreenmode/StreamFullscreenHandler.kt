@@ -8,9 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.ui.FullscreenHandler
 import com.bitmovin.streams.config.FullscreenConfig
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.lang.IndexOutOfBoundsException
 
 internal class StreamFullscreenHandler(
@@ -48,7 +45,7 @@ internal class StreamFullscreenHandler(
                         // Do nothing, it is not a big deal if the ratio is null
                     }
 
-                    if (ratio != null && ratio < config.minAspectRatioForLandScapeForce) {
+                    if (ratio != null && ratio < config.minAspectRatioForLandscapeForce) {
                         activity?.requestedOrientation =
                             ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                     } else if (ratio != null && ratio > config.maxAspectRatioForPortraitForce) {

@@ -128,7 +128,7 @@ class PlayerActivity : ComponentActivity() {
                 modifier = Modifier
                     .aspectRatio(aspectRatioAnim)
                     .fillMaxHeight(0.7f),
-                jwToken = token,
+                authenticationToken = token,
                 fullscreenConfig = FullscreenConfig(
                     screenDefaultOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                 ),
