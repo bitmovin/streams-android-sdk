@@ -3,7 +3,7 @@ package com.bitmovin.streams.config
 /**
  * Configuration for the fullscreen behavior of the player.
  */
-data class FullscreenConfig(
+public data class FullscreenConfig(
     /**
      * Whether the fullscreen behavior should be enabled.
      */
@@ -39,8 +39,8 @@ data class FullscreenConfig(
      */
     var autoPiPOnBackground: Boolean = true,
 ) {
-    companion object {
-        val DEFAULT = FullscreenConfig()
-        val DISABLED = FullscreenConfig(enable = false)
+    public companion object {
+        public val DEFAULT: FullscreenConfig = FullscreenConfig()
+        public val DISABLED: FullscreenConfig = FullscreenConfig(enable = false)
     }
 }

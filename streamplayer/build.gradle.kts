@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+
 plugins {
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.android.library)
@@ -41,6 +43,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
+
+kotlin {
+    explicitApi()
+
+    explicitApi = ExplicitApiMode.Strict
 }
 
 dependencies {

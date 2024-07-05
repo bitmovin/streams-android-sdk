@@ -18,7 +18,7 @@ import java.util.UUID
  * Bitmovin Streams Player Component.
  */
 @Composable
-fun BitmovinStream(
+public fun BitmovinStream(
     /**
      * The configuration for the player.
      */
@@ -50,7 +50,7 @@ fun BitmovinStream(
  * Bitmovin Streams Player Component.
  */
 @Composable
-fun BitmovinStream(
+public fun BitmovinStream(
     /**
      * The streamId of the stream to be played.
      */

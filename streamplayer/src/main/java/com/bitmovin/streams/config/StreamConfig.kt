@@ -9,7 +9,7 @@ import com.bitmovin.streams.StreamError
  * Configuration for the BitmovinStream
  */
 
-data class StreamConfig(
+public data class StreamConfig(
     /**
      * The streamId of the stream to be played.
      */
@@ -66,7 +66,7 @@ data class StreamConfig(
     /**
      * Configuration for the BitmovinStream
      */
-    constructor(
+    public constructor(
         /**
          * The streamId of the stream to be played.
          */
