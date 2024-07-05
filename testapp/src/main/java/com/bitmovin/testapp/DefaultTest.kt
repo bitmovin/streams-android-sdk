@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.streams.TestStreamsIds
+import com.bitmovin.testapp.utils.TestStreamsIds
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StreamConfig
 import com.bitmovin.streams.config.StyleConfigStream
