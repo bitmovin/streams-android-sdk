@@ -295,7 +295,7 @@ internal enum class BitmovinStreamState {
     DISPLAYING_ERROR,
 }
 
-enum class StreamError(private var message: String) {
+public enum class StreamError(private var message: String) {
     NO_INTERNET("No internet connection"),
     UNAUTHORIZED("Unauthorized access to stream. This stream may require a token."),
     FORBIDDEN_ACCESS("Forbidden access to stream. This stream may require a token."),
@@ -312,7 +312,7 @@ enum class StreamError(private var message: String) {
         return message
     }
 
-    companion object {
+    internal companion object {
         fun fromHttpCode(httpCode: Int): StreamError {
             return when (httpCode) {
                 0 -> NO_INTERNET

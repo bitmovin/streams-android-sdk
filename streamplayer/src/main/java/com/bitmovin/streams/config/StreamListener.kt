@@ -4,11 +4,11 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.StreamError
 
-interface StreamListener {
+public interface StreamListener {
     /**
      * Called when the stream is ready to be played.
      */
-    fun onStreamReady(
+    public fun onStreamReady(
         player: Player,
         playerView: PlayerView,
     )
@@ -16,5 +16,5 @@ interface StreamListener {
     /**
      * Called when an error occurs during the stream setup.
      */
-    fun onStreamError(error: StreamError)
+    public fun onStreamError(error: StreamError)
 }
