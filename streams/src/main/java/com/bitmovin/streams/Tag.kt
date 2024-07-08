@@ -1,8 +1,5 @@
 package com.bitmovin.streams
 
-internal class Tag {
-    companion object {
-        const val STREAM = "BitmovinStream"
-        const val PERF = "BitmovinStreamPerf"
-    }
-}
+
+internal const val TAG_STREAM = "BitmovinStream"
+internal const val TAG_PERF = "BitmovinStreamPerf"

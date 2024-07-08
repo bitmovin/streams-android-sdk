@@ -329,7 +329,7 @@ public enum class StreamError(private var message: String) {
 
 internal class Logger(private val id: String, private val allLogs: Boolean) {
     fun i(message: String) {
-        i(Tag.STREAM, message)
+        i(TAG_STREAM, message)
     }
 
     fun i(
@@ -346,19 +346,19 @@ internal class Logger(private val id: String, private val allLogs: Boolean) {
         throwable: Throwable? = null,
     ) {
         if (throwable == null) {
-            Log.e(Tag.STREAM, "[$id] $message")
+            Log.e(TAG_STREAM, "[$id] $message")
         } else {
-            Log.e(Tag.STREAM, "[$id] $message", throwable)
+            Log.e(TAG_STREAM, "[$id] $message", throwable)
         }
     }
 
     fun w(message: String) {
-        Log.w(Tag.STREAM, "[$id] $message")
+        Log.w(TAG_STREAM, "[$id] $message")
     }
 
     fun d(message: String) {
         if (allLogs) {
-            Log.d(Tag.STREAM, "[$id] $message")
+            Log.d(TAG_STREAM, "[$id] $message")
         }
     }
 
@@ -377,6 +377,6 @@ internal class Logger(private val id: String, private val allLogs: Boolean) {
         sectionName: String,
         duration: Long,
     ) {
-        i(Tag.PERF, "$sectionName took $duration ms")
+        i(TAG_PERF, "$sectionName took $duration ms")
     }
 }
