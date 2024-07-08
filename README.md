@@ -1,3 +1,5 @@
+[![Verifications](https://github.com/bitmovin-engineering/streams-android-sdk/actions/workflows/Verifications.yml/badge.svg?branch=main)](https://github.com/bitmovin-engineering/streams-android-sdk/actions/workflows/Verifications.yml)
+
 # Bitmovin Streams on Android 
 
 This library provides BitmovinStream, which is a Compose component to play [Bitmovin Streams](https://bitmovin.com/streams) natively on Android.
