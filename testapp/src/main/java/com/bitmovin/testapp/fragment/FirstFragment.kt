@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.streams.TestStreamsIds
+import com.bitmovin.testapp.utils.TestStreamsIds
 import com.bitmovin.testapp.R
 import com.bitmovin.testapp.databinding.FragmentFirstBinding
 

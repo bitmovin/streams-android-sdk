@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.streams.TestStreamsIds
+import com.bitmovin.testapp.utils.TestStreamsIds
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StreamConfig
 import com.bitmovin.streams.config.StyleConfigStream
@@ -165,9 +165,20 @@ class DefaultTest : ComponentActivity() {
                     config =
                         StreamConfig(
                             streamId = TestStreamsIds.SINTEL,
-                            styleConfig = StyleConfigStream.RED_EXAMPLE_THEME,
+                            styleConfig = StyleConfigStream(
+                                playbackMarkerBgColor = Color(255, 0, 0, 0),
+                                playbackMarkerBorderColor = Color(255, 0, 0, 0),
+                                playbackTrackPlayedColor = Color(245, 7, 7, 255),
+                                playbackTrackBufferedColor = Color(199, 199, 199, 204),
+                                playbackTrackBgColor = Color(128, 128, 128, 127),
+                                textColor = Color(217, 217, 217, 255),
+                                backgroundColor = Color(0, 0, 0, 255),
+                            )
                         ),
                 ),
+                /**
+                 * An example theme with red colors.
+                 */
                 Test(
                     title = "Default Theme",
                     expectedResult = "The default theme should be applied to the player",

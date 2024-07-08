@@ -1,4 +1,4 @@
-package com.bitmovin.streams
+package com.bitmovin.testapp.utils
 
 class TestStreamsIds {
     companion object {

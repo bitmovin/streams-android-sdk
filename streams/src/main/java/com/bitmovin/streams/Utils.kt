@@ -85,7 +85,7 @@ internal fun Context.getActivity(): Activity? {
     return null
 }
 
-const val MAX_FETCHING_ATTEMPTS = 3
+private const val MAX_FETCHING_ATTEMPTS = 3
 
 internal suspend fun getStreamConfigData(
     streamId: String,

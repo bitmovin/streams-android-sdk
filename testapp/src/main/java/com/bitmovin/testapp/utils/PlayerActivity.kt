@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -168,7 +169,15 @@ class PlayerActivity : ComponentActivity() {
                             // Do nothing
                         }
                     },
-                styleConfig = StyleConfigStream.RED_EXAMPLE_THEME,
+                styleConfig = StyleConfigStream(
+                    playbackMarkerBgColor = Color(255, 0, 0, 0),
+                    playbackMarkerBorderColor = Color(255, 0, 0, 0),
+                    playbackTrackPlayedColor = Color(245, 7, 7, 255),
+                    playbackTrackBufferedColor = Color(199, 199, 199, 204),
+                    playbackTrackBgColor = Color(128, 128, 128, 127),
+                    textColor = Color(217, 217, 217, 255),
+                    backgroundColor = Color(0, 0, 0, 255),
+                ),
             )
             Text(
                 text = name,
