@@ -6,7 +6,7 @@ on:
       - master-candidate
       - github-actions-dev
     paths:
-      - 'streamplayer/**'
+      - 'streams/**'
       - '.github/**'
       - 'gradle/**'
 
@@ -14,7 +14,7 @@ on:
     branches:
       - main
     paths:
-      - 'streamplayer/**'
+      - 'streams/**'
       - '.github/**'
       - 'gradle/**'
 
@@ -36,13 +36,13 @@ jobs:
         run: ./gradlew --no-daemon ktlintCheck
 
       - name: Unit Tests
-        run: ./gradlew --no-daemon :streamplayer:test
+        run: ./gradlew --no-daemon :streams:test
 
       - name: Build with Gradle
-        run: ./gradlew --no-daemon :streamplayer:assembleDebug
+        run: ./gradlew --no-daemon :streams:assembleDebug
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.3.3
         with:
           name: bitmovin-streams.aar
-          path: streamplayer/build/outputs/aar/streamplayer-debug.aar
+          path: streams/build/outputs/aar/streams-debug.aar
