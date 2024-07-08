@@ -287,7 +287,11 @@ internal suspend fun createPlayerView(
     // Should be done at the end
     // TODO: Make the background in the webview be affected too to avoid having to wait the video start to change the background.
     streamConfig.styleConfig.playerStyle.backgroundColor?.let {
-        Color.parseColor(it)?.toArgb()?.let { colorInt -> playerView.setBackgroundColor(colorInt) }
+        val colorInt = Color.parseColor(it)?.toArgb()
+        if (colorInt != null)
+            playerView.setBackgroundColor(colorInt)
+        else
+            logger.e("Unable to load background color: $it")
     }
     return playerView
 }
@@ -496,9 +500,7 @@ internal fun backgroundColor(color: String): String {
 }
 
 internal fun Color.toCSS(): String {
-    val s =
-        "rgba(${(this.red * 255).toInt()}, ${(this.green * 255).toInt()}, ${(this.blue * 255).toInt()}, ${this.alpha})"
-    return s
+    return "rgba(${(this.red * 255).toInt()}, ${(this.green * 255).toInt()}, ${(this.blue * 255).toInt()}, ${this.alpha})"
 }
 
 internal fun Color.Companion.parseColor(str: String): Color? {
