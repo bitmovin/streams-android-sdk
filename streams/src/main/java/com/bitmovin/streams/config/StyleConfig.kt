@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 /**
  * Configuration for the style of the player.
 */
-class StyleConfigStream(
+public data class StyleConfigStream(
     /**
      * The color of the playback marker background.
      */
@@ -40,11 +40,11 @@ class StyleConfigStream(
      */
     var customCss: String = "",
 ) {
-    companion object {
+    public companion object {
         /**
          * The default theme of the player.
          */
-        val BITMOVIN_DEFAULT_THEME =
+        public val BITMOVIN_DEFAULT_THEME: StyleConfigStream =
             StyleConfigStream(
                 playbackMarkerBgColor = getColor(32, 172, 227, 0.5f),
                 playbackMarkerBorderColor = getColor(32, 172, 227, 1f),
@@ -52,20 +52,6 @@ class StyleConfigStream(
                 playbackTrackBufferedColor = getColor(255, 255, 255, 1f),
                 playbackTrackBgColor = getColor(255, 255, 255, 0.35f),
                 textColor = getColor(255, 255, 255, 1f),
-                backgroundColor = getColor(0, 0, 0, 1f),
-            )
-
-        /**
-         * An example theme with red colors.
-         */
-        val RED_EXAMPLE_THEME =
-            StyleConfigStream(
-                playbackMarkerBgColor = getColor(255, 0, 0, 0f),
-                playbackMarkerBorderColor = getColor(255, 0, 0, 0f),
-                playbackTrackPlayedColor = getColor(245, 7, 7, 1f),
-                playbackTrackBufferedColor = getColor(199, 199, 199, 0.8f),
-                playbackTrackBgColor = getColor(128, 128, 128, 0.48f),
-                textColor = getColor(217, 217, 217, 1f),
                 backgroundColor = getColor(0, 0, 0, 1f),
             )
     }

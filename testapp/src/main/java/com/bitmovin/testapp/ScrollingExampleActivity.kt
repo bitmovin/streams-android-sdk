@@ -28,7 +28,7 @@ import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.StreamError
-import com.bitmovin.streams.TestStreamsIds
+import com.bitmovin.testapp.utils.TestStreamsIds
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StreamConfig
 import com.bitmovin.streams.config.StreamListener
