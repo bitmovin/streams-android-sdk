@@ -1,4 +1,29 @@
+<style>
+
+#header-container {
+    display: flex;
+    justify-content: space-between;
+}
+    
+</style>
+
+<div id="header-container">
+
+<div align="left">
+
 [![Verifications](https://github.com/bitmovin-engineering/streams-android-sdk/actions/workflows/Verifications.yml/badge.svg?branch=main)](https://github.com/bitmovin-engineering/streams-android-sdk/actions/workflows/Verifications.yml)
+
+</div>
+<div align="right">
+
+[![bitmovin](http://bitmovin-a.akamaihd.net/webpages/bitmovin-logo-github.png)](http://www.bitmovin.com)
+
+</div>
+
+</div>
+
+<br>
+
 
 # Bitmovin Streams on Android 
 
