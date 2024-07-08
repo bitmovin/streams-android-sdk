@@ -69,7 +69,7 @@ internal class StreamsProvider : ContentProvider() {
      */
     override fun onCreate(): Boolean {
         init(context!!.applicationContext)
-        Log.i(Tag.STREAM, "Streams Pool initialized successfully")
+        Log.i(TAG_PERF, "Streams Pool initialized successfully")
         return false
     }
 
