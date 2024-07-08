@@ -4,6 +4,8 @@ This library provides BitmovinStream, which is a Compose component to play [Bitm
 
 The component is built on top of the [Bitmovin Player Android SDK](https://bitmovin.com/docs/player/android-sdk/).
 
+This library features the `BitmovinStream` Jetpack Composable. 
+
 It's properties are highly customizable and can be used in a variety of ways, from simple video playback to more complex use cases.
 
 > *__Note:__ If you are planning really advanced/deep use cases, we recommend using the Bitmovin Player Android SDK directly and building your own "`Stream Player`" on top of it to have full control over the player and suite your needs better. This project still can be a reference on how to build for Compose and Streams.*
@@ -68,18 +70,14 @@ There is an alternative way to setup the component using Configuration object:
 ## Configurations classes
 
 ### StreamConfig
-*[StreamConfig.kt](streams%2Fsrc%2Fmain%2Fjava%2Fcom%2Fbitmovin%2Fstreams%2Fconfig%2FStreamConfig.kt)*
 
 Meant to be used as a configuration object for the BitmovinStream component. It has the same properties as the BitmovinStream component.
 
-
 ### FullscreenConfig
-*[FullscreenConfig.kt](streams%2Fsrc%2Fmain%2Fjava%2Fcom%2Fbitmovin%2Fstreams%2Fconfig%2FFullscreenConfig.kt)*
 
 The FullscreenConfig is a configuration object that allows you to customize the behavior of the player when it enters/exits fullscreen mode.
 
 ### StyleConfig
-*[StyleConfig.kt](streams%2Fsrc%2Fmain%2Fjava%2Fcom%2Fbitmovin%2Fstreams%2Fconfig%2FStyleConfig.kt)*
 
 The StyleConfig is a configuration object that allows you to customize the appearance of the player. 
 It has the priority over the style configuration set in the Bitmovin Stream dashboard.
@@ -87,7 +85,6 @@ It has the priority over the style configuration set in the Bitmovin Stream dash
 You can find some predefined styles in the StreamThemes class.
 
 ### StreamListener
-*[StreamListener.kt](streams%2Fsrc%2Fmain%2Fjava%2Fcom%2Fbitmovin%2Fstreams%2Fconfig%2FStreamListener.kt)*
 
 The StreamListener is an interface that allows you to listen to the events of the player.
 Caution: The listener only handle it's own Events. to handle the player events, you can use the onStreamReady event to get the player instance and add your own listener with player.on(...).
@@ -149,5 +146,5 @@ BitmovinStream(
 ```
 
 ### More examples 
-- [ScrollingExampleActivity.kt](testapp%2Fsrc%2Fmain%2Fjava%2Fcom%2Fbitmovin%2Ftestapp%2FScrollingExampleActivity.kt)
-- [VideoLibraryApp.kt](testapp%2Fsrc%2Fmain%2Fjava%2Fcom%2Fbitmovin%2Ftestapp%2FVideoLibraryApp.kt)
+- [ScrollingExampleActivity.kt](testapp/src/main/java/com/bitmovin/testapp/ScrollingExampleActivity.kt)
+- [VideoLibraryApp.kt](testapp/src/main/java/com/bitmovin/testapp/VideoLibraryApp.kt)
