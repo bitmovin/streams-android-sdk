@@ -9,59 +9,59 @@ import com.bitmovin.streams.StreamError
  * Configuration for the BitmovinStream
  */
 
-public data class StreamConfig(
+public class StreamConfig(
     /**
      * The streamId of the stream to be played.
      */
-    var streamId: String,
+    public var streamId: String,
     /**
      * The token to be used for authentication if the stream is protected.
      */
-    var authenticationToken: String? = null,
+    public var authenticationToken: String? = null,
     /**
      * Whether the player should start playing automatically.
      */
-    var autoPlay: Boolean = false,
+    public var autoPlay: Boolean = false,
     /**
      * Whether the player should be muted.
      */
-    var muted: Boolean = false,
+    public var muted: Boolean = false,
     /**
      * The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
      */
-    var poster: String? = null,
+    public var poster: String? = null,
     /**
      * The time in seconds at which the player should start playing.
      */
-    var startTime: Double = 0.0,
+    public var startTime: Double = 0.0,
     /**
      * Whether the player should loop the stream.
      */
-    var loop: Boolean = false,
+    public var loop: Boolean = false,
     /**
      * The configuration for the fullscreen mode.
      */
-    var fullscreenConfig: FullscreenConfig,
+    public var fullscreenConfig: FullscreenConfig,
     /**
      * The list of subtitle tracks available for the stream.
      */
-    var subtitles: List<SubtitleTrack> = emptyList(),
+    public var subtitles: List<SubtitleTrack> = emptyList(),
     /**
      * The listener for the player events.
      */
-    var streamListener: StreamListener? = null,
+    public var streamListener: StreamListener? = null,
     /**
      * Whether ads should be enabled.
      */
-    var enableAds: Boolean = true,
+    public var enableAds: Boolean = true,
     /**
      * The style configuration for the player. This property has priority over the style configuration from the dashboard.
      */
-    var styleConfig: StyleConfigStream = StyleConfigStream(),
+    public var styleConfig: StyleConfigStream = StyleConfigStream(),
     /**
      * Whether all logs should be displayed.
      */
-    var allLogs: Boolean = false,
+    public var allLogs: Boolean = false,
 ) {
     /**
      * Configuration for the BitmovinStream

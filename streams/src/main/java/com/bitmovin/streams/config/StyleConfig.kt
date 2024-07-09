@@ -5,40 +5,40 @@ import androidx.compose.ui.graphics.Color
 /**
  * Configuration for the style of the player.
 */
-public data class StyleConfigStream(
+public class StyleConfigStream(
     /**
      * The color of the playback marker background.
      */
-    var playbackMarkerBgColor: Color? = null,
+    public var playbackMarkerBgColor: Color? = null,
     /**
      * The color of the playback marker border.
      */
-    var playbackMarkerBorderColor: Color? = null,
+    public var playbackMarkerBorderColor: Color? = null,
     /**
      * The color of the playback track played.
      */
-    var playbackTrackPlayedColor: Color? = null,
+    public var playbackTrackPlayedColor: Color? = null,
     /**
      * The color of the playback track buffered.
      */
-    var playbackTrackBufferedColor: Color? = null,
+    public var playbackTrackBufferedColor: Color? = null,
     /**
      * The color of the playback track background.
      */
-    var playbackTrackBgColor: Color? = null,
+    public var playbackTrackBgColor: Color? = null,
     /**
      * The color of the text.
      */
-    var textColor: Color? = null,
+    public var textColor: Color? = null,
     /**
      * The color of the background.
      */
-    var backgroundColor: Color? = null,
+    public var backgroundColor: Color? = null,
     /**
      * CSS rules that you can add to make the player look as you expect. Does not support URL or URI, has to be plain text.
      * @see <a href="https://developer.bitmovin.com/playback/docs/player-ui-css-class-reference">Bitmovin Player UI CSS Class Reference</a>
      */
-    var customCss: String = "",
+    public var customCss: String = "",
 ) {
     public companion object {
         /**
