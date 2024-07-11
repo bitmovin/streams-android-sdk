@@ -17,6 +17,8 @@ on:
       - 'streams/**'
       - '.github/**'
       - 'gradle/**'
+  workflow_dispatch:
+
 
 jobs:
   verifications:
@@ -33,15 +35,19 @@ jobs:
           java-version: '17'
 
       - name: KtLint checks
+        if: always()
         run: ./gradlew --no-daemon ktlintCheck
 
       - name: Unit Tests
+        if: always()
         run: ./gradlew --no-daemon :streams:test
 
       - name: Build with Gradle
+        if: always()
         run: ./gradlew --no-daemon :streams:assembleDebug
 
       - name: Upload a Build Artifact
+        if: always()
         uses: actions/upload-artifact@v4.3.3
         with:
           name: bitmovin-streams.aar
