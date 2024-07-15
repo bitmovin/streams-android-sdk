@@ -43,7 +43,6 @@ import okhttp3.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Thread.sleep
 import kotlin.reflect.KProperty
 
 /**
@@ -85,8 +84,6 @@ internal fun Context.getActivity(): Activity? {
     return null
 }
 
-private const val MAX_FETCHING_ATTEMPTS = 3
-
 internal suspend fun getStreamConfigData(
     streamId: String,
     jwToken: String?,
@@ -105,18 +102,13 @@ internal suspend fun getStreamConfigData(
                     .build()
 
             logger.d("Request: $request")
-            var response: Response
-            var trys = 0
-            do {
-                sleep((200 * trys).toLong())
-                try {
-                    response = client.newCall(request).execute()
-                } catch (e: IOException) {
-                    // If the request fails, we return a null StreamConfigDataResponse with the "0" error code which is associated with a network issue.
-                    return@recordDuration StreamConfigDataResponse(null, 0)
-                }
-                trys++
-            } while (response.code != 200 && trys <= MAX_FETCHING_ATTEMPTS)
+            val response: Response
+            try {
+                response = client.newCall(request).execute()
+            } catch (e: IOException) {
+                // If the request fails, we return a null StreamConfigDataResponse with the "0" error code which is associated with a network issue.
+                return@recordDuration StreamConfigDataResponse(null, 0)
+            }
             val code = response.code
             if (!response.isSuccessful) {
                 StreamConfigDataResponse(null, code)

@@ -121,7 +121,7 @@ internal fun FullScreen(
                 }
                 /*
                 There is some unpredictable delay depending of the device that led to having the wrong width and height, especially while escaping from PiP mode and entering.
-                This is a workaround to get the right width and height during a 0.5 seconds period which restart itself whenever there's a change (which should be reasonable for most devices).
+                This is a workaround to get the right width and height during a 0.6 seconds period which restart itself whenever there's a change (which should be reasonable for most devices).
                 This method is not perfect and cause some short visual glitches, but it's better than having the wrong width and height.
                 NB : This issue is not present when the dialog is not immersive.
                  */
