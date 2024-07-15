@@ -58,7 +58,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         this.streamEventListener = streamListener
         val streamConfigDataResp = getStreamConfigData(streamId, jwToken, logger)
         val streamResponseCode = streamConfigDataResp.responseHttpCode
-        if (streamResponseCode != 200 || streamConfigDataResp.streamConfigData == null) {
+        if (streamConfigDataResp.streamConfigData == null) {
             castError(StreamError.fromHttpCode(streamResponseCode))
             return
         }
@@ -264,10 +264,12 @@ private fun Player.handleAttributes(
     if (loop) {
         val coroutineScope = CoroutineScope(Dispatchers.IO)
         // Impl detail : we do not use the PlayerEvent.PlaybackFinished event because it triggers the ui visibility which seems undesirable
+        var scheduledSeek = false
         this.on(PlayerEvent.TimeChanged::class.java) {
             // Delay action
             val player = this@handleAttributes
-            var scheduledSeek = false
+            // the on time changed event is called ~ every 0.2 seconds during a classic playback. We want to trigger the seek action at the end of the video
+            // 0.4 is sweet spot since it's pretty sure the on time changed event will be called in a 0.4 timeframe while not being really noticeable by the user.
             if (player.currentTime > player.duration - 0.4 && !scheduledSeek) {
                 scheduledSeek = true
                 coroutineScope.launch {
@@ -352,6 +354,7 @@ internal class Logger(private val id: String, private val allLogs: Boolean) {
         }
     }
 
+    @Suppress("unused")
     fun w(message: String) {
         Log.w(TAG_STREAM, "[$id] $message")
     }
