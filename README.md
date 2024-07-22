@@ -1,6 +1,15 @@
-[![bitmovin](http://bitmovin-a.akamaihd.net/webpages/bitmovin-logo-github.png)](http://www.bitmovin.com)
+<div>
 
 [![Verifications](https://github.com/bitmovin-engineering/streams-android-sdk/actions/workflows/Verifications.yml/badge.svg?branch=main)](https://github.com/bitmovin-engineering/streams-android-sdk/actions/workflows/Verifications.yml)
+
+</div>
+
+<br>
+
+<div align="center">
+
+[![bitmovin](docs/streams-android-sdk-github-header.png)](http://www.bitmovin.com)
+</div>
 
 <br>
 
@@ -114,6 +123,7 @@ BitmovinStream(config)
 ```
 
 ### Gif-like stream player
+Player that will loop and not allow the user to interact with the player.
 ```kotlin
 val reusableGifVidConfig = StreamConfig(
     streamId = "<YOUR-STREAM-ID>",
@@ -123,7 +133,8 @@ val reusableGifVidConfig = StreamConfig(
     fullscreenConfig = FullscreenConfig(
         enable = false
     ),
-    onStreamReady = { _, playerView ->
+    // Hiding the UI by interacting directly with the Bitmovin Player API.
+    onStreamReady = { player, playerView ->
         playerView.isUiVisible = false
     }
 )
@@ -131,9 +142,11 @@ BitmovinStream(config = reusableGifVidConfig)
 ```
 
 ### Using the StyleConfig
-```kotlin
-import java.awt.Color
+You can customize the player appearance by using the StyleConfig object.
+Note that you can also inject custom css to the player by using the `customCss` property of the StyleConfig object.
+We recommend reading through the [Bitmovin Player CSS documentation](https://developer.bitmovin.com/playback/docs/player-ui-css-class-reference) this property.
 
+```kotlin
 val myStyleConfig = StyleConfigStream(
     playbackMarkerBorderColor = Color(0xFF01295F),
     playbackMarkerBgColor = Color(0xAF01295F),
@@ -146,12 +159,11 @@ val myStyleConfig = StyleConfigStream(
 
 BitmovinStream(
     streamId = "<YOUR-STREAM-ID>",
-    poster = "really_cool_img.jpg",
+    poster = "really_cool_cat.jpg",
     styleConfig = myStyleConfig,
     modifier = Modifier.aspectRatio(16f/9f)
 )
 ```
 
 ### More examples 
-- [ScrollingExampleActivity.kt](testapp/src/main/java/com/bitmovin/testapp/ScrollingExampleActivity.kt)
-- [VideoLibraryApp.kt](testapp/src/main/java/com/bitmovin/testapp/VideoLibraryApp.kt)
+For more complex examples, please check the testapp module.
