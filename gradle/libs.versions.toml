@@ -1,4 +1,8 @@
 [versions]
+# Should be the same version as the one in the build.gradle.kts file
+# Only used when we use Maven dependency to get the Streams
+bitmovin-streams = "0.0.0-test"
+
 agp = "8.4.2"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
@@ -20,6 +24,9 @@ csscolor4j = "1.0.0"
 
 
 [libraries]
+# Only used when we use Maven dependency to get the Streams
+bitmovin-streams = { module = "com.bitmovin.streams:streams", version.ref = "bitmovin-streams"}
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -50,4 +57,5 @@ kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.1.1" }
 

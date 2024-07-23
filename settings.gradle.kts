@@ -11,15 +11,16 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+@Suppress("UnstableApiUsage") // To avoid warnings about the incubating API
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
-
         maven {
             url = uri("https://artifacts.bitmovin.com/artifactory/public-releases")
         }
+        mavenLocal()
     }
 }
 
