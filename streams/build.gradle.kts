@@ -4,12 +4,71 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.ktlint)
+    `maven-publish`
+}
 
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
+// Setting up variables for the project
+val streamsGroupId: String by project
+val streamsArtifactId: String by project
+val streamsVersion: String by project
+group = streamsGroupId
+version = streamsVersion
+
+// Check if the version matches semantic versioning standard
+val versionPattern = Regex("""^\d+\.\d+\.\d+(-SNAPSHOT)?${'$'}""")
+if (!versionPattern.matches(version.toString())) {
+    throw Exception("Invalid version")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            // Group and artifact configuration
+            groupId = streamsGroupId
+            artifactId = streamsArtifactId
+
+            // Artifact configuration
+            val releaseArtifact = layout.buildDirectory.file("outputs/aar/$streamsArtifactId-release.aar")
+            artifact(artifact(releaseArtifact))
+
+            // POM configuration
+            pom {
+                name.set("Bitmovin Streams SDK")
+                description.set("Bitmovin Streams SDK")
+                url.set("https://bitmovin.com")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                // Transitive dependencies
+                withXml {
+                    // dependencies { dependency {...}, ... }
+                    // Changes made to the the XML are affected indirectly just because we manipulate in the withXml scope thanks to asNode().
+                    val dependenciesNode = asNode().appendNode("dependencies")
+                    configurations["api"].dependencies.forEach {
+                        val dependencyNode = dependenciesNode.appendNode("dependency")
+                        dependencyNode.appendNode("groupId", it.group)
+                        dependencyNode.appendNode("artifactId", it.name)
+                        dependencyNode.appendNode("version", it.version)
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Publishing will automatically generate the artifact
+tasks.forEach {
+    if (it.name.startsWith("publish")) {
+        it.dependsOn("assembleRelease")
+    }
 }
 
 android {
-    namespace = "com.bitmovin.streams"
+    namespace = streamsGroupId
     compileSdk = 34
     defaultConfig {
         minSdk = 21
