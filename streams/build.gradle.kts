@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ktlint)
     `maven-publish`
+    alias(libs.plugins.jfrogs.artifactory)
 }
 
 // Setting up variables for the project
@@ -29,7 +30,7 @@ publishing {
             artifactId = streamsArtifactId
 
             // Artifact configuration
-            val releaseArtifact = layout.buildDirectory.file("outputs/aar/$streamsArtifactId-release.aar")
+            val releaseArtifact = layout.buildDirectory.file("outputs/aar/streams-release.aar")
             artifact(artifact(releaseArtifact))
 
             // POM configuration
@@ -56,6 +57,26 @@ publishing {
                     }
                 }
             }
+        }
+    }
+}
+
+artifactory {
+    setContextUrl("https://bitmovin.jfrog.io/bitmovin")
+
+    publish {
+        repository {
+            // The Artifactory repository key to publish to
+            repoKey = if (version.toString().endsWith("SNAPSHOT")) "libs-snapshot-local" else "libs-release-local"
+            username = System.getenv("ARTIFACTORY_USER") // The publisher username
+            password = System.getenv("ARTIFACTORY_PASSWORD") // The publisher password
+        }
+
+        defaults {
+            // Tell the Artifactory Plugin which artifacts should be published to Artifactory.
+            publications("aar")
+            setPublishArtifacts(true)
+            setPublishPom(true)
         }
     }
 }
@@ -120,6 +141,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
     api(libs.google.gson)
     api(libs.bitmovin.player)
     api(libs.csscolor4j)
