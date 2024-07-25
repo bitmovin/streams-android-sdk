@@ -35,13 +35,13 @@ import androidx.compose.ui.unit.sp
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.streams.StreamError
-import com.bitmovin.testapp.utils.TestStreamsIds
+import com.bitmovin.streams.config.StreamError
 import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.LightColorScheme
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import com.bitmovin.testapp.utils.PlayerActivity
+import com.bitmovin.testapp.utils.TestStreamsIds
 
 class StreamLibraryApp : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

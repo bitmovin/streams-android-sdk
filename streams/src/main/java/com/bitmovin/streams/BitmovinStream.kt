@@ -16,16 +16,16 @@ import java.util.UUID
 
 /**
  * Bitmovin Streams Player Component.
+ *
+ * @param config The configuration for the player.
+ * @param modifier The modifier to be applied to the stream player.
+ *
+ *
+ * @see <a href="https://dashboard.bitmovin.com/streams/home">Bitmovin Streams Dashboard</a>
  */
 @Composable
 public fun BitmovinStream(
-    /**
-     * The configuration for the player.
-     */
     config: StreamConfig,
-    /**
-     * The modifier to be applied to the stream player.
-     */
     modifier: Modifier = Modifier,
 ) {
     BitmovinStream(
@@ -46,14 +46,30 @@ public fun BitmovinStream(
     )
 }
 
+// We need to also have the parameters in the top Javadoc for Dokka to generate the documentation accordingly.
 /**
  * Bitmovin Streams Player Component.
+ *
+ * @param streamId The streamId of the stream to be played.
+ * @param modifier The modifier to be applied to the stream player.
+ * @param authenticationToken The token to be used for authentication if the stream is protected.
+ * @param autoPlay Whether the player should start playing automatically.
+ * @param loop  Whether the player should loop the stream.
+ * @param muted Whether the player should be muted.
+ * @param poster The poster image to be displayed before the player starts. This property has priority over the poster image from the dashboard.
+ * @param startTime The time in seconds at which the player should start playing.
+ * @param subtitles The list of subtitle tracks available for the stream.
+ * @param fullscreenConfig The configuration for the fullscreen mode.
+ * @param streamListener The listener for the player events.
+ * @param enableAds Whether ads should be enabled.
+ * @param styleConfig The style configuration for the player. This property has priority over the style configuration from the dashboard.
+ * @param allLogs Whether all logs should be displayed.
+ *
+ * @see <a href="https://dashboard.bitmovin.com/streams/home">Bitmovin Streams Dashboard</a>
  */
 @Composable
 public fun BitmovinStream(
-    /**
-     * The streamId of the stream to be played.
-     */
+    /** The streamId of the stream to be played. */
     streamId: String,
     /**
      * The modifier to be applied to the stream player.
@@ -128,10 +144,10 @@ public fun BitmovinStream(
                 FullScreen(
                     onDismissRequest = { stream.playerView?.exitFullscreen() },
                     isImmersive = fullscreenConfig.immersive,
-                ) { StreamVideoPlayer(playerView = playerView) }
+                ) { BitmovinPlayerComposeWrapper(playerView = playerView) }
                 TextVideoPlayerFiller(text = "In Fullscreen", modifier)
             } else {
-                StreamVideoPlayer(
+                BitmovinPlayerComposeWrapper(
                     playerView = playerView,
                     modifier = modifier,
                 )
@@ -150,6 +166,7 @@ public fun BitmovinStream(
             )
         }
     }
+
     stream.logger.performance(
         "Stream recomposition",
         System.currentTimeMillis() - recompositionTimeStart,

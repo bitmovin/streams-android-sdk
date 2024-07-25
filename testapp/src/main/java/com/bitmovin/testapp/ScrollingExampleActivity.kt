@@ -7,12 +7,29 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,13 +44,13 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.streams.StreamError
-import com.bitmovin.testapp.utils.TestStreamsIds
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StreamConfig
+import com.bitmovin.streams.config.StreamError
 import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
+import com.bitmovin.testapp.utils.TestStreamsIds
 
 class ScrollingExampleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,11 +70,11 @@ fun BitmovinShowcase() {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     Column(
         modifier =
-            Modifier
-                .verticalScroll(scrollState)
-                .fillMaxWidth()
-                .padding(if (isLandscape) 144.dp else 0.dp, 0.dp)
-                .safeContentPadding(),
+        Modifier
+            .verticalScroll(scrollState)
+            .fillMaxWidth()
+            .padding(if (isLandscape) 144.dp else 0.dp, 0.dp)
+            .safeContentPadding(),
     ) {
         Text(
             text = "Discovering the Bitmovin Stream Player Component",
@@ -266,9 +283,9 @@ fun BitmovinShowcase() {
 fun PropertyCard(prop: Property) {
     Card(
         modifier =
-            Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
+        Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
     ) {
         Column(Modifier.padding(12.dp)) {
             Row {
@@ -281,9 +298,9 @@ fun PropertyCard(prop: Property) {
                     Row(
                         horizontalArrangement = Arrangement.Absolute.Right,
                         modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp),
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp),
                     ) {
                         Text(text = "Default :", style = MaterialTheme.typography.bodySmall)
                         Text(
@@ -319,10 +336,10 @@ fun FlipCard(
     ) {
         Column(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clip(shape = RoundedCornerShape(10.dp))
-                    .background(cool_blue),
+            Modifier
+                .fillMaxWidth()
+                .clip(shape = RoundedCornerShape(10.dp))
+                .background(cool_blue),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -335,9 +352,9 @@ fun FlipCard(
                     text = title,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier =
-                        Modifier
-                            .padding(16.dp, 6.dp)
-                            .fillMaxWidth(),
+                    Modifier
+                        .padding(16.dp, 6.dp)
+                        .fillMaxWidth(),
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     textAlign = TextAlign.Center,
@@ -345,9 +362,9 @@ fun FlipCard(
             }
             Box(
                 modifier =
-                    Modifier
-                        .aspectRatio(aspectRatio)
-                        .padding(8.dp, 0.dp),
+                Modifier
+                    .aspectRatio(aspectRatio)
+                    .padding(8.dp, 0.dp),
             ) {
                 val corners = 8.dp
                 if (isFront) {
@@ -355,9 +372,9 @@ fun FlipCard(
                         painter = painterResource(id = code),
                         contentDescription = "Source Code",
                         modifier =
-                            Modifier
-                                .clip(shape = RoundedCornerShape(corners))
-                                .fillMaxWidth(),
+                        Modifier
+                            .clip(shape = RoundedCornerShape(corners))
+                            .fillMaxWidth(),
                         contentScale = ContentScale.FillWidth,
                         alignment = Alignment.TopEnd,
                     )
