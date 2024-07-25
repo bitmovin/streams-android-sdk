@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.dokka)
 
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 }
