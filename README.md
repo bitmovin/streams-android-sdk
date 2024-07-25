@@ -23,11 +23,48 @@ It's properties are highly customizable and can be used in a variety of ways, fr
 
 ## Getting Started
 
-__/!\ *TODO WHEN PUBLISHED* /!\\__
+Add the Bitmovin Maven artifactory to your `settings.gradle.kts` file:
 
-...
+```kotlin
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        ...
+        mavenCentral()
+        maven {
+            url = uri("https://artifacts.bitmovin.com/artifactory/public-releases")
+        }
+        ...
+    }
+}
+```
 
-Each activity that uses the BitmovinStream component must be declared in the AndroidManifest.xml file with the following configuration:
+<br>
+
+Add the following to your `build.gradle.kts` file:
+
+```kotlin
+dependencies {
+    ...
+    implementation("com.bitmovin.streams:streams:<CURRENT_VERSION>")
+    ...
+}
+```
+
+Or your `build.gradle` file:
+
+```gradle
+dependencies {
+    ...
+    implementation 'com.bitmovin.streams:streams:<CURRENT_VERSION>'
+    ...
+}
+```
+
+<br>
+
+Finally, each activity that uses the BitmovinStream component must be declared in the AndroidManifest.xml file with the following 
+configuration:
 
 ```xml
 <manifest
@@ -45,6 +82,10 @@ Each activity that uses the BitmovinStream component must be declared in the And
     <.../>
 >
 ```
+
+<br>
+
+You're all set! You can now use the BitmovinStream component in your project.
 
 ## Properties
 

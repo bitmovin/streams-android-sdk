@@ -1,7 +1,7 @@
 [versions]
-# Should be the same version as the one in the build.gradle.kts file
+# Should be the same version as the one in the gradle.properties file
 # Only used when we use Maven dependency to get the Streams
-bitmovin-streams = "0.0.0-test"
+bitmovin-streams = "0.0.0-SNAPSHOT"
 
 agp = "8.4.2"
 kotlin = "2.0.0"
@@ -58,4 +58,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.1.1" }
-
+jfrogs-artifactory = { id = "com.jfrog.artifactory", version = "5.2.3" }
