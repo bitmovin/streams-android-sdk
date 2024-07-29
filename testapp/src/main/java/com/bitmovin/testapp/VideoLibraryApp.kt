@@ -36,12 +36,12 @@ import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
 import com.bitmovin.streams.StreamError
-import com.bitmovin.testapp.utils.TestStreamsIds
 import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.LightColorScheme
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import com.bitmovin.testapp.utils.PlayerActivity
+import com.bitmovin.testapp.utils.TestStreamsIds
 
 class StreamLibraryApp : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,19 +65,13 @@ fun StreamsList() {
             .safeDrawingPadding(),
     ) {
         StreamElem("Sintel", TestStreamsIds.SINTEL, unfoldedStreamId)
-        StreamElem("Vertical Video", TestStreamsIds.VERTICAL_VIDEO, unfoldedStreamId)
-        StreamElem(name = "Squared Video", streamId = TestStreamsIds.SQUARE_VIDEO, unfoldedStreamId)
         StreamElem(
-            name = "Tears of Steel",
-            streamId = TestStreamsIds.TEAR_OF_STEEL,
-            unfoldedStreamId,
-        )
-        StreamElem(
-            name = "Big Buck Bunny - token required",
+            name = "Big Buck Bunny",
             streamId = TestStreamsIds.BIG_BUCK_BUNNY,
             unfoldedStreamId,
-            // token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTg2OTY0NDB9.J7ysnY4jc6cHHSTbfoqz3PApo2WlO36pi94mU92MAAp77iDYQuMDtqcuGwdE7OBMSwkFvvpmLEJNgFh02Q3bcpiQWtQZaH43uObsQpJnpnoDSwghq3BWXo0_F478lPk51L1-F7UBpYjctNJ9usmJD-c9hCOmd-gTLmvjBx0Ytveh4PY6kWbNjahZT1sHu-SGDwxJJEgqrf18PXDb1tO9GHU6xIgLrXa956m9yaz9XMFPvN55C7SMmvGZxkSFDa_0WQssikZo4Xa4z14ZuNGv5JpiE4pP7zBj6Ll0ri9Ofypof_aw1DJiR5O6MP7sK7nYRgZR0MrlJ2OrOcBxYCqbnA"
         )
+        StreamElem(name = "Squared Video", streamId = TestStreamsIds.SQUARE_VIDEO, unfoldedStreamId)
+        StreamElem("Vertical Video", TestStreamsIds.VERTICAL_VIDEO, unfoldedStreamId)
     }
 }
 
