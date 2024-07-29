@@ -14,18 +14,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.testapp.utils.TestStreamsIds
 import com.bitmovin.streams.config.FullscreenConfig
 import com.bitmovin.streams.config.StreamConfig
 import com.bitmovin.streams.config.StyleConfigStream
+import com.bitmovin.testapp.utils.TestStreamsIds
 
 class DefaultTest : ComponentActivity() {
     private lateinit var fetchingTests: List<Test>
@@ -88,8 +96,8 @@ class DefaultTest : ComponentActivity() {
             listOf(
                 Test(
                     title = "Dashboard settings",
-                    expectedResult = "This stream should have 3 ads, a poster and watermark image w/ rick and morty and an awful color palette",
-                    config = StreamConfig(streamId = TestStreamsIds.TEAR_OF_STEEL),
+                    expectedResult = "This stream should be Big Buck Bunny with a ad at the start and a blue theme",
+                    config = StreamConfig(streamId = TestStreamsIds.BIG_BUCK_BUNNY),
                 ),
                 Test(
                     title = "404 (Stream not found)",
@@ -99,14 +107,14 @@ class DefaultTest : ComponentActivity() {
                 Test(
                     title = "401 (Unauthorized)",
                     expectedResult = "Unauthorized error message should be displayed",
-                    config = StreamConfig(streamId = TestStreamsIds.BIG_BUCK_BUNNY),
+                    config = StreamConfig(streamId = TestStreamsIds.PROTECTED_STREAM),
                 ),
                 Test(
                     title = "403 (Forbidden)",
                     expectedResult = "Forbidden error message should be displayed",
                     config =
                         StreamConfig(
-                            streamId = TestStreamsIds.BIG_BUCK_BUNNY,
+                            streamId = TestStreamsIds.PROTECTED_STREAM,
                             authenticationToken = "__INVALID_TOKEN__",
                         ),
                 ),
