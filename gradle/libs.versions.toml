@@ -35,6 +35,8 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
+gradlePlugins-dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
+
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson"}
 bitmovin-player = { module = "com.bitmovin.player:player", version.ref = "bitmovin-player"}
 androidx-graphics-shapes-android = { group = "androidx.graphics", name = "graphics-shapes-android", version.ref = "graphicsShapesAndroid" }
@@ -51,4 +53,5 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 android-application = { id = "com.android.application", version.ref = "agp" }
+
 
