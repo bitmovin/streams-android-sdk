@@ -17,6 +17,8 @@ import java.util.UUID
 /**
  * Bitmovin Streams Player Component.
  *
+ * This Jetpack Compose component allows you to play a stream using the Bitmovin Player by providing the streamId of the stream to be played.
+ *
  * @param config The configuration for the player.
  * @param modifier The modifier to be applied to the stream player.
  *
@@ -47,8 +49,11 @@ public fun BitmovinStream(
 }
 
 // We need to also have the parameters in the top Javadoc for Dokka to generate the documentation accordingly.
+
 /**
  * Bitmovin Streams Player Component.
+ *
+ * This Jetpack Compose component allows you to play a stream using the Bitmovin Player by providing the streamId of the stream to be played.
  *
  * @param streamId The streamId of the stream to be played.
  * @param modifier The modifier to be applied to the stream player.

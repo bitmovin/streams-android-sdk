@@ -55,18 +55,20 @@ android {
 }
 
 tasks.dokkaHtml.configure {
-    outputDirectory.set(rootDir.resolve("build/reports/${version}/docs"))
+    outputDirectory.set(rootDir.resolve("build/reports/$version/docs"))
 
     pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-        customStyleSheets = listOf(
-            rootDir.resolve("docs/dokka/logo-styles.css"),
-            rootDir.resolve("docs/dokka/styles.css"),
-        )
-        customAssets = listOf(
-            rootDir.resolve("docs/dokka/docs_logo.svg"),
-            // Used as favicon
-            rootDir.resolve("docs/dokka/logo-icon.svg"),
-        )
+        customStyleSheets =
+            listOf(
+                rootDir.resolve("docs/dokka/logo-styles.css"),
+                rootDir.resolve("docs/dokka/styles.css"),
+            )
+        customAssets =
+            listOf(
+                rootDir.resolve("docs/dokka/docs_logo.svg"),
+                // Used as favicon
+                rootDir.resolve("docs/dokka/logo-icon.svg"),
+            )
     }
 }
 

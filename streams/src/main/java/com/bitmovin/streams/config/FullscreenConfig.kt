@@ -9,9 +9,7 @@ public class FullscreenConfig(
      */
     public var enable: Boolean = true,
     /**
-     * Whether the player should be in immersive mode.
-     *
-     * Recommended to be false if the _EdgeToEdge_ is disabled on the Activity (may break on some very specific devices).
+     * Whether the player should be in immersive mode. Recommended to be false if the _EdgeToEdge_ is disabled on the Activity (may break on some very specific devices).
      */
     public var immersive: Boolean = true,
     /**
@@ -27,11 +25,7 @@ public class FullscreenConfig(
      */
     public var maxAspectRatioForPortraitForce: Float = 0.8f,
     /**
-     * The default orientation of the screen.
-     *
-     * Will be forced after fullscreen escape if non-null. If null, the screen orientation will automatically reset to the state after exiting fullscreen.
-     *
-     * Should correspond to one of the ActivityInfo.SCREEN_ORIENTATION_* constants.
+     * The default orientation of the screen.Will be forced after fullscreen escape if non-null. If null, the screen orientation will automatically reset to the state after exiting fullscreen. Should correspond to one of the ActivityInfo.SCREEN_ORIENTATION_* constants.
      */
     public var screenDefaultOrientation: Int? = null,
     /**
