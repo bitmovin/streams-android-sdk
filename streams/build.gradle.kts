@@ -81,11 +81,9 @@ artifactory {
     }
 }
 
-// Publishing will automatically generate the artifact
-tasks.forEach {
-    if (it.name.startsWith("publish")) {
-        it.dependsOn("assembleRelease")
-    }
+// Make the publish task depend on the assemble task
+tasks.withType<AbstractPublishToMaven>().forEach {
+    it.dependsOn("assembleRelease")
 }
 
 android {
