@@ -46,7 +46,7 @@ Add the following to your `build.gradle.kts` file:
 ```kotlin
 dependencies {
     ...
-    implementation("com.bitmovin.streams:streams:<CURRENT_VERSION>")
+    implementation("com.bitmovin.streams:streams-android-sdk:<LATEST_VERSION>")
     ...
 }
 ```
@@ -56,7 +56,7 @@ Or your `build.gradle` file:
 ```gradle
 dependencies {
     ...
-    implementation 'com.bitmovin.streams:streams:<CURRENT_VERSION>'
+    implementation 'com.bitmovin.streams:streams-android-sdk:<LATEST_VERSION>'
     ...
 }
 ```

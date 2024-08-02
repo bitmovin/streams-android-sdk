@@ -74,7 +74,7 @@ artifactory {
 
         defaults {
             // Tell the Artifactory Plugin which artifacts should be published to Artifactory.
-            publications("aar")
+            publications("maven")
             setPublishArtifacts(true)
             setPublishPom(true)
         }
