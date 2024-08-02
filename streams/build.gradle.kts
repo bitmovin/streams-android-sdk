@@ -1,9 +1,18 @@
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+
+buildscript {
+    dependencies {
+        classpath(libs.gradlePlugins.dokka.base)
+    }
+}
 
 plugins {
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.dokka)
     alias(libs.plugins.ktlint)
     `maven-publish`
     alias(libs.plugins.jfrogs.artifactory)
@@ -120,6 +129,24 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+}
+
+tasks.dokkaHtml.configure {
+    outputDirectory.set(rootDir.resolve("build/reports/$version/docs"))
+
+    pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+        customStyleSheets =
+            listOf(
+                rootDir.resolve("docs/dokka/logo-styles.css"),
+                rootDir.resolve("docs/dokka/styles.css"),
+            )
+        customAssets =
+            listOf(
+                rootDir.resolve("docs/dokka/docs_logo.svg"),
+                // Used as favicon
+                rootDir.resolve("docs/dokka/logo-icon.svg"),
+            )
     }
 }
 

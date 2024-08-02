@@ -13,6 +13,7 @@ import com.bitmovin.player.api.event.PlayerEvent
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
 import com.bitmovin.player.api.ui.FullscreenHandler
 import com.bitmovin.streams.config.FullscreenConfig
+import com.bitmovin.streams.config.StreamError
 import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.streams.fullscreenmode.StreamFullscreenHandler
@@ -30,7 +31,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
     var state by mutableStateOf(BitmovinStreamState.FETCHING)
     var streamError = StreamError.UNKNOWN_ERROR
     var playerView: PlayerView? = null
-    var player: Player? = null
+    var player: Player? = null // We need to keep a reference to the player to be able to dispose it
     private var streamEventListener: StreamListener? = null
     private var pipExitHandler: PiPExitListener? = null
 
@@ -200,8 +201,9 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
         subtitlesView.setPlayer(player)
 
         val fullscreenHandler: FullscreenHandler
+
+        // Setting up the fullscreen feature
         if (fullscreenConfig.enable) {
-            // Setting up the fullscreen feature
             fullscreenHandler =
                 StreamFullscreenHandler(
                     playerView,
@@ -210,6 +212,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
                 )
             playerView.setFullscreenHandler(fullscreenHandler)
         }
+
         // Setting up the PiP feature
         if (fullscreenConfig.enable) {
             val pipHandler = PiPHandler(context.getActivity()!!, playerView)
@@ -295,38 +298,6 @@ internal enum class BitmovinStreamState {
     WAITING_FOR_PLAYER,
     DISPLAYING,
     DISPLAYING_ERROR,
-}
-
-public enum class StreamError(private var message: String) {
-    NO_INTERNET("No internet connection"),
-    UNAUTHORIZED("Unauthorized access to stream. This stream may require a token."),
-    FORBIDDEN_ACCESS("Forbidden access to stream. This stream may require a token."),
-    STREAM_NOT_FOUND("Stream not found. Please check that the streamId is correct."),
-    INTERNAL_SERVER_ERROR("Internal server error. Please try again later."),
-    SERVICE_UNAVAILABLE("Service unavailable. Please try again later."),
-    SOURCE_ERROR("Error while loading the source."),
-    UNKNOWN_FETCHING_ERROR("An unknown error occurred during FETCHING."),
-    UNKNOWN_ERROR("An unknown error occurred."),
-    ;
-
-    @Override
-    override fun toString(): String {
-        return message
-    }
-
-    internal companion object {
-        fun fromHttpCode(httpCode: Int): StreamError {
-            return when (httpCode) {
-                0 -> NO_INTERNET
-                401 -> UNAUTHORIZED
-                403 -> FORBIDDEN_ACCESS
-                404 -> STREAM_NOT_FOUND
-                500 -> INTERNAL_SERVER_ERROR
-                503 -> SERVICE_UNAVAILABLE
-                else -> UNKNOWN_FETCHING_ERROR.apply { message = "Error $httpCode : $message" }
-            }
-        }
-    }
 }
 
 internal class Logger(private val id: String, private val allLogs: Boolean) {

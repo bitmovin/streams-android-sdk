@@ -3,10 +3,11 @@ package com.bitmovin.streams.config
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.player.api.media.subtitle.SubtitleTrack
-import com.bitmovin.streams.StreamError
 
 /**
- * Configuration for the BitmovinStream
+ * Configuration for the BitmovinStream.
+ *
+ * @see com.bitmovin.streams.BitmovinStream
  */
 
 public class StreamConfig(

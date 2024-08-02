@@ -21,7 +21,7 @@ constraintlayout = "2.1.4"
 navigationFragmentKtx = "2.7.7"
 navigationUiKtx = "2.7.7"
 csscolor4j = "1.0.0"
-
+dokka = "1.9.20"
 
 [libraries]
 # Only used when we use Maven dependency to get the Streams
@@ -42,6 +42,8 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
+gradlePlugins-dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
+
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson"}
 bitmovin-player = { module = "com.bitmovin.player:player", version.ref = "bitmovin-player"}
 androidx-graphics-shapes-android = { group = "androidx.graphics", name = "graphics-shapes-android", version.ref = "graphicsShapesAndroid" }
@@ -56,6 +58,7 @@ csscolor4j = { group = "org.silentsoft", name = "csscolor4j", version.ref = "css
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.1.1" }
 jfrogs-artifactory = { id = "com.jfrog.artifactory", version = "5.2.3" }
