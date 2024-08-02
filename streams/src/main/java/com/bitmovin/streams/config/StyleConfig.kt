@@ -4,6 +4,8 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * Configuration for the style of the player.
+ *
+ * @see <a href="https://developer.bitmovin.com/playback/docs/player-ui-css-class-reference">Bitmovin Player UI CSS Class Reference</a>
 */
 public class StyleConfigStream(
     /**
@@ -36,7 +38,6 @@ public class StyleConfigStream(
     public var backgroundColor: Color? = null,
     /**
      * CSS rules that you can add to make the player look as you expect. Does not support URL or URI, has to be plain text.
-     * @see <a href="https://developer.bitmovin.com/playback/docs/player-ui-css-class-reference">Bitmovin Player UI CSS Class Reference</a>
      */
     public var customCss: String = "",
 ) {

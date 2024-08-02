@@ -42,13 +42,14 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bitmovin.player.PlayerView
+import com.bitmovin.streams.config.StreamError
 import kotlinx.coroutines.delay
 
 /**
  * Player wrapped into a compose element
  */
 @Composable
-internal fun StreamVideoPlayer(
+internal fun BitmovinPlayerComposeWrapper(
     playerView: PlayerView,
     modifier: Modifier = Modifier,
 ) {

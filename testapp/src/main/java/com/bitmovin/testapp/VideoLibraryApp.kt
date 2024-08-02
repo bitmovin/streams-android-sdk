@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.bitmovin.player.PlayerView
 import com.bitmovin.player.api.Player
 import com.bitmovin.streams.BitmovinStream
-import com.bitmovin.streams.StreamError
+import com.bitmovin.streams.config.StreamError
 import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.LightColorScheme
