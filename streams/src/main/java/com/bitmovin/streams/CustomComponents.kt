@@ -35,19 +35,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bitmovin.player.PlayerView
+import com.bitmovin.streams.config.StreamError
 import kotlinx.coroutines.delay
 
 /**
  * Player wrapped into a compose element
  */
 @Composable
-internal fun StreamVideoPlayer(
+internal fun BitmovinPlayerComposeWrapper(
     playerView: PlayerView,
     modifier: Modifier = Modifier,
 ) {
@@ -192,8 +194,8 @@ internal fun TextVideoPlayerFiller(
                 text = text,
                 modifier = Modifier.padding(16.dp),
                 color = Color.White,
-                style = androidx.compose.ui.text.TextStyle(fontSize = 16.sp),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                style = TextStyle.Default,
+                textAlign = TextAlign.Center,
             )
             if (loadingEffect) {
                 CircularLoadingAnimation(Modifier.padding(16.dp))
