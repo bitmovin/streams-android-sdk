@@ -50,6 +50,7 @@ import com.bitmovin.streams.config.StreamError
 import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
+import com.bitmovin.testapp.utils.TestStreamsIds
 
 class ScrollingExampleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,7 +94,7 @@ fun BitmovinShowcase() {
             text =
                 """
                 This demonstration showcases the capabilities of the Bitmovin Stream Player component in an Android app.
-                To create a Stream Player, you should call the BitmovinStream composable function and pass the streamId as parameters from a ComposeView. That's all folks.
+                To create a Stream Player, you should call the BitmovinStream composable function and pass the streamId as parameters from a ComposeView.
                 """.trimIndent(),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(16.dp),
