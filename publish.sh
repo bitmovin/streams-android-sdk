@@ -145,9 +145,7 @@ read -p "Press enter to continue when the release is created..."
 
 echo "Copying artifacts from libs-release-local to public-releases in jfrog ..."
 
-echo "Let's pretend the release happened there"
-# Real release line
-#curl -H "Content-Type: application/json" -X POST -u ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} "https://bitmovin.jfrog.io/bitmovin/api/copy/libs-release-local/com/bitmovin/streams/streams-android-sdk/${VERSION}?to=/public-releases/com/bitmovin/streams/streams-android-sdk/${VERSION}"
+curl -H "Content-Type: application/json" -X POST -u ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} "https://bitmovin.jfrog.io/bitmovin/api/copy/libs-release-local/com/bitmovin/streams/streams-android-sdk/${VERSION}?to=/public-releases/com/bitmovin/streams/streams-android-sdk/${VERSION}"
 
 echo ""
 echo "Copied artifacts to public jfrog repo."
