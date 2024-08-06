@@ -1,7 +1,7 @@
 <div>
 
 [![Verifications](https://github.com/bitmovin-engineering/streams-android-sdk/actions/workflows/Verifications.yml/badge.svg?branch=main)](https://github.com/bitmovin-engineering/streams-android-sdk/actions/workflows/Verifications.yml)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.0.0-28ac48)](https://kotlinlang.org/)
+[![Version](https://img.shields.io/badge/latest%20version-1.0.0-28ac48)]
 
 </div>
 
