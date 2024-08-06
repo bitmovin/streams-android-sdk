@@ -150,5 +150,6 @@ curl -H "Content-Type: application/json" -X POST -u ${ARTIFACTORY_USER}:${ARTIFA
 echo ""
 echo "Copied artifacts to public jfrog repo."
 
-echo "Don't forget to update the changelog in readme.io"
-open "https://developer.bitmovin.com/streams/docs/overview"
+# There is no release notes from now. Maybe be added later on
+#echo "Don't forget to update the changelog in readme.io"
+#open "<LINK IF ANY>"
