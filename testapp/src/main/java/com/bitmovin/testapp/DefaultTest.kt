@@ -148,7 +148,7 @@ class DefaultTest : ComponentActivity() {
                 ),
                 Test(
                     title = "Disabled",
-                    expectedResult = "Fullscreen and Picture-in-Picture should not be available",
+                    expectedResult = "Fullscreen and Picture-in-Picture should be disabled",
                     config =
                         StreamConfig(
                             streamId = TestStreamsIds.SINTEL,
@@ -236,8 +236,8 @@ class DefaultTest : ComponentActivity() {
                 ),
                 Test(
                     "Start Time",
-                    "The video should start at 10 seconds",
-                    StreamConfig(streamId = TestStreamsIds.SINTEL, startTime = 10.0),
+                    "The video should start at 5 minutes",
+                    StreamConfig(streamId = TestStreamsIds.SINTEL, startTime = 5 * 60.0),
                 ),
                 Test(
                     "Subtitles",
