@@ -29,6 +29,7 @@ internal class StreamsProvider : ContentProvider() {
                             maxSize = 1L * 1024L * 1024L,
                         ),
                     ).build()
+            Log.i(TAG_STREAM, "Streams Pool initialized successfully.")
         }
 
         fun getInstance(): StreamsProvider {
@@ -69,7 +70,6 @@ internal class StreamsProvider : ContentProvider() {
      */
     override fun onCreate(): Boolean {
         init(context!!.applicationContext)
-        Log.i(TAG_PERF, "Streams Pool initialized successfully")
         return false
     }
 
