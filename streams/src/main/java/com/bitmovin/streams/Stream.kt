@@ -157,7 +157,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
     ): Player {
         val player = createPlayer(streamConfig, context, enableAds, autoPlay, muted, logger)
         this.player = player
-        player.on(PlayerEvent.Ready::class.java) {
+        player.next(PlayerEvent.Ready::class.java) {
             if (state == BitmovinStreamState.INITIALIZING) {
                 state = BitmovinStreamState.WAITING_FOR_VIEW
             } else if (state == BitmovinStreamState.WAITING_FOR_PLAYER) {
@@ -166,7 +166,7 @@ internal class Stream(private val usid: String, allLogs: Boolean = false) {
             }
         }
         // If the source loading crashes while initializing, the stream is blocked
-        player.on(PlayerEvent.SourceRemoved::class.java) {
+        player.next(PlayerEvent.SourceRemoved::class.java) {
             if (state != BitmovinStreamState.DISPLAYING) {
                 castError(StreamError.SOURCE_ERROR)
             }

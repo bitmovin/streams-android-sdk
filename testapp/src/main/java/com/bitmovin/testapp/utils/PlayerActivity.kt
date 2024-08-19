@@ -39,6 +39,16 @@ import com.bitmovin.streams.config.StreamListener
 import com.bitmovin.streams.config.StyleConfigStream
 import com.bitmovin.testapp.ui.theme.StreamsandroidsdkTheme
 import kotlin.math.abs
+private val appTheme = StyleConfigStream(
+    playbackMarkerBgColor = Color(255, 0, 0, 0),
+    playbackMarkerBorderColor = Color(255, 0, 0, 0),
+    playbackTrackPlayedColor = Color(245, 7, 7, 255),
+    playbackTrackBufferedColor = Color(199, 199, 199, 204),
+    playbackTrackBgColor = Color(128, 128, 128, 127),
+    textColor = Color(217, 217, 217, 255),
+    backgroundColor = Color(0, 0, 0, 255),
+)
+private const val FS_TREESHOLD = 8
 
 class PlayerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,10 +70,9 @@ class PlayerActivity : ComponentActivity() {
         streamId: String,
         token: String?,
     ) {
-        var name by remember { mutableStateOf("Loading...") }
         var description by remember { mutableStateOf("Loading...") }
+        var name by remember { mutableStateOf("Loading...") }
         val config = LocalConfiguration.current
-
         var aspectRatio by remember { mutableFloatStateOf(16f / 9f) }
         // not really useful but it looks cleaner.
         val aspectRatioAnim by animateFloatAsState(
@@ -169,15 +178,7 @@ class PlayerActivity : ComponentActivity() {
                             // Do nothing
                         }
                     },
-                styleConfig = StyleConfigStream(
-                    playbackMarkerBgColor = Color(255, 0, 0, 0),
-                    playbackMarkerBorderColor = Color(255, 0, 0, 0),
-                    playbackTrackPlayedColor = Color(245, 7, 7, 255),
-                    playbackTrackBufferedColor = Color(199, 199, 199, 204),
-                    playbackTrackBgColor = Color(128, 128, 128, 127),
-                    textColor = Color(217, 217, 217, 255),
-                    backgroundColor = Color(0, 0, 0, 255),
-                ),
+                styleConfig = appTheme
             )
             Text(
                 text = name,
@@ -187,10 +188,6 @@ class PlayerActivity : ComponentActivity() {
             )
             Text(text = description, Modifier.padding(8.dp))
         }
-    }
-
-    companion object {
-        const val FS_TREESHOLD = 8
     }
 }
 

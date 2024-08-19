@@ -147,7 +147,7 @@ public fun BitmovinStream(
 
             if (playerView.isFullscreen) {
                 FullScreen(
-                    onDismissRequest = { stream.playerView?.exitFullscreen() },
+                    onDismissRequest = { playerView.exitFullscreen() },
                     isImmersive = fullscreenConfig.immersive,
                 ) { BitmovinPlayerComposeWrapper(playerView = playerView) }
                 TextVideoPlayerFiller(text = "In Fullscreen", modifier)
