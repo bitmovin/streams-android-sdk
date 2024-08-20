@@ -42,6 +42,15 @@ getVersion() {
   VERSION=$(grep "streamsVersion" gradle.properties | cut -d "=" -f 2)
 }
 
+isSnapshotVersion() {
+  getVersion
+  if [[ $VERSION == *"-SNAPSHOT" ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 if test -e ~/.bashrc; then
   # shellcheck disable=SC2039,SC1090
   source ~/.bashrc
@@ -71,10 +80,23 @@ if [ -z "$ARTIFACTORY_PASSWORD" ]; then
   setEnvVariable "ARTIFACTORY_PASSWORD" "$ARTIFACTORY_PASSWORD"
 fi
 
+
+
 echo ""
-echo "Git Checkout and pull 'main' branch..."
-git checkout main
-git pull
+
+#If not a snapshot version
+if ! isSnapshotVersion; then
+  echo "Git Checkout and pull 'main' branch..."
+  git checkout main
+  git pull
+  # And no work in progress
+  if git status | grep -q "nothing to commit, working tree clean"; then
+    echo "No work in progress. Continuing..."
+  else
+    echo "There is work in progress. Please commit or stash your changes before continuing."
+    exit 1
+  fi
+fi
 
 echo "Did you Before publishing, make sure the version has been already bumped in the 'README.md' and 'CHANGELOG.md' and already merged as release PR into 'main' branch !"
 waitForApproval
@@ -95,7 +117,7 @@ waitForApproval
 
 echo ""
 echo "Check correct code style..."
-if ! ./gradlew ktLintCheck --daemon; then
+if ! ./gradlew ktlintCheck --daemon; then
   echo "Code style violations detected, please fix them first on main as otherwise the build will fail."
   exit
 fi
@@ -119,6 +141,7 @@ echo "streams-android-sdk building and publishing..."
 ./gradlew streams:assembleRelease || exit
 ./gradlew publishToMavenLocal || exit
 ./gradlew artifactoryPublish || exit
+./gradlew verifyLatestDocsIsUpToDate || exit
 echo "streams-android-sdk built and published! (Locally)"
 
 echo ""
@@ -141,12 +164,18 @@ open "https://github.com/bitmovin-engineering/streams-android-sdk/releases/new?t
 # shellcheck disable=SC2039
 read -p "Press enter to continue when the release is created..."
 
-echo "Copying artifacts from libs-release-local to public-releases in jfrog ..."
+# If it's not a SNAPSHOT version (finish with "-SNAPSHOT"), copy the artifacts to the public repository
+if isSnapshotVersion ; then
+  echo "Version is a SNAPSHOT version. Skipping copying to public repository."
+else
+  echo "Copying artifacts from libs-release-local to public-releases in jfrog ..."
+  curl -H "Content-Type: application/json" -X POST -u "${ARTIFACTORY_USER}":"${ARTIFACTORY_PASSWORD}" "https://bitmovin.jfrog.io/bitmovin/api/copy/libs-release-local/com/bitmovin/streams/streams-android-sdk/${VERSION}?to=/public-releases/com/bitmovin/streams/streams-android-sdk/${VERSION}"
 
-curl -H "Content-Type: application/json" -X POST -u "${ARTIFACTORY_USER}":"${ARTIFACTORY_PASSWORD}" "https://bitmovin.jfrog.io/bitmovin/api/copy/libs-release-local/com/bitmovin/streams/streams-android-sdk/${VERSION}?to=/public-releases/com/bitmovin/streams/streams-android-sdk/${VERSION}"
+  echo ""
 
-echo ""
-echo "Copied artifacts to public jfrog repo."
+  echo "Copied artifacts to public jfrog repo."
+
+fi
 
 # There is no release notes from now. Maybe be added later on
 #echo "Don't forget to update the changelog in readme.io"

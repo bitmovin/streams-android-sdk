@@ -2,7 +2,15 @@
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## Development
+## Unreleased
+
+### Added
+- Added Dokka documentation as a [GitHub Pages site](https://bitmovin.github.io/streams-android-sdk/).
+
+### [Internal]
+- Improved publishing snapshot process.
+
+### 
 
 ## 1.0.0
 

@@ -7,7 +7,7 @@
 
 <div align="center">
 
-[![bitmovin](docs/streams-android-sdk-github-header.png)](http://www.bitmovin.com)
+[![bitmovin](docs_assets/streams-android-sdk-github-header.png)](http://www.bitmovin.com)
 </div>
 
 # Bitmovin Streams on Android 
