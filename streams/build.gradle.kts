@@ -157,7 +157,7 @@ tasks.dokkaHtml.configure {
 tasks.register("generateDocs") {
     dependsOn("dokkaHtml")
     doLast {
-        val docsDir = rootDir.resolve("docs/latest")
+        val docsDir = rootDir.resolve("docs")
         docsDir.deleteRecursively()
         docsDir.mkdirs()
         rootDir.resolve("build/reports/$version/docs").copyRecursively(docsDir, true)
@@ -170,7 +170,7 @@ tasks.register("generateDocs") {
 tasks.register("verifyLatestDocsIsUpToDate") {
     dependsOn("dokkaHtml")
     doLast {
-        val latestDocs = rootDir.resolve("docs/latest")
+        val latestDocs = rootDir.resolve("docs")
         val currentDocs = rootDir.resolve("build/reports/$version/docs")
         if (!latestDocs.exists() || !currentDocs.exists()) {
             throw Exception("Docs not generated")
