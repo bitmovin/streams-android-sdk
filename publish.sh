@@ -167,10 +167,6 @@ read -p "Press enter to continue when the release is created..."
 # If it's not a SNAPSHOT version (finish with "-SNAPSHOT"), copy the artifacts to the public repository
 if isSnapshotVersion ; then
   echo "Version is a SNAPSHOT version. Skipping copying to public repository."
-
-  # Deploy documentation to GitHub deployments
-  echo "Deploying documentation to GitHub deployments..."
-
 else
   echo "Copying artifacts from libs-release-local to public-releases in jfrog ..."
   curl -H "Content-Type: application/json" -X POST -u "${ARTIFACTORY_USER}":"${ARTIFACTORY_PASSWORD}" "https://bitmovin.jfrog.io/bitmovin/api/copy/libs-release-local/com/bitmovin/streams/streams-android-sdk/${VERSION}?to=/public-releases/com/bitmovin/streams/streams-android-sdk/${VERSION}"
