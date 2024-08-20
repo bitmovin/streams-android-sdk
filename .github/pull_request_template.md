@@ -1,5 +1,3 @@
-### Related Issue(s)
-<!--- Link the related issue(s). If none remove this part. -->
 ### Description
 <!--- Describe your changes. Can be a fix, a change or a feature... -->
 
