@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>FullscreenConfig</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+<link href="../../../images/docs_logo.svg">
+<link href="../../../images/logo-icon.svg">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/styles.css" rel="Stylesheet">
+</head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+                    <a class="library-name--link" href="../../../index.html">
+                            streams
+                    </a>
+            </div>
+            <div class="library-version">
+1.0.1-SNAPSHOT            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":streams:dokkaHtml/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="streams::com.bitmovin.streams.config/FullscreenConfig///PointingToDeclaration//-1975676589">
+  <div class="breadcrumbs"><a href="../../../index.html">streams</a><span class="delimiter">/</span><a href="../index.html">com.bitmovin.streams.config</a><span class="delimiter">/</span><span class="current">FullscreenConfig</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Fullscreen</span><wbr></wbr><span><span>Config</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":streams:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">FullscreenConfig</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">var </span>enable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>immersive<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>autoRotate<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>minAspectRatioForLandscapeForce<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">1.2f</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>maxAspectRatioForPortraitForce<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">0.8f</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>screenDefaultOrientation<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>autoPiPOnBackground<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></span></span><span class="token punctuation">)</span></div><p class="paragraph">Configuration for the fullscreen behavior of the player.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-1705102802%2FConstructors%2F-1975676589" anchor-label="FullscreenConfig" id="-1705102802%2FConstructors%2F-1975676589" data-filterable-set=":streams:dokkaHtml/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":streams:dokkaHtml/release" data-filterable-set=":streams:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-fullscreen-config.html"><span>Fullscreen</span><wbr></wbr><span><span>Config</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1705102802%2FConstructors%2F-1975676589"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":streams:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">enable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">immersive<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">autoRotate<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">minAspectRatioForLandscapeForce<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">1.2f</span><span class="token punctuation">, </span></span><span class="parameter ">maxAspectRatioForPortraitForce<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">0.8f</span><span class="token punctuation">, </span></span><span class="parameter ">screenDefaultOrientation<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">autoPiPOnBackground<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="688892633%2FClasslikes%2F-1975676589" anchor-label="Companion" id="688892633%2FClasslikes%2F-1975676589" data-filterable-set=":streams:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":streams:dokkaHtml/release" data-filterable-set=":streams:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="688892633%2FClasslikes%2F-1975676589"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":streams:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1231288093%2FProperties%2F-1975676589" anchor-label="autoPiPOnBackground" id="1231288093%2FProperties%2F-1975676589" data-filterable-set=":streams:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":streams:dokkaHtml/release" data-filterable-set=":streams:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="auto-pi-p-on-background.html"><span>auto</span><wbr></wbr><span>Pi</span><wbr></wbr><span>POn</span><wbr></wbr><span><span>Background</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1231288093%2FProperties%2F-1975676589"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":streams:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="auto-pi-p-on-background.html">autoPiPOnBackground</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether the player should automatically enter picture-in-picture mode when the app goes to the background while a stream being in fullscreen.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1658545186%2FProperties%2F-1975676589" anchor-label="autoRotate" id="-1658545186%2FProperties%2F-1975676589" data-filterable-set=":streams:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":streams:dokkaHtml/release" data-filterable-set=":streams:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="auto-rotate.html"><span>auto</span><wbr></wbr><span><span>Rotate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1658545186%2FProperties%2F-1975676589"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":streams:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="auto-rotate.html">autoRotate</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether the player should automatically change orientation.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-481867291%2FProperties%2F-1975676589" anchor-label="enable" id="-481867291%2FProperties%2F-1975676589" data-filterable-set=":streams:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":streams:dokkaHtml/release" data-filterable-set=":streams:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="enable.html"><span><span>enable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-481867291%2FProperties%2F-1975676589"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":streams:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="enable.html">enable</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether the fullscreen behavior should be enabled.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1266100023%2FProperties%2F-1975676589" anchor-label="immersive" id="1266100023%2FProperties%2F-1975676589" data-filterable-set=":streams:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":streams:dokkaHtml/release" data-filterable-set=":streams:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="immersive.html"><span><span>immersive</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1266100023%2FProperties%2F-1975676589"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":streams:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="immersive.html">immersive</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Whether the player should be in immersive mode. Recommended to be false if the <i>EdgeToEdge</i> is disabled on the Activity (may break on some very specific devices).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1344895150%2FProperties%2F-1975676589" anchor-label="maxAspectRatioForPortraitForce" id="-1344895150%2FProperties%2F-1975676589" data-filterable-set=":streams:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":streams:dokkaHtml/release" data-filterable-set=":streams:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="max-aspect-ratio-for-portrait-force.html"><span>max</span><wbr></wbr><span>Aspect</span><wbr></wbr><span>Ratio</span><wbr></wbr><span>For</span><wbr></wbr><span>Portrait</span><wbr></wbr><span><span>Force</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1344895150%2FProperties%2F-1975676589"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":streams:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="max-aspect-ratio-for-portrait-force.html">maxAspectRatioForPortraitForce</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">The maximum aspect ratio for forcing portrait orientation. Does not apply if autoRotate is false.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="917979034%2FProperties%2F-1975676589" anchor-label="minAspectRatioForLandscapeForce" id="917979034%2FProperties%2F-1975676589" data-filterable-set=":streams:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":streams:dokkaHtml/release" data-filterable-set=":streams:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="min-aspect-ratio-for-landscape-force.html"><span>min</span><wbr></wbr><span>Aspect</span><wbr></wbr><span>Ratio</span><wbr></wbr><span>For</span><wbr></wbr><span>Landscape</span><wbr></wbr><span><span>Force</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="917979034%2FProperties%2F-1975676589"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":streams:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="min-aspect-ratio-for-landscape-force.html">minAspectRatioForLandscapeForce</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">The minimum aspect ratio for forcing landscape orientation. Does not apply if autoRotate is false.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="819918669%2FProperties%2F-1975676589" anchor-label="screenDefaultOrientation" id="819918669%2FProperties%2F-1975676589" data-filterable-set=":streams:dokkaHtml/release"></a>
+          <div class="table-row" data-filterable-current=":streams:dokkaHtml/release" data-filterable-set=":streams:dokkaHtml/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="screen-default-orientation.html"><span>screen</span><wbr></wbr><span>Default</span><wbr></wbr><span><span>Orientation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="819918669%2FProperties%2F-1975676589"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":streams:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="screen-default-orientation.html">screenDefaultOrientation</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The default orientation of the screen.Will be forced after fullscreen escape if non-null. If null, the screen orientation will automatically reset to the state after exiting fullscreen. Should correspond to one of the ActivityInfo.SCREEN_ORIENTATION_* constants.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

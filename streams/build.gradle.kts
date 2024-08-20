@@ -132,6 +132,7 @@ android {
     }
 }
 
+// Configure the dokka plugin
 tasks.dokkaHtml.configure {
     outputDirectory.set(rootDir.resolve("build/reports/$version/docs"))
 
@@ -147,6 +148,49 @@ tasks.dokkaHtml.configure {
                 // Used as favicon
                 rootDir.resolve("docs/dokka/logo-icon.svg"),
             )
+    }
+}
+
+/**
+ * Task that generate the dokka Html docs and copy the generated files to the docs folder
+ */
+tasks.register("generateDocs") {
+    dependsOn("dokkaHtml")
+    doLast {
+        val docsDir = rootDir.resolve("docs/latest")
+        docsDir.deleteRecursively()
+        docsDir.mkdirs()
+        rootDir.resolve("build/reports/$version/docs").copyRecursively(docsDir, true)
+    }
+}
+
+/**
+ * Checks if latest docs is the same as currently generating docs
+ */
+tasks.register("verifyLatestDocsIsUpToDate") {
+    dependsOn("dokkaHtml")
+    doLast {
+        val latestDocs = rootDir.resolve("docs/latest")
+        val currentDocs = rootDir.resolve("build/reports/$version/docs")
+        if (!latestDocs.exists() || !currentDocs.exists()) {
+            throw Exception("Docs not generated")
+        }
+        // Compare each files of the dirs and check if they are the same
+        if (!latestDocs.compareRecursivelyWith(currentDocs)) {
+            throw Exception("Latest docs is not up-to-date. Please run the generateDocs task")
+        }
+    }
+}
+
+fun File.compareRecursivelyWith(other: File): Boolean {
+    if (this.isDirectory) {
+        if (!other.isDirectory) return false
+        val thisFiles = this.listFiles() ?: return false
+        val otherFiles = other.listFiles() ?: return false
+        if (thisFiles.size != otherFiles.size) return false
+        return thisFiles.all { it.compareRecursivelyWith(other.resolve(it.name)) }
+    } else {
+        return this.readText() == other.readText()
     }
 }
 
