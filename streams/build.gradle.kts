@@ -139,14 +139,14 @@ tasks.dokkaHtml.configure {
     pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
         customStyleSheets =
             listOf(
-                rootDir.resolve("docs/dokka/logo-styles.css"),
-                rootDir.resolve("docs/dokka/styles.css"),
+                rootDir.resolve("docs_assets/dokka/logo-styles.css"),
+                rootDir.resolve("docs_assets/dokka/styles.css"),
             )
         customAssets =
             listOf(
-                rootDir.resolve("docs/dokka/docs_logo.svg"),
+                rootDir.resolve("docs_assets/dokka/docs_logo.svg"),
                 // Used as favicon
-                rootDir.resolve("docs/dokka/logo-icon.svg"),
+                rootDir.resolve("docs_assets/dokka/logo-icon.svg"),
             )
     }
 }
