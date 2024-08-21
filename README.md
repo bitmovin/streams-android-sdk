@@ -1,7 +1,7 @@
 <div>
 
 [![Verifications](https://github.com/bitmovin-engineering/streams-android-sdk/actions/workflows/Verifications.yml/badge.svg?branch=main)](https://github.com/bitmovin-engineering/streams-android-sdk/actions/workflows/Verifications.yml)
-![Version](https://img.shields.io/badge/latest%20version-1.0.0-28dc48)
+![Version](https://img.shields.io/badge/latest%20version-1.0.0-284cd8)
 
 </div>
 
@@ -10,13 +10,11 @@
 [![bitmovin](docs_assets/streams-android-sdk-github-header.png)](http://www.bitmovin.com)
 </div>
 
-# Bitmovin Streams on Android 
+# Bitmovin Streams on Android
 
-This library provides BitmovinStream, which is a Compose component to play [Bitmovin Streams](https://bitmovin.com/streams) natively on Android.
+This library features the `BitmovinStream`, which is a Jetpack Compose component to play [Bitmovin Streams](https://bitmovin.com/streams) natively on Android.
 
-The component is built on top of the [Bitmovin Player Android SDK](https://bitmovin.com/docs/player/android-sdk/).
-
-This library features the `BitmovinStream` Jetpack Composable. 
+The component is built on top of the [Bitmovin Android Android](https://bitmovin.com/docs/player/android-sdk/).
 
 It's properties are highly customizable and can be used in a variety of ways, from simple video playback to more complex use cases.
 
@@ -64,7 +62,7 @@ dependencies {
 
 <br>
 
-Finally, each activity that uses the BitmovinStream component must be declared in the AndroidManifest.xml file with the following 
+Finally, each activity that uses the BitmovinStream component must be declared in the AndroidManifest.xml file with the following
 configuration:
 
 ```xml
@@ -90,7 +88,7 @@ You're all set! You can now use the BitmovinStream component in your project.
 
 ## Properties
 
-It has the following parameters:  
+It has the following parameters:
 
 | Parameter           | Default Value | Description                                                                                                                                                                                         |
 |---------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -132,7 +130,7 @@ The FullscreenConfig is a configuration object that allows you to customize the 
 
 ### StyleConfig
 
-The StyleConfig is a configuration object that allows you to customize the appearance of the player. 
+The StyleConfig is a configuration object that allows you to customize the appearance of the player.
 It has the priority over the style configuration set in the Bitmovin Stream dashboard.
 
 You can find some predefined styles in the StreamThemes class.
@@ -202,5 +200,11 @@ BitmovinStream(
 )
 ```
 
-### More examples 
-For more complex examples, please check the testapp module.
+### More examples
+For more examples, please check the [testapp module](/testapp).
+
+## Contributing
+We are happy to accept contributions. Feel free to open a PR.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file for details.
